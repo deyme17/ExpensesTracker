@@ -1,0 +1,74 @@
+monobank_app/
+│
+├── main.py                    
+│
+├── app/                      
+│   ├── __init__.py
+│   ├── app.py         
+│   │
+│   ├── views/               
+│   │   ├── __init__.py
+│   │   ├── screens.py         
+│   │   ├── login_screen.py    
+│   │   ├── register_screen.py     
+│   │   ├── transactions_screen.py  
+│   │   └── analytics_screen.py 
+│   │
+│   ├── controllers/          
+│   │   ├── __init__.py
+│   │   ├── auth_controller.py  
+│   │   ├── transaction_controller.py  
+│   │   └── analytics_controller.py 
+│   │
+│   ├── services/              
+│   │   ├── __init__.py
+│   │   ├── auth_service.py    
+│   │   ├── transaction_service.py  
+│   │   ├── analytics_service.py  
+│   │   └── monobank_api.py     
+│   │
+│   ├── models/                
+│   │   ├── __init__.py
+│   │   ├── user.py             
+│   │   ├── transaction.py  
+│   │   └── graphs/
+│   │        ├── __init__.py
+│   │        ├── distribution_graph.py
+│   │        ├── share_graph.py
+│   │        └── dynamics_graph.py
+│   │
+│   ├── database/        
+│   │   ├── __init__.py
+│   │   ├── db_manager.py    
+│   │   └── repositories/
+│   │       ├── __init__.py
+│   │       ├── user_repository.py
+│   │       └── transaction_repository.py
+│   │
+│   ├── utils/            
+│   │   ├── __init__.py
+│   │   ├── encryption.py      
+│   │   ├── connectivity.py
+│   │   └── helpers.py          
+│
+├── resources/                  
+│   ├── images/               
+│   ├── fonts/                  
+│   └── icons/                 
+│
+├── kv/                         
+│   ├── monobank_app.kv         
+│   ├── login_screen.kv        
+│   ├── register_screen.kv      
+│   ├── main_screen.kv          
+│   ├── transactions_screen.kv  
+│   └── analytics_screen.kv     
+│
+├── tests/                    
+│   ├── __init__.py
+│   ├── test_auth_service.py
+│   └── test_transaction_service.py
+│
+├── buildozer.spec              
+├── requirements.txt            
+└── README.md                   

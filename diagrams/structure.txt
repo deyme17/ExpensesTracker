@@ -100,7 +100,6 @@ ExpensesTracker/
 │   │   ├── __init__.py
 │   │   ├── encryption.py       # Шифрування локальних даних
 │   │   ├── connectivity.py     # Робота з мережею
-│   │   ├── ui_helpers.py       # Допоміжні UI функції
 │   │   └── formatters.py       # Форматування даних
 │   │
 │   └── cache/                  # Кешування даних
@@ -108,16 +107,30 @@ ExpensesTracker/
 │       └── cache_manager.py    # Управління кешем
 │
 ├── resources/                  # Ресурси додатку
-│   ├── images/                 # Зображення
-│   └── icons/                  # Іконки
+│   └── images/
 │
 ├── tests/                      # Тести мобільного додатку
 │
 ├── docs/                       # Документація
 ├── config/                     # Конфігураційні файли
+├── dbSchema/ 
+│   ├── dbSchema.png
+│   └── dbSchema.sql
+├── diagrams/ 
+│   ├── DFD/
+│   │   ├── ContextDFD.drawio.png
+│   │   ├── DataFlowDiag0.drawio.png
+│   │   └── DataFlowDiag1.drawio.png
+│   └── UML/
+│       ├── Activity_UMLdiag.drawio.png
+│       ├── Class_UMLdiag.drawio.png
+│       ├── Sequence_UMLdiag.drawio.png
+│       └── UseCases_UML.drawio.png
 │
 ├── buildozer.spec              # Конфігурація для Buildozer
 ├── requirements.txt            # Залежності проекту
-├── server_requirements.txt     # Залежності сервера
+├── .env
+├── .gitignore
+├── LICENSE
 ├── Dockerfile
 └── README.md                   # Опис проекту

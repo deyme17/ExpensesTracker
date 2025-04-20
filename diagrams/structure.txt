@@ -1,74 +1,123 @@
-monobank_app/
+ExpensesTracker/
 │
-├── main.py                    
+├── main.py
 │
-├── app/                      
+├── server/                     # Серверна частина для WebHook
 │   ├── __init__.py
-│   ├── app.py         
+│   ├── app.py                  # Основний Flask-додаток
+│   ├── config.py               # Конфігурації для різних середовищ
 │   │
-│   ├── views/               
+│   ├── api/                    # API-ендпоінти
 │   │   ├── __init__.py
-│   │   ├── screens.py         
-│   │   ├── login_screen.py    
-│   │   ├── register_screen.py     
-│   │   ├── transactions_screen.py  
-│   │   └── analytics_screen.py 
+│   │   ├── auth_routes.py      # Ендпоінти авторизації
+│   │   ├── transaction_routes.py # Ендпоінти транзакцій
+│   │   ├── webhook_routes.py   # Ендпоінти для WebHook
+│   │   └── analytics_routes.py # Ендпоінти аналітики
 │   │
-│   ├── controllers/          
+│   ├── services/               # Бізнес-логіка сервера
 │   │   ├── __init__.py
-│   │   ├── auth_controller.py  
-│   │   ├── transaction_controller.py  
-│   │   └── analytics_controller.py 
+│   │   ├── auth_service.py     # Авторизація і користувачі
+│   │   ├── monobank_service.py # Інтеграція з Monobank API
+│   │   ├── webhook_service.py  # Обробка WebHook
+│   │   └── transaction_service.py # Обробка транзакцій
 │   │
-│   ├── services/              
+│   ├── models/                 # Моделі даних сервера
 │   │   ├── __init__.py
-│   │   ├── auth_service.py    
-│   │   ├── transaction_service.py  
-│   │   ├── analytics_service.py  
-│   │   └── monobank_api.py     
+│   │   ├── user.py             # Модель користувача
+│   │   ├── transaction.py      # Модель транзакції
+│   │   └── category.py         # Модель категорії
 │   │
-│   ├── models/                
+│   ├── database/               # Робота з базою даних
 │   │   ├── __init__.py
-│   │   ├── user.py             
-│   │   ├── transaction.py  
-│   │   └── graphs/
-│   │        ├── __init__.py
-│   │        ├── distribution_graph.py
-│   │        ├── share_graph.py
-│   │        └── dynamics_graph.py
-│   │
-│   ├── database/        
-│   │   ├── __init__.py
-│   │   ├── db_manager.py    
-│   │   └── repositories/
+│   │   ├── db.py               # Підключення до БД
+│   │   └── repositories/       # Репозиторії для моделей
 │   │       ├── __init__.py
 │   │       ├── user_repository.py
-│   │       └── transaction_repository.py
+│   │       ├── transaction_repository.py
+│   │       └── category_repository.py
 │   │
-│   ├── utils/            
+│   ├── utils/                  # Утиліти сервера
 │   │   ├── __init__.py
-│   │   ├── encryption.py      
-│   │   ├── connectivity.py
-│   │   └── helpers.py          
+│   │   ├── security.py         # Безпека і шифрування
+│   │   ├── validators.py       # Валідатори даних
+│   │   └── helpers.py          # Допоміжні функції
+│   │
+│   └── tests/                  # Тести серверної частини
+│       ├── __init__.py
+│       ├── test_auth_api.py
+│       ├── test_webhook.py
+│       └── test_transaction_api.py
 │
-├── resources/                  
-│   ├── images/               
-│   ├── fonts/                  
-│   └── icons/                 
-│
-├── kv/                         
-│   ├── monobank_app.kv         
-│   ├── login_screen.kv        
-│   ├── register_screen.kv      
-│   ├── main_screen.kv          
-│   ├── transactions_screen.kv  
-│   └── analytics_screen.kv     
-│
-├── tests/                    
+├── app/                        # Мобільний додаток
 │   ├── __init__.py
-│   ├── test_auth_service.py
-│   └── test_transaction_service.py
+│   ├── app.py                  # Основний клас додатку
+│   │
+│   ├── views/                  # Екрани додатку
+│   │   ├── __init__.py
+│   │   ├── main_screen.py      # Головний екран
+│   │   ├── auth_screen.py     # Екран входу
+│   │   ├── register_screen.py  # Екран реєстрації
+│   │   ├── first_screen.py      # перший екран
+│   │   ├── analytics_screen.py # Екран аналітики
+│   │   └── splash_screen.py   # Екран завантаження
+│   │
+│   ├── controllers/            # Контролери додатку
+│   │   ├── __init__.py
+│   │   ├── auth_controller.py  # Контролер авторизації
+│   │   ├── transaction_controller.py # Контролер транзакцій
+│   │   └── analytics_controller.py # Контролер аналітики
+│   │
+│   ├── services/               # Сервіси додатку
+│   │   ├── __init__.py
+│   │   ├── auth_service.py     # Сервіс авторизації
+│   │   ├── transaction_service.py # Сервіс транзакцій
+│   │   ├── analytics_service.py # Сервіс аналітики
+│   │   ├── api_service.py      # Сервіс для роботи з сервером
+│   │   └── monobank_api.py     # Прямі запити до Monobank API
+│   │
+│   ├── models/                 # Моделі даних додатку
+│   │   ├── __init__.py
+│   │   ├── user.py             # Модель користувача
+│   │   ├── transaction.py      # Модель транзакції
+│   │   ├── category.py         # Модель категорії
+│   │   └── graphs/             # Класи для графіків
+│   │        ├── __init__.py
+│   │        ├── base_graph.py  # Базовий клас графіка
+│   │        ├── distribution_graph.py # Розподіл витрат
+│   │        ├── share_graph.py # Частка витрат по категоріям
+│   │        └── dynamics_graph.py # Динаміка витрат
+│   │
+│   ├── database/               # Локальна база даних
+│   │   ├── __init__.py
+│   │   ├── db_manager.py       # Управління локальною БД
+│   │   └── repositories/       # Локальні репозиторії
+│   │       ├── __init__.py
+│   │       ├── user_repository.py
+│   │       ├── transaction_repository.py
+│   │       └── category_repository.py
+│   │
+│   ├── utils/                  # Утиліти додатку
+│   │   ├── __init__.py
+│   │   ├── encryption.py       # Шифрування локальних даних
+│   │   ├── connectivity.py     # Робота з мережею
+│   │   ├── ui_helpers.py       # Допоміжні UI функції
+│   │   └── formatters.py       # Форматування даних
+│   │
+│   └── cache/                  # Кешування даних
+│       ├── __init__.py
+│       └── cache_manager.py    # Управління кешем
 │
-├── buildozer.spec              
-├── requirements.txt            
-└── README.md                   
+├── resources/                  # Ресурси додатку
+│   ├── images/                 # Зображення
+│   └── icons/                  # Іконки
+│
+├── tests/                      # Тести мобільного додатку
+│
+├── docs/                       # Документація
+├── config/                     # Конфігураційні файли
+│
+├── buildozer.spec              # Конфігурація для Buildozer
+├── requirements.txt            # Залежності проекту
+├── server_requirements.txt     # Залежності сервера
+├── Dockerfile
+└── README.md                   # Опис проекту

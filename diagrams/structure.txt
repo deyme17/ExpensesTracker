@@ -5,7 +5,6 @@ ExpensesTracker/
 ├── server/                     # Серверна частина для WebHook
 │   ├── __init__.py
 │   ├── app.py                  # Основний Flask-додаток
-│   ├── config.py               # Конфігурації для різних середовищ
 │   │
 │   ├── api/                    # API-ендпоінти
 │   │   ├── __init__.py

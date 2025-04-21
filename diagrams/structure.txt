@@ -54,8 +54,9 @@ ExpensesTracker/
 │   ├── views/                  # Екрани додатку
 │   │   ├── __init__.py
 │   │   ├── main_screen.py      # Головний екран
-│   │   ├── auth_screen.py     # Екран входу
+│   │   ├── login_screen.py     # Екран входу
 │   │   ├── register_screen.py  # Екран реєстрації
+│   │   ├── screens.py          # Базовий клас екранів
 │   │   ├── first_screen.py      # перший екран
 │   │   ├── analytics_screen.py # Екран аналітики
 │   │   └── splash_screen.py   # Екран завантаження
@@ -111,6 +112,14 @@ ExpensesTracker/
 ├── tests/                      # Тести мобільного додатку
 │
 ├── kv/                         # Ківі файли
+│   ├── main_screen.kv     
+│   ├── login_screen.kv   
+│   ├── register_screen.kv 
+│   ├── screens.kv         
+│   ├── first_screen.kv    
+│   ├── analytics_screen.kv
+│   └── splash_screen.kv
+│
 ├── docs/                       # Документація
 ├── config/                     # Конфігураційні файли
 ├── dbSchema/ 

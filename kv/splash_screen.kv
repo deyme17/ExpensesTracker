@@ -1,0 +1,113 @@
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import dp kivy.metrics.dp
+#:import Animation kivy.animation.Animation
+
+#:set primary_color get_color_from_hex('#FF7043')
+#:set secondary_color get_color_from_hex('#0F7055')
+#:set bg_color get_color_from_hex('#062925')
+#:set text_light get_color_from_hex('#FFFFFF')
+#:set accent_color get_color_from_hex('#FFB74D')
+
+<SplashScreen>:
+    canvas.before:
+        Color:
+            rgba: bg_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: secondary_color[0], secondary_color[1], secondary_color[2], 0.2
+        Ellipse:
+            pos: self.center_x - self.width*0.75, -self.height*0.5
+            size: self.width*1.5, self.height*1.0
+        Color:
+            rgba: primary_color[0], primary_color[1], primary_color[2], 0.1
+        Ellipse:
+            pos: self.center_x - self.width*0.75, self.height*0.5
+            size: self.width*1.5, self.height*1.0
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(20)
+        padding: dp(30)
+        size_hint: None, None
+        size: min(root.width * 0.8, dp(400)), min(root.height * 0.7, dp(500))
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+        Widget:
+            size_hint_y: 0.1
+
+        Image:
+            id: logo
+            source: 'resourses\images\logo.png'
+            size_hint: None, None
+            size: dp(150), dp(150)
+            pos_hint: {'center_x': 0.5}
+            on_kv_post:
+                anim = Animation(size=(dp(160), dp(160)), duration=0.8, t='out_quad') + Animation(size=(dp(150), dp(150)), duration=0.8, t='in_quad')
+                anim.repeat = True
+                anim.start(self)
+
+        Widget:
+            size_hint_y: 0.05
+
+        Label:
+            text: 'Expenses Tracker'
+            font_size: '30sp'
+            bold: True
+            pos_hint: {'center_x': 0.5}
+            color: text_light
+            size_hint_y: None
+            height: dp(50)
+            opacity: 0
+            on_kv_post:
+                Animation(opacity=1, d=0.8).start(self)
+
+        Label:
+            text: 'Track your finances'
+            font_size: '16sp'
+            pos_hint: {'center_x': 0.5}
+            color: text_light
+            opacity: 0
+            size_hint_y: None
+            height: dp(30)
+            on_kv_post:
+                Animation(opacity=0.7, d=1.0, t='out_quad').start(self)
+
+        Widget:
+            size_hint_y: 0.2
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+
+            Widget:
+                id: progress_bar
+                size_hint: None, None
+                size: dp(0), dp(4)
+                pos_hint: {'center_x': 0.5}
+                canvas:
+                    Color:
+                        rgba: primary_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(2)]
+                on_kv_post:
+                    anim = Animation(size=(dp(230), dp(4)), duration=1.5, t='out_quad')
+                    anim.start(self)
+
+            Label:
+                text: 'Loading...'
+                font_size: '14sp'
+                color: accent_color
+                opacity: 0
+                size_hint_y: None
+                height: dp(20)
+                on_kv_post:
+                    Animation(opacity=1, d=1.2).start(self)
+
+        Widget:
+            size_hint_y: 0.1

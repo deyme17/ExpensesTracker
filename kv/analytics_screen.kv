@@ -1,0 +1,296 @@
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+#:import dp kivy.metrics.dp
+#:import Clock kivy.clock.Clock
+#:import Animation kivy.animation.Animation
+
+# color scheme
+#:set primary_color get_color_from_hex('#FF7043')
+#:set secondary_color get_color_from_hex('#0F7055')
+#:set accent_color get_color_from_hex('#FFB74D')
+#:set bg_color get_color_from_hex('#062925')
+#:set text_light get_color_from_hex('#FFFFFF')
+#:set text_dark get_color_from_hex('#212121')
+#:set hint_color get_color_from_hex('#B0BEC5')
+#:set card_color get_color_from_hex('#0A4035')
+#:set error_color get_color_from_hex('#F44336')
+#:set success_color get_color_from_hex('#66BB6A')
+#:set income_color get_color_from_hex('#66BB6A')
+#:set expense_color get_color_from_hex('#F44336')
+
+<ChartButton@ToggleButton>:
+    group: 'chart_type'
+    background_color: 0, 0, 0, 0
+    color: text_light if self.state == 'down' else hint_color
+    font_size: '15sp'
+    bold: self.state == 'down'
+    allow_no_selection: False
+    
+    canvas.before:
+        Color:
+            rgba: primary_color if self.state == 'down' else (card_color[0]+0.1, card_color[1]+0.1, card_color[2]+0.1, 1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(8)]
+        
+        Color:
+            rgba: accent_color if self.state == 'down' else (0, 0, 0, 0)
+        Line:
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(8)]
+            width: dp(1.5)
+    
+    on_press: 
+        self.background_color = 0, 0, 0, 0.1
+        Animation(background_color=(0, 0, 0, 0), d=0.3).start(self)
+
+<StatsTable@GridLayout>:
+    cols: 2
+    padding: dp(10)
+    spacing: dp(10)
+    canvas.before:
+        Color:
+            rgba: card_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(12)]
+        
+        Color:
+            rgba: 1, 1, 1, 0.05
+        Line:
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+            width: 1
+
+<AnimatedBackground@Widget>:
+    canvas.before:
+        Color:
+            rgba: bg_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        
+        Color:
+            rgba: secondary_color[0], secondary_color[1], secondary_color[2], 0.15
+        Ellipse:
+            pos: self.center_x - self.width*0.75, self.center_y - self.height*0.75
+            size: self.width*1.5, self.height*1.5
+
+<StatisticsScreen>:
+    graph_container: graph_container
+    histogram_btn: histogram_btn
+    line_btn: line_btn
+    pie_btn: pie_btn
+    
+    AnimatedBackground:
+        id: animated_bg
+        size_hint: 1, 1
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+        
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            padding: [dp(10), 0]
+            
+            BoxLayout:
+                size_hint_x: None
+                width: dp(50)
+                canvas.before:
+                    Color:
+                        rgba: accent_color[0], accent_color[1], accent_color[2], 0.2
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+                
+                Label:
+                    text: '📊'
+                    font_size: '24sp'
+            
+            Label:
+                text: 'Статистика'
+                color: text_light
+                font_size: '24sp'
+                bold: True
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+                padding_x: dp(15)
+                
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_press: root.show_menu()
+                
+                canvas.before:
+                    Color:
+                        rgba: secondary_color
+                    Line:
+                        width: 1.5
+                        circle: (self.center_x, self.center_y, min(self.width, self.height) / 2 - dp(5), 0, 360)
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x + dp(5), self.center_y - dp(2)]
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(5), self.center_y + dp(2), self.center_x + dp(5), self.center_y + dp(2)]
+        
+        BoxLayout:
+            id: graph_container
+            orientation: 'vertical'
+            size_hint_y: 0.5
+            
+            canvas.before:
+                Color:
+                    rgba: card_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(12)]
+                
+                Color:
+                    rgba: 1, 1, 1, 0.05
+                Line:
+                    rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+                    width: 1
+        
+        GridLayout:
+            cols: 3
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+            padding: [dp(5), 0]
+            
+            ChartButton:
+                id: histogram_btn
+                text: 'Гістограма'
+                state: 'down'
+                on_release: root.change_chart_type('histogram')
+                
+            ChartButton:
+                id: line_btn
+                text: 'Лінійний'
+                on_release: root.change_chart_type('line')
+                
+            ChartButton:
+                id: pie_btn
+                text: 'Кругова'
+                on_release: root.change_chart_type('pie')
+        
+        StatsTable:
+            size_hint_y: 0.3
+            
+            Label:
+                text: 'Показник'
+                color: hint_color
+                font_size: '16sp'
+                bold: True
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+                
+            Label:
+                text: 'Значення'
+                color: hint_color
+                font_size: '16sp'
+                bold: True
+                text_size: self.size
+                halign: 'right'
+                valign: 'middle'
+            
+            Label:
+                text: 'Середнє значення'
+                color: text_light
+                font_size: '16sp'
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+                
+            Label:
+                text: str(root.avg_value)
+                color: primary_color
+                font_size: '16sp'
+                bold: True
+                text_size: self.size
+                halign: 'right'
+                valign: 'middle'
+            
+            Label:
+                text: 'Мінімальне'
+                color: text_light
+                font_size: '16sp'
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+                
+            Label:
+                text: str(root.min_value)
+                color: expense_color
+                font_size: '16sp'
+                bold: True
+                text_size: self.size
+                halign: 'right'
+                valign: 'middle'
+            
+            Label:
+                text: 'Максимальне'
+                color: text_light
+                font_size: '16sp'
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+                
+            Label:
+                text: str(root.max_value) 
+                color: income_color
+                font_size: '16sp'
+                bold: True
+                text_size: self.size
+                halign: 'right'
+                valign: 'middle'
+        
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            spacing: dp(5)
+            
+            Button:
+                text: 'Транзакції'
+                background_color: 0, 0, 0, 0
+                color: text_light
+                
+                canvas.before:
+                    Color:
+                        rgba: card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+                
+                on_press: root.go_to_transactions()
+            
+            Button:
+                text: 'Статистика'
+                background_color: 0, 0, 0, 0
+                color: primary_color
+                bold: True
+                
+                canvas.before:
+                    Color:
+                        rgba: card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+                    
+                    Color:
+                        rgba: primary_color
+                    Rectangle:
+                        pos: self.x + dp(10), self.y + dp(5)
+                        size: self.width - dp(20), dp(2)

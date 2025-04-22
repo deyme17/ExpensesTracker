@@ -1266,7 +1266,7 @@ TransactionRow:
         content.add_widget(field_spinner)
         content.add_widget(direction_label)
         content.add_widget(direction_spinner)
-        content.add_widget(Widget())  # Гнучкий простір
+        content.add_widget(Widget()) 
         content.add_widget(buttons_box)
 
         modal.add_widget(content)
@@ -1276,35 +1276,31 @@ TransactionRow:
     def apply_sort(self, field, ascending, modal):
         modal.dismiss()
         
-        # Отримати всі транзакції з контейнера
+        # get all trnasactions
         transactions = list(self.transactions_container.children)
         
-        # Функція порівняння відповідно до вибраного поля
+        # sort
         def sort_key(transaction):
             if field == 'Дата':
                 date_str = transaction.date
                 day, month, year = map(int, date_str.split('.'))
                 return datetime(year, month, day)
             elif field == 'Сума':
-                # Перетворити суму з формату "+123,456" в числове значення
                 amount_str = transaction.amount.replace(',', '').replace(' ', '')
                 return float(amount_str)
             elif field == 'Категорія':
                 return transaction.category
             elif field == 'Тип оплати':
                 return transaction.payment_method
-            # Для інших полів, якщо вони будуть додані в майбутньому
             return ''
         
-        # Сортування списку транзакцій
+        # sort list
         sorted_transactions = sorted(transactions, key=sort_key, reverse=not ascending)
         
-        # Очистити контейнер і додати відсортовані транзакції
         self.transactions_container.clear_widgets()
         for transaction in sorted_transactions:
             self.transactions_container.add_widget(transaction)
         
-        # Показати повідомлення про успішне сортування
         sort_direction = "за зростанням" if ascending else "за спаданням"
         self.show_success_message(f"Транзакції відсортовано за {field.lower()} {sort_direction}")
 

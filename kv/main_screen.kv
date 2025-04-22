@@ -94,7 +94,7 @@
         bold: True
 
 <MainScreen>:
-    transactions_container: transactions_container
+    transactions_container: transactions_container_id
     canvas.before:
         Color:
             rgba: bg_color
@@ -209,6 +209,21 @@
                 size: dp(40), dp(40)
                 pos_hint: {'center_y': 0.5}
                 background_color: 0, 0, 0, 0
+                on_press: root.show_sort()
+                canvas.before:
+                    Color:
+                        rgba: accent_color
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(6), self.center_y - dp(5), self.center_x, self.center_y - dp(10), self.center_x + dp(6), self.center_y - dp(5)]
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(6), self.center_y + dp(5), self.center_x, self.center_y + dp(10), self.center_x + dp(6), self.center_y + dp(5)]
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
                 on_press: root.show_filter()
                 canvas.before:
                     Color:
@@ -227,7 +242,7 @@
             bar_inactive_color: hint_color
             effect_cls: 'ScrollEffect'
             GridLayout:
-                id: transactions_container
+                id: transactions_container_id
                 cols: 1
                 spacing: dp(5)
                 padding: dp(5)

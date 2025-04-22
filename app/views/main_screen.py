@@ -1141,6 +1141,173 @@ TransactionRow:
         except Exception as e:
             self.show_error_message(f"Помилка фільтрації: {str(e)}")
 
+    def show_sort(self):
+        modal = ModalView(
+            size_hint=(0.8, 0.6),
+            background='',
+            background_color=(0, 0, 0, 0),
+            overlay_color=(0, 0, 0, 0.7)
+        )
+
+        content = BoxLayout(
+            orientation='vertical',
+            spacing=dp(12),
+            padding=[dp(20), dp(20), dp(20), dp(20)],
+            opacity=0
+        )
+
+        with content.canvas.before:
+            Color(rgba=get_color_from_hex('#0A4035'))
+            self.content_rect = RoundedRectangle(size=content.size, pos=content.pos, radius=[dp(20)])
+        
+        content.bind(size=self._update_rect, pos=self._update_rect)
+
+        title_label = Label(
+            text='Сортування транзакцій',
+            font_size=sp(22),
+            bold=True,
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(50)
+        )
+
+        class CustomSpinner(Spinner):
+            def __init__(self, **kwargs):
+                super(CustomSpinner, self).__init__(**kwargs)
+                self.background_color = (0, 0, 0, 0)
+                self.color = get_color_from_hex('#0A4035')
+                self.bold = True
+                self.font_size = sp(16)
+                self.bind(pos=self.update_rect, size=self.update_rect)
+                Clock.schedule_once(lambda dt: self.update_rect(), 0)
+            
+            def update_rect(self, *args):
+                self.canvas.before.clear()
+                with self.canvas.before:
+                    Color(rgba=get_color_from_hex('#D8F3EB'))
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
+                    Color(rgba=get_color_from_hex('#0A4035'))
+                    x = self.x + self.width - dp(30)
+                    y = self.y + self.height / 2 - dp(2)
+                    Triangle(points=[
+                        x, y + dp(5),
+                        x + dp(10), y + dp(5),
+                        x + dp(5), y - dp(5)
+                    ])
+
+        field_label = Label(
+            text='Сортувати за:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        sort_fields = ['Дата', 'Сума', 'Категорія', 'Тип оплати', 'Кешбек', 'Комісія']
+        field_spinner = CustomSpinner(
+            text=sort_fields[0],
+            values=sort_fields,
+            size_hint_y=None,
+            height=dp(45)
+        )
+        
+        direction_label = Label(
+            text='Напрямок:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        direction_spinner = CustomSpinner(
+            text='За зростанням',
+            values=['За зростанням', 'За спаданням'],
+            size_hint_y=None,
+            height=dp(45)
+        )
+
+        class StyledButton(Button):
+            def __init__(self, **kwargs):
+                super(StyledButton, self).__init__(**kwargs)
+                self.background_normal = ''
+                self.background_down = ''
+                self.background_color = (0, 0, 0, 0)
+                self.color = get_color_from_hex('#0A4035')
+                self.bold = True
+                self.font_size = sp(16)
+                self.bind(pos=self.update_rect, size=self.update_rect)
+                Clock.schedule_once(lambda dt: self.update_rect(), 0)
+            
+            def update_rect(self, *args):
+                self.canvas.before.clear()
+                with self.canvas.before:
+                    Color(rgba=get_color_from_hex('#D8F3EB'))
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
+
+        cancel_button = StyledButton(text='Скасувати')
+        apply_button = StyledButton(text='Застосувати')
+
+        cancel_button.bind(on_press=lambda x: modal.dismiss())
+        apply_button.bind(on_press=lambda x: self.apply_sort(
+            field_spinner.text,
+            direction_spinner.text == 'За зростанням',
+            modal
+        ))
+
+        buttons_box = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(15))
+        buttons_box.add_widget(cancel_button)
+        buttons_box.add_widget(apply_button)
+
+        content.add_widget(title_label)
+        content.add_widget(field_label)
+        content.add_widget(field_spinner)
+        content.add_widget(direction_label)
+        content.add_widget(direction_spinner)
+        content.add_widget(Widget())  # Гнучкий простір
+        content.add_widget(buttons_box)
+
+        modal.add_widget(content)
+        modal.open()
+        Animation(opacity=1, d=0.3).start(content)
+
+    def apply_sort(self, field, ascending, modal):
+        modal.dismiss()
+        
+        # Отримати всі транзакції з контейнера
+        transactions = list(self.transactions_container.children)
+        
+        # Функція порівняння відповідно до вибраного поля
+        def sort_key(transaction):
+            if field == 'Дата':
+                date_str = transaction.date
+                day, month, year = map(int, date_str.split('.'))
+                return datetime(year, month, day)
+            elif field == 'Сума':
+                # Перетворити суму з формату "+123,456" в числове значення
+                amount_str = transaction.amount.replace(',', '').replace(' ', '')
+                return float(amount_str)
+            elif field == 'Категорія':
+                return transaction.category
+            elif field == 'Тип оплати':
+                return transaction.payment_method
+            # Для інших полів, якщо вони будуть додані в майбутньому
+            return ''
+        
+        # Сортування списку транзакцій
+        sorted_transactions = sorted(transactions, key=sort_key, reverse=not ascending)
+        
+        # Очистити контейнер і додати відсортовані транзакції
+        self.transactions_container.clear_widgets()
+        for transaction in sorted_transactions:
+            self.transactions_container.add_widget(transaction)
+        
+        # Показати повідомлення про успішне сортування
+        sort_direction = "за зростанням" if ascending else "за спаданням"
+        self.show_success_message(f"Транзакції відсортовано за {field.lower()} {sort_direction}")
+
     def show_success_message(self, message):
         popup = Popup(
             title='Успіх',

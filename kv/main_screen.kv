@@ -51,15 +51,12 @@
             size: self.size
             radius: [dp(10)]
 
-<TransactionRow@BoxLayout>:
-    category: ''
-    amount: ''
-    date: ''
-    is_income: False
-    payment_method: 'Картка'
+#:set bottom_bar_color get_color_from_hex('#0A4035')
+
+<SelectableTransactionRow>:
     orientation: 'horizontal'
     size_hint_y: None
-    height: dp(50)
+    height: dp(60)
     padding: dp(10)
     spacing: dp(5)
     canvas.before:
@@ -69,13 +66,17 @@
             pos: self.pos
             size: self.size
             radius: [dp(5)]
+    
     Label:
         text: root.category
         color: text_dark
-        size_hint_x: 0.4
+        size_hint_x: 0.35
         text_size: self.size
         halign: 'left'
         valign: 'middle'
+        shorten: True
+        shorten_from: 'right'
+    
     Label:
         text: root.date
         color: hint_color
@@ -84,6 +85,7 @@
         halign: 'center'
         valign: 'middle'
         font_size: '14sp'
+    
     Label:
         text: root.amount
         color: success_color if root.is_income else error_color

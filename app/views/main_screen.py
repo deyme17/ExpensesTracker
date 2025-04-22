@@ -11,6 +11,7 @@ from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.modalview import ModalView
 from kivy.uix.textinput import TextInput
 from kivy.uix.spinner import Spinner, SpinnerOption
@@ -274,52 +275,320 @@ TransactionRow:
         self.content_rect.pos = instance.pos
         self.content_rect.size = instance.size
 
-    def save_transaction(self, category, amount_text, date_text, description, is_income, payment_method, modal):
-        try:
-            if not amount_text:
-                self.show_error_message("Будь ласка, введіть суму")
-                return
+    def show_add_transaction(self, is_income=True):
+        modal = ModalView(
+            size_hint=(0.9, 0.9),
+            background='',
+            background_color=(0, 0, 0, 0),
+            overlay_color=(0, 0, 0, 0.7)
+        )
 
-            try:
-                amount = float(amount_text.replace(',', '.'))
-                if amount <= 0:
-                    self.show_error_message("Сума повинна бути додатною")
-                    return
-            except ValueError:
-                self.show_error_message("Некоректна сума")
-                return
+        content = BoxLayout(
+            orientation='vertical',
+            spacing=dp(15),
+            padding=[dp(20), dp(20), dp(20), dp(20)],
+            opacity=0
+        )
 
-            if not date_text:
-                self.show_error_message("Будь ласка, введіть дату")
-                return
+        with content.canvas.before:
+            Color(rgba=get_color_from_hex('#0A4035'))
+            self.content_rect = RoundedRectangle(size=content.size, pos=content.pos, radius=[dp(15)])
 
-            try:
-                day, month, year = date_text.split('.')
-                date_obj = datetime(int(year), int(month), int(day))
-            except:
-                self.show_error_message("Некоректний формат дати (дд.мм.рррр)")
-                return
+        content.bind(size=self._update_rect, pos=self._update_rect)
 
-            modal.dismiss()
+        class CustomSpinner(Spinner):
+            def __init__(self, **kwargs):
+                super(CustomSpinner, self).__init__(**kwargs)
+                self.background_color = (0, 0, 0, 0)
+                self.color = get_color_from_hex('#0A4035')
+                self.bold = True
+                self.font_size = sp(16)
+                self.bind(pos=self.update_rect, size=self.update_rect)
+                Clock.schedule_once(lambda dt: self.update_rect(), 0)
+            
+            def update_rect(self, *args):
+                self.canvas.before.clear()
+                with self.canvas.before:
+                    Color(rgba=get_color_from_hex('#FFFFFF'))
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
+                    Color(rgba=get_color_from_hex('#0A4035'))
+                    x = self.x + self.width - dp(30)
+                    y = self.y + self.height / 2 - dp(2)
+                    Triangle(points=[
+                        x, y + dp(5),
+                        x + dp(10), y + dp(5),
+                        x + dp(5), y - dp(5)
+                    ])
+        
+        category_label = Label(
+            text='Категорія:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        categories = INCOME_CATEGORIES if is_income else EXPENSE_CATEGORIES
+        category_spinner = CustomSpinner(
+            text=categories[0],
+            values=categories,
+            size_hint_y=None,
+            height=dp(45)
+        )
 
-            if not is_income:
-                amount = -amount
+        payment_label = Label(
+            text='Тип оплати:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        payment_spinner = CustomSpinner(
+            text='Картка',
+            values=['Картка', 'Готівка'],
+            size_hint_y=None,
+            height=dp(45)
+        )
 
-            date_str = date_obj.strftime("%d.%m.%Y")
-            transaction_row = Builder.load_string('''
-TransactionRow:
-    category: '{}'
-    amount: '{:+,.0f}'
-    date: '{}'
-    is_income: {}
-    payment_method: '{}'
-'''.format(category, amount, date_str, is_income, payment_method))
+        amount_label = Label(
+            text='Сума:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        class StyledTextInput(TextInput):
+            def __init__(self, **kwargs):
+                super(StyledTextInput, self).__init__(**kwargs)
+                self.background_color = (0, 0, 0, 0)
+                self.cursor_color = get_color_from_hex('#0A4035')
+                self.foreground_color = get_color_from_hex('#0A4035')
+                self.font_size = sp(16)
+                self.multiline = False
+                self.padding = [dp(15), dp(10), dp(15), dp(10)]
+                self.bind(pos=self.update_rect, size=self.update_rect)
+                Clock.schedule_once(lambda dt: self.update_rect(), 0)
+            
+            def update_rect(self, *args):
+                self.canvas.before.clear()
+                with self.canvas.before:
+                    Color(rgba=get_color_from_hex('#FFFFFF'))
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
+        
+        amount_input = StyledTextInput(
+            hint_text='Введіть суму',
+            hint_text_color=get_color_from_hex('#0A4035'),
+            size_hint_y=None,
+            height=dp(45)
+        )
 
-            self.transactions_container.add_widget(transaction_row, index=0)
-            self.show_success_message("Транзакцію успішно додано")
+        currency_label = Label(
+            text='Валюта:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        currency_spinner = CustomSpinner(
+            text='UAH',
+            values=['UAH', 'USD', 'EUR', 'PLN'],
+            size_hint_y=None,
+            height=dp(45)
+        )
 
-        except Exception as e:
-            self.show_error_message(f"Помилка: {str(e)}")
+        date_label = Label(
+            text='Дата:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        date_container = BoxLayout(
+            orientation='horizontal',
+            spacing=dp(5),
+            size_hint_y=None,
+            height=dp(45)
+        )
+        
+        days = [str(i).zfill(2) for i in range(1, 32)]
+        months = [str(i).zfill(2) for i in range(1, 13)]
+        current_year = datetime.now().year
+        years = [str(year) for year in range(current_year - 5, current_year + 1)]
+        
+        day_spinner = CustomSpinner(
+            text=str(datetime.now().day).zfill(2),
+            values=days,
+            size_hint=(0.3, 1)
+        )
+        
+        month_spinner = CustomSpinner(
+            text=str(datetime.now().month).zfill(2),
+            values=months,
+            size_hint=(0.3, 1)
+        )
+        
+        year_spinner = CustomSpinner(
+            text=str(current_year),
+            values=years,
+            size_hint=(0.4, 1)
+        )
+        
+        date_container.add_widget(day_spinner)
+        date_container.add_widget(month_spinner)
+        date_container.add_widget(year_spinner)
+
+        cashback_label = Label(
+            text='Кешбек:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        cashback_input = StyledTextInput(
+            text='0',
+            hint_text='Введіть відсоток кешбеку',
+            hint_text_color=get_color_from_hex('#0A4035'),
+            foreground_color=get_color_from_hex('#000000'),
+            size_hint_y=None,
+            height=dp(45)
+        )
+
+        commission_label = Label(
+            text='Комісія:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        commission_input = StyledTextInput(
+            text='0',
+            hint_text='Введіть комісію',
+            hint_text_color=get_color_from_hex('#0A4035'),
+            foreground_color=get_color_from_hex('#000000'),
+            size_hint_y=None,
+            height=dp(45)
+        )
+
+        description_label = Label(
+            text='Опис:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        description_input = StyledTextInput(
+            hint_text='Додайте опис транзакції',
+            hint_text_color=get_color_from_hex('#0A4035'),
+            multiline=True,
+            size_hint_y=None,
+            height=dp(60)
+        )
+  
+        description_input.multiline = True
+
+        class StyledButton(Button):
+            def __init__(self, bg_color, **kwargs):
+                super(StyledButton, self).__init__(**kwargs)
+                self.background_color = (0, 0, 0, 0)
+                self.bg_color = bg_color
+                self.color = get_color_from_hex('#FFFFFF')
+                self.bold = True
+                self.bind(size=self.update_background, pos=self.update_background)
+                Clock.schedule_once(lambda dt: self.update_background(), 0)
+
+            def update_background(self, *args):
+                self.canvas.before.clear()
+                with self.canvas.before:
+                    Color(rgba=get_color_from_hex(self.bg_color))
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(8)])
+        
+        cancel_button = StyledButton(
+            text='Скасувати',
+            bg_color='#445555',
+            size_hint_y=None,
+            height=dp(50),
+            font_size=sp(16)
+        )
+        
+        save_button = StyledButton(
+            text='Зберегти',
+            bg_color='#0F7055',
+            size_hint_y=None,
+            height=dp(50),
+            font_size=sp(16)
+        )
+        
+        cancel_button.bind(on_press=lambda x: modal.dismiss())
+        save_button.bind(on_press=lambda x: self.save_transaction(
+            category_spinner.text,
+            amount_input.text,
+            f"{day_spinner.text}.{month_spinner.text}.{year_spinner.text}",
+            description_input.text,
+            is_income,
+            payment_spinner.text,
+            modal,
+            currency_spinner.text,
+            cashback_input.text,
+            commission_input.text
+        ))
+
+        buttons_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(15))
+        buttons_box.add_widget(cancel_button)
+        buttons_box.add_widget(save_button)
+
+        scroll_container = ScrollView(
+            do_scroll_x=False,
+            do_scroll_y=True,
+            size_hint=(1, 1)
+        )
+        
+        fields_container = BoxLayout(
+            orientation='vertical', 
+            spacing=dp(10),
+            size_hint_y=None
+        )
+        fields_container.bind(minimum_height=fields_container.setter('height'))
+        
+        fields_container.add_widget(category_label)
+        fields_container.add_widget(category_spinner)
+        fields_container.add_widget(payment_label)
+        fields_container.add_widget(payment_spinner)
+        fields_container.add_widget(amount_label)
+        fields_container.add_widget(amount_input)
+        fields_container.add_widget(currency_label)
+        fields_container.add_widget(currency_spinner)
+        fields_container.add_widget(date_label)
+        fields_container.add_widget(date_container)
+        fields_container.add_widget(cashback_label)
+        fields_container.add_widget(cashback_input)
+        fields_container.add_widget(commission_label)
+        fields_container.add_widget(commission_input)
+        fields_container.add_widget(description_label)
+        fields_container.add_widget(description_input)
+        
+        scroll_container.add_widget(fields_container)
+        
+        content.add_widget(scroll_container)
+        content.add_widget(buttons_box)
+
+        modal.add_widget(content)
+        modal.open()
+        Animation(opacity=1, d=0.3).start(content)
 
     def show_error_message(self, message):
         popup = Popup(

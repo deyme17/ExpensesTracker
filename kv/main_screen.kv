@@ -5,26 +5,26 @@
 #:import Animation kivy.animation.Animation
 
 # Кольорова гамма
-#:set primary_color get_color_from_hex('#FF7043')      # Основной оранжевый
-#:set secondary_color get_color_from_hex('#0F7055')    # Темно-зеленый
-#:set accent_color get_color_from_hex('#FFB74D')       # Светло-оранжевый
-#:set bg_color get_color_from_hex('#062925')           # Фон (темно-зеленый)
-#:set text_light get_color_from_hex('#FFFFFF')         # Светлый текст
-#:set text_dark get_color_from_hex('#212121')          # Темный текст
-#:set hint_color get_color_from_hex('#B0BEC5')         # Серый для подсказок
-#:set card_color get_color_from_hex('#0A4035')         # Цвет карточки
-#:set card_light get_color_from_hex('#65F0C9')         # Светло-бирюзовый
-#:set error_color get_color_from_hex('#F44336')        # Красный для ошибок
-#:set success_color get_color_from_hex('#66BB6A')      # Зеленый для успеха
-#:set light_bg get_color_from_hex('#D8F3EB')           # Светлый фон для таблицы
+#:set primary_color get_color_from_hex('#FF7043')
+#:set secondary_color get_color_from_hex('#0F7055')
+#:set accent_color get_color_from_hex('#FFB74D')
+#:set bg_color get_color_from_hex('#062925')
+#:set text_light get_color_from_hex('#FFFFFF')
+#:set text_dark get_color_from_hex('#212121')
+#:set hint_color get_color_from_hex('#B0BEC5')
+#:set card_color get_color_from_hex('#0A4035')
+#:set card_light get_color_from_hex('#65F0C9')
+#:set error_color get_color_from_hex('#F44336')
+#:set success_color get_color_from_hex('#66BB6A')
+#:set light_bg get_color_from_hex('#D8F3EB')
 
-# Стилізована кнопка
 <CustomButton@Button>:
-    background_color: 0, 0, 0, 0
+    background_normal: ''
+    background_down: ''
+    background_color: (0, 0, 0, 0)
     color: text_light
     font_size: '16sp'
     size_hint: None, None
-    
     canvas.before:
         Color:
             rgba: light_bg
@@ -33,18 +33,35 @@
             size: self.size
             radius: [dp(5)]
 
-# Транзакції
+<FilterButton@Button>:
+    background_normal: ''
+    background_down: ''
+    background_color: (0, 0, 0, 0)
+    color: get_color_from_hex('#0A4035')
+    font_size: '16sp'
+    bold: True
+    size_hint_x: 0.5
+    size_hint_y: None
+    height: dp(45)
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#D8F3EB')
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10)]
+
 <TransactionRow@BoxLayout>:
     category: ''
     amount: ''
     date: ''
     is_income: False
+    payment_method: 'Картка'
     orientation: 'horizontal'
     size_hint_y: None
     height: dp(50)
     padding: dp(10)
     spacing: dp(5)
-    
     canvas.before:
         Color:
             rgba: light_bg
@@ -52,55 +69,46 @@
             pos: self.pos
             size: self.size
             radius: [dp(5)]
-            
     Label:
         text: root.category
         color: text_dark
-        size_hint_x: 0.5
+        size_hint_x: 0.4
         text_size: self.size
         halign: 'left'
         valign: 'middle'
-        
     Label:
         text: root.date
         color: hint_color
-        size_hint_x: 0.25
+        size_hint_x: 0.3
         text_size: self.size
         halign: 'center'
         valign: 'middle'
         font_size: '14sp'
-        
     Label:
         text: root.amount
         color: success_color if root.is_income else error_color
-        size_hint_x: 0.25
+        size_hint_x: 0.3
         text_size: self.size
         halign: 'right'
         valign: 'middle'
         bold: True
 
-# Головний екран
 <MainScreen>:
     transactions_container: transactions_container
-    
     canvas.before:
         Color:
             rgba: bg_color
         Rectangle:
             pos: self.pos
             size: self.size
-    
     BoxLayout:
         orientation: 'vertical'
         padding: dp(10)
         spacing: dp(10)
-        
-        # Верхняя панель с балансом
         BoxLayout:
             size_hint_y: None
             height: dp(70)
             padding: dp(5)
-            
             canvas.before:
                 Color:
                     rgba: card_light
@@ -108,12 +116,9 @@
                     pos: self.pos
                     size: self.size
                     radius: [dp(10)]
-            
-            # Иконка кошелька
             Widget:
                 size_hint_x: None
                 width: dp(50)
-                
                 canvas:
                     Color:
                         rgba: secondary_color
@@ -123,8 +128,6 @@
                     Line:
                         width: 1.5
                         points: [self.x + dp(10), self.y + dp(35), self.x + dp(20), self.y + dp(45), self.x + dp(30), self.y + dp(45), self.x + dp(40), self.y + dp(35)]
-                    
-            # Баланс            
             Label:
                 text: 'Баланс: 123456'
                 font_size: '20sp'
@@ -134,15 +137,12 @@
                 valign: 'middle'
                 text_size: self.size
                 padding_x: dp(10)
-            
-            # Кнопка настроек  
             Button:
                 size_hint: None, None
                 size: dp(40), dp(40)
                 pos_hint: {'center_y': 0.5}
                 background_color: 0, 0, 0, 0
                 on_press: root.show_menu()
-                
                 canvas.before:
                     Color:
                         rgba: secondary_color
@@ -155,21 +155,16 @@
                     Line:
                         width: 1.5
                         points: [self.center_x - dp(5), self.center_y + dp(2), self.center_x + dp(5), self.center_y + dp(2)]
-        
-        # Панель
         BoxLayout:
             size_hint_y: None
             height: dp(50)
             spacing: dp(10)
-
-            # Кнопка дохода
             Button:
                 text: 'Дохід'
                 background_color: 0, 0, 0, 0
                 color: text_light
                 bold: True
                 on_press: root.show_add_transaction(is_income=True)
-                
                 canvas.before:
                     Color:
                         rgba: success_color
@@ -177,15 +172,12 @@
                         pos: self.pos
                         size: self.size
                         radius: [dp(10)]
-
-            # Витрати
             Button:
                 text: 'Витрати'
                 background_color: 0, 0, 0, 0
                 color: text_light
                 bold: True
                 on_press: root.show_add_transaction(is_income=False)
-                
                 canvas.before:
                     Color:
                         rgba: error_color
@@ -193,13 +185,10 @@
                         pos: self.pos
                         size: self.size
                         radius: [dp(10)]
-        
-        # Заголовок для транзакцій
         BoxLayout:
             size_hint_y: None
             height: dp(50)
             padding: [dp(15), 0]
-            
             canvas.before:
                 Color:
                     rgba: card_color
@@ -207,7 +196,6 @@
                     pos: self.pos
                     size: self.size
                     radius: [dp(10)]
-            
             Label:
                 text: 'Останні транзакції'
                 font_size: '18sp'
@@ -216,29 +204,21 @@
                 halign: 'left'
                 valign: 'middle'
                 text_size: self.size
-            
-            # Фільтр
             Button:
                 size_hint: None, None
                 size: dp(40), dp(40)
                 pos_hint: {'center_y': 0.5}
                 background_color: 0, 0, 0, 0
                 on_press: root.show_filter()
-                
                 canvas.before:
                     Color:
                         rgba: accent_color
                     Line:
                         width: 1.5
-                        circle: (self.center_x, self.center_y, min(self.width, self.height) / 2 - dp(10), 0, 360)
+                        points: [self.center_x - dp(10), self.center_y + dp(8), self.center_x + dp(10), self.center_y + dp(8), self.center_x + dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(10), self.center_y + dp(8)]
                     Line:
                         width: 1.5
-                        points: [self.center_x - dp(5), self.center_y, self.center_x + dp(5), self.center_y]
-                    Line:
-                        width: 1.5
-                        points: [self.center_x, self.center_y - dp(5), self.center_x, self.center_y + dp(5)]
-        
-        # Таблиця з транзакціями
+                        points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(2)]
         ScrollView:
             do_scroll_x: False
             do_scroll_y: True
@@ -246,8 +226,6 @@
             bar_color: primary_color
             bar_inactive_color: hint_color
             effect_cls: 'ScrollEffect'
-            
-            # Контейнер для транзакцій
             GridLayout:
                 id: transactions_container
                 cols: 1
@@ -255,20 +233,15 @@
                 padding: dp(5)
                 size_hint_y: None
                 height: self.minimum_height
-        
-        # Нидня навігація
         BoxLayout:
             size_hint_y: None
             height: dp(60)
             spacing: dp(5)
-            
-            # Кнопка "Транзакції"
             Button:
                 text: 'Транзакції'
                 background_color: 0, 0, 0, 0
                 color: primary_color
                 bold: True
-                
                 canvas.before:
                     Color:
                         rgba: card_color
@@ -276,20 +249,15 @@
                         pos: self.pos
                         size: self.size
                         radius: [dp(10)]
-                    
-                    # Індикатор
                     Color:
                         rgba: primary_color
                     Rectangle:
                         pos: self.x + dp(10), self.y + dp(5)
                         size: self.width - dp(20), dp(2)
-            
-            # Кнопка "Статистика"
             Button:
                 text: 'Статистика'
                 background_color: 0, 0, 0, 0
                 color: text_light
-                
                 canvas.before:
                     Color:
                         rgba: card_color
@@ -297,5 +265,4 @@
                         pos: self.pos
                         size: self.size
                         radius: [dp(10)]
-                
                 on_press: root.go_statistics()

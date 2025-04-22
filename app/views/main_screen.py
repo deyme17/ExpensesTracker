@@ -13,16 +13,17 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.modalview import ModalView
 from kivy.uix.textinput import TextInput
-from kivy.uix.spinner import Spinner
+from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.graphics import Color, Rectangle, Ellipse, RoundedRectangle, Line, Mesh, Triangle
 from datetime import datetime, timedelta
+import calendar
 import random
 
-# Load kv file
 Builder.load_file('kv/main_screen.kv')
 
 INCOME_CATEGORIES = ['Зарплата', 'Подарунок', 'Дивіденди', 'Фріланс', 'Відсотки', 'Інше']
 EXPENSE_CATEGORIES = ['Продукти', 'Транспорт', 'Розваги', 'Здоровя', 'Одяг', 'Кафе', 'Звязок', 'Інше']
+PAYMENT_METHODS = ['Всі', 'Картка', 'Готівка']
 
 class MainScreen(BaseScreen):
     def __init__(self, **kwargs):
@@ -40,13 +41,15 @@ class MainScreen(BaseScreen):
             days_ago = random.randint(0, 10)
             transaction_date = now - timedelta(days=days_ago)
             date_str = transaction_date.strftime("%d.%m.%Y")
+            payment_method = random.choice(['Картка', 'Готівка'])
             transaction_row = Builder.load_string('''
 TransactionRow:
     category: '{}'
     amount: '{:+,.0f}'
     date: '{}'
     is_income: {}
-'''.format(category, amount, date_str, is_income))
+    payment_method: '{}'
+'''.format(category, amount, date_str, is_income, payment_method))
             self.transactions_container.add_widget(transaction_row)
 
     def show_add_transaction(self, is_income=True):
@@ -79,13 +82,25 @@ TransactionRow:
 
         title_box = BoxLayout(size_hint_y=None, height=dp(40), spacing=dp(10))
         icon = BoxLayout(size_hint=(None, None), size=(dp(30), dp(30)))
+        
+        icon_color = get_color_from_hex('#66BB6A') if is_income else get_color_from_hex('#F44336')
         with icon.canvas:
-            icon_color = get_color_from_hex('#66BB6A') if is_income else get_color_from_hex('#F44336')
             Color(rgba=icon_color)
             Ellipse(pos=icon.pos, size=icon.size)
             Color(rgba=get_color_from_hex('#FFFFFF'))
             Line(circle=(icon.center_x, icon.center_y, dp(13)), width=dp(2))
             Line(circle=(icon.center_x, icon.center_y, dp(7)), width=dp(1))
+        
+        def update_icon(instance, value):
+            instance.canvas.clear()
+            with instance.canvas:
+                Color(rgba=icon_color)
+                Ellipse(pos=instance.pos, size=instance.size)
+                Color(rgba=get_color_from_hex('#FFFFFF'))
+                Line(circle=(instance.center_x, instance.center_y, dp(13)), width=dp(2))
+                Line(circle=(instance.center_x, instance.center_y, dp(7)), width=dp(1))
+        
+        icon.bind(pos=update_icon, size=update_icon)
 
         title_text = 'Новий дохід' if is_income else 'Нова витрата'
         title = Label(
@@ -106,7 +121,9 @@ TransactionRow:
                 self.background_normal = ''
                 self.background_down = ''
                 self.bold = True
+                self.color = get_color_from_hex('#0A4035')
                 self.bind(size=self.update_background, pos=self.update_background)
+                Clock.schedule_once(lambda dt: self.update_background(), 0)
 
             def update_background(self, *args):
                 self.canvas.before.clear()
@@ -128,7 +145,14 @@ TransactionRow:
             values=categories,
             size_hint_y=None,
             height=dp(45),
-            color=get_color_from_hex('#0A4035'),
+            font_size=sp(16)
+        )
+        
+        payment_spinner = StyledSpinner(
+            text='Картка',
+            values=['Картка', 'Готівка'],
+            size_hint_y=None,
+            height=dp(45),
             font_size=sp(16)
         )
 
@@ -140,6 +164,7 @@ TransactionRow:
                 self.foreground_color = get_color_from_hex('#0A4035')
                 self.bold = True
                 self.bind(size=self.update_background, pos=self.update_background)
+                Clock.schedule_once(lambda dt: self.update_background(), 0)
 
             def update_background(self, *args):
                 self.canvas.before.clear()
@@ -187,6 +212,7 @@ TransactionRow:
                 self.bg_color = bg_color
                 self.color = get_color_from_hex('#FFFFFF')
                 self.bind(size=self.update_background, pos=self.update_background)
+                Clock.schedule_once(lambda dt: self.update_background(), 0)
 
             def update_background(self, *args):
                 self.canvas.before.clear()
@@ -213,6 +239,7 @@ TransactionRow:
             date_input.text,
             description_input.text,
             is_income,
+            payment_spinner.text,
             modal
         ))
 
@@ -224,13 +251,16 @@ TransactionRow:
         content.add_widget(Label(text='Категорія:', font_size=sp(16), color=get_color_from_hex('#FFFFFF'),
                                  halign='left', size_hint_y=None, height=dp(30), text_size=(None, dp(30))))
         content.add_widget(category_spinner)
+        content.add_widget(Label(text='Тип оплати:', font_size=sp(16), color=get_color_from_hex('#FFFFFF'),
+                                 halign='left', size_hint_y=None, height=dp(30), text_size=(None, dp(30))))
+        content.add_widget(payment_spinner)
         content.add_widget(Label(text='Сума:', font_size=sp(16), color=get_color_from_hex('#FFFFFF'),
                                  halign='left', size_hint_y=None, height=dp(30), text_size=(None, dp(30))))
         content.add_widget(amount_input)
         content.add_widget(Label(text='Дата:', font_size=sp(16), color=get_color_from_hex('#FFFFFF'),
                                  halign='left', size_hint_y=None, height=dp(30), text_size=(None, dp(30))))
         content.add_widget(date_input)
-        content.add_widget(Label(text='Опис (необов\'язково):', font_size=sp(16), color=get_color_from_hex('#FFFFFF'),
+        content.add_widget(Label(text='Опис:', font_size=sp(16), color=get_color_from_hex('#FFFFFF'),
                                  halign='left', size_hint_y=None, height=dp(30), text_size=(None, dp(30))))
         content.add_widget(description_input)
         content.add_widget(Widget())
@@ -244,7 +274,7 @@ TransactionRow:
         self.content_rect.pos = instance.pos
         self.content_rect.size = instance.size
 
-    def save_transaction(self, category, amount_text, date_text, description, is_income, modal):
+    def save_transaction(self, category, amount_text, date_text, description, is_income, payment_method, modal):
         try:
             if not amount_text:
                 self.show_error_message("Будь ласка, введіть суму")
@@ -282,7 +312,8 @@ TransactionRow:
     amount: '{:+,.0f}'
     date: '{}'
     is_income: {}
-'''.format(category, amount, date_str, is_income))
+    payment_method: '{}'
+'''.format(category, amount, date_str, is_income, payment_method))
 
             self.transactions_container.add_widget(transaction_row, index=0)
             self.show_success_message("Транзакцію успішно додано")
@@ -298,15 +329,27 @@ TransactionRow:
             background='',
             background_color=(0, 0, 0, 0)
         )
+        
+        background_rect = RoundedRectangle(pos=popup.pos, size=popup.size, radius=[dp(10)])
+        error_bar = RoundedRectangle(
+            pos=(popup.x + dp(10), popup.y + popup.height - dp(3)),
+            size=(popup.width - dp(20), dp(3)),
+            radius=[dp(1.5)]
+        )
+        
         with popup.canvas.before:
             Color(rgba=get_color_from_hex('#0A4035'))
-            RoundedRectangle(pos=popup.pos, size=popup.size, radius=[dp(10)])
+            background_rect
             Color(rgba=get_color_from_hex('#F44336'))
-            RoundedRectangle(
-                pos=(popup.x + dp(10), popup.y + popup.height - dp(3)),
-                size=(popup.width - dp(20), dp(3)),
-                radius=[dp(1.5)]
-            )
+            error_bar
+        
+        def update_rects(instance, value):
+            background_rect.pos = instance.pos
+            background_rect.size = instance.size
+            error_bar.pos = (instance.x + dp(10), instance.y + instance.height - dp(3))
+            error_bar.size = (instance.width - dp(20), dp(3))
+        
+        popup.bind(pos=update_rects, size=update_rects)
         popup.title_color = get_color_from_hex('#FFFFFF')
         popup.title_size = sp(18)
         popup.content.color = get_color_from_hex('#FFFFFF')
@@ -328,49 +371,112 @@ TransactionRow:
             spacing=dp(10),
             padding=dp(10)
         )
+        
+        background_rect = RoundedRectangle(pos=popup.pos, size=popup.size, radius=[dp(10)])
+        menu_bar = RoundedRectangle(
+            pos=(popup.x + dp(10), popup.y + popup.height - dp(3)),
+            size=(popup.width - dp(20), dp(3)),
+            radius=[dp(1.5)]
+        )
+        
         with popup.canvas.before:
             Color(rgba=get_color_from_hex('#0A4035'))
-            RoundedRectangle(pos=popup.pos, size=popup.size, radius=[dp(10)])
+            background_rect
             Color(rgba=get_color_from_hex('#FF7043'))
-            RoundedRectangle(
-                pos=(popup.x + dp(10), popup.y + popup.height - dp(3)),
-                size=(popup.width - dp(20), dp(3)),
-                radius=[dp(1.5)]
-            )
+            menu_bar
+        
+        def update_rects(instance, value):
+            background_rect.pos = instance.pos
+            background_rect.size = instance.size
+            menu_bar.pos = (instance.x + dp(10), instance.y + instance.height - dp(3))
+            menu_bar.size = (instance.width - dp(20), dp(3))
+        
+        popup.bind(pos=update_rects, size=update_rects)
         popup.title_color = get_color_from_hex('#FFFFFF')
         popup.title_size = sp(18)
+        
+        class MenuButton(Button):
+            def __init__(self, **kwargs):
+                super().__init__(**kwargs)
+                self.background_color = (0, 0, 0, 0)
+                self.color = get_color_from_hex('#0A4035')
+                self.font_size = sp(16)
+                self.bind(size=self.update_bg, pos=self.update_bg)
+                Clock.schedule_once(lambda dt: self.update_bg(), 0)
+                
+            def update_bg(self, *args):
+                self.canvas.before.clear()
+                with self.canvas.before:
+                    Color(rgba=get_color_from_hex('#D8F3EB'))
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(8)])
 
-        logout_btn = Button(
+        logout_btn = MenuButton(
             text='Вийти з акаунту',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
             size_hint_y=None,
-            height=dp(45),
-            font_size=sp(16)
+            height=dp(45)
         )
         logout_btn.bind(on_press=lambda x: [popup.dismiss(), self.logout()])
 
-        exit_btn = Button(
+        exit_btn = MenuButton(
             text='Вихід з додатку',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
             size_hint_y=None,
-            height=dp(45),
-            font_size=sp(16)
+            height=dp(45)
         )
         exit_btn.bind(on_press=lambda x: [popup.dismiss(), self.exit_app()])
 
         content.add_widget(logout_btn)
         content.add_widget(exit_btn)
         popup.content = content
-        popup.open()
-
+        popup.open()    
+        
     def logout(self):
         self.switch_screen('login_screen', 'right')
 
+    def create_date_selector(self, is_start=True):
+        box = BoxLayout(orientation='horizontal', spacing=dp(5), size_hint_y=None, height=dp(45))
+        
+        days = [str(i).zfill(2) for i in range(1, 32)]
+        months = [str(i).zfill(2) for i in range(1, 13)]
+        
+        current_year = datetime.now().year
+        years = [str(year) for year in range(current_year - 5, current_year + 1)]
+        
+        day_spinner = Spinner(
+            text=days[0] if is_start else str(datetime.now().day).zfill(2),
+            values=days,
+            size_hint=(0.3, 1),
+            background_color=get_color_from_hex('#FFF4E7'),
+            color=get_color_from_hex('#0A4035'),
+            font_size=sp(14)
+        )
+        
+        month_spinner = Spinner(
+            text=months[0] if is_start else str(datetime.now().month).zfill(2),
+            values=months,
+            size_hint=(0.3, 1),
+            background_color=get_color_from_hex('#FFF4E7'),
+            color=get_color_from_hex('#0A4035'),
+            font_size=sp(14)
+        )
+        
+        year_spinner = Spinner(
+            text=str(current_year - 1) if is_start else str(current_year),
+            values=years,
+            size_hint=(0.4, 1),
+            background_color=get_color_from_hex('#FFF4E7'),
+            color=get_color_from_hex('#0A4035'),
+            font_size=sp(14)
+        )
+        
+        box.add_widget(day_spinner)
+        box.add_widget(month_spinner)
+        box.add_widget(year_spinner)
+        
+        return box, day_spinner, month_spinner, year_spinner
+
     def show_filter(self):
         modal = ModalView(
-            size_hint=(0.85, 0.6),
+            size_hint=(0.9, 0.85),
             background='',
             background_color=(0, 0, 0, 0),
             overlay_color=(0, 0, 0, 0.7)
@@ -378,55 +484,42 @@ TransactionRow:
 
         content = BoxLayout(
             orientation='vertical',
-            spacing=dp(15),
-            padding=[dp(20)] * 4,
+            spacing=dp(12),
+            padding=[dp(20), dp(20), dp(20), dp(20)],
             opacity=0
         )
 
         with content.canvas.before:
             Color(rgba=get_color_from_hex('#0A4035'))
-            self.content_rect = RoundedRectangle(size=content.size, pos=content.pos, radius=[dp(15)])
-            Color(rgba=get_color_from_hex('#FFB74D'))
-            RoundedRectangle(
-                pos=(content.x + dp(15), content.y + content.height - dp(3)),
-                size=(content.width - dp(30), dp(3)),
-                radius=[dp(1.5)]
-            )
-
+            self.content_rect = RoundedRectangle(size=content.size, pos=content.pos, radius=[dp(20)])
+        
         content.bind(size=self._update_rect, pos=self._update_rect)
 
-        # header with icon
-        title_box = BoxLayout(size_hint_y=None, height=dp(40), spacing=dp(10))
-        icon = BoxLayout(size_hint=(None, None), size=(dp(30), dp(30)))
-        with icon.canvas:
-            Color(rgba=get_color_from_hex('#FFB74D'))
-            Line(points=[icon.center_x - dp(10), icon.center_y + dp(8),
-                        icon.center_x + dp(10), icon.center_y + dp(8)], width=dp(2))
-            Line(points=[icon.center_x - dp(5), icon.center_y,
-                        icon.center_x + dp(5), icon.center_y], width=dp(2))
-            Line(points=[icon.center_x, icon.center_y - dp(8),
-                        icon.center_x, icon.center_y - dp(8)], width=dp(2))
+        title_label = Label(
+            text='Фільтр транзакцій',
+            font_size=sp(22),
+            bold=True,
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(50)
+        )
 
-        title = Label(text='Фільтр транзакцій', font_size=sp(20), bold=True,
-                    color=get_color_from_hex('#FFFFFF'), halign='left')
-        title_box.add_widget(icon)
-        title_box.add_widget(title)
-
-        # styled spinner
-        class StyledSpinner(Spinner):
+        class CustomSpinner(Spinner):
             def __init__(self, **kwargs):
-                super().__init__(**kwargs)
+                super(CustomSpinner, self).__init__(**kwargs)
                 self.background_color = (0, 0, 0, 0)
-                self.background_normal = ''
-                self.background_down = ''
+                self.color = get_color_from_hex('#0A4035')
                 self.bold = True
-                self.bind(size=self.update_background, pos=self.update_background)
-
-            def update_background(self, *args):
+                self.font_size = sp(16)
+                self.bind(pos=self.update_rect, size=self.update_rect)
+                Clock.schedule_once(lambda dt: self.update_rect(), 0)
+            
+            def update_rect(self, *args):
                 self.canvas.before.clear()
                 with self.canvas.before:
                     Color(rgba=get_color_from_hex('#D8F3EB'))
-                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(8)])
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
                     Color(rgba=get_color_from_hex('#0A4035'))
                     x = self.x + self.width - dp(30)
                     y = self.y + self.height / 2 - dp(2)
@@ -436,172 +529,300 @@ TransactionRow:
                         x + dp(5), y - dp(5)
                     ])
 
-        type_spinner = StyledSpinner(
-            text='Всі',
-            values=['Всі', 'Доходи', 'Витрати'],
-            size_hint_y=None,
-            height=dp(45),
-            color=get_color_from_hex('#0A4035'),
-            font_size=sp(16)
-        )
-
-        all_categories = ['Всі'] + INCOME_CATEGORIES + EXPENSE_CATEGORIES
-        category_spinner = StyledSpinner(
-            text='Всі',
-            values=all_categories,
-            size_hint_y=None,
-            height=dp(45),
-            color=get_color_from_hex('#0A4035'),
-            font_size=sp(16)
-        )
-
-        periods = ['Весь час', 'Сьогодні', 'Тиждень', 'Місяць', 'Рік']
-        period_spinner = StyledSpinner(
-            text='Весь час',
-            values=periods,
-            size_hint_y=None,
-            height=dp(45),
-            color=get_color_from_hex('#0A4035'),
-            font_size=sp(16)
-        )
-
-        # styled input
         class StyledTextInput(TextInput):
             def __init__(self, **kwargs):
-                super().__init__(**kwargs)
+                super(StyledTextInput, self).__init__(**kwargs)
                 self.background_color = (0, 0, 0, 0)
                 self.cursor_color = get_color_from_hex('#0A4035')
                 self.foreground_color = get_color_from_hex('#0A4035')
-                self.bold = True
-                self.bind(size=self.update_background, pos=self.update_background)
-
-            def update_background(self, *args):
+                self.font_size = sp(16)
+                self.multiline = False
+                self.padding = [dp(15), dp(10), dp(15), dp(10)]
+                self.write_tab = False
+                self.bind(pos=self.update_rect, size=self.update_rect)
+                Clock.schedule_once(lambda dt: self.update_rect(), 0)
+            
+            def update_rect(self, *args):
                 self.canvas.before.clear()
                 with self.canvas.before:
                     Color(rgba=get_color_from_hex('#D8F3EB'))
-                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(8)])
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
 
-        min_amount = StyledTextInput(hint_text='Від', hint_text_color=get_color_from_hex('#0A4035'),
-                                    input_type='number', multiline=False, font_size=sp(16),
-                                    padding=[dp(15), dp(12), dp(15), dp(10)])
-        max_amount = StyledTextInput(hint_text='До', hint_text_color=get_color_from_hex('#0A4035'),
-                                    input_type='number', multiline=False, font_size=sp(16),
-                                    padding=[dp(15), dp(12), dp(15), dp(10)])
+        sum_label = Label(
+            text='Сума:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        amount_row = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(10))
+        
+        min_amount_box = BoxLayout(size_hint_x=0.5, spacing=dp(5))
+        min_amount_label = Label(
+            text="З:",
+            size_hint=(None, 1),
+            width=dp(20),
+            color=get_color_from_hex('#FFFFFF'),
+            font_size=sp(16)
+        )
+        min_amount = StyledTextInput(
+            hint_text='0',
+            text='0',
+            hint_text_color=get_color_from_hex('#0A4035')
+        )
+        min_amount_box.add_widget(min_amount_label)
+        min_amount_box.add_widget(min_amount)
+        
+        max_amount_box = BoxLayout(size_hint_x=0.5, spacing=dp(5))
+        max_amount_label = Label(
+            text="До:",
+            size_hint=(None, 1),
+            width=dp(25),
+            color=get_color_from_hex('#FFFFFF'),
+            font_size=sp(16)
+        )
+        max_amount = StyledTextInput(
+            hint_text='1000000',
+            text='1000000',
+            hint_text_color=get_color_from_hex('#0A4035')
+        )
+        max_amount_box.add_widget(max_amount_label)
+        max_amount_box.add_widget(max_amount)
+        
+        amount_row.add_widget(min_amount_box)
+        amount_row.add_widget(max_amount_box)
 
-        amount_box = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(10))
-        amount_box.add_widget(min_amount)
-        amount_box.add_widget(max_amount)
+        date_section = BoxLayout(
+            orientation='vertical',
+            spacing=dp(8),
+            size_hint_y=None,
+            height=dp(140)
+        )
+        
+        date_rect = RoundedRectangle(pos=date_section.pos, size=date_section.size, radius=[dp(12)])
+        with date_section.canvas.before:
+            Color(rgba=get_color_from_hex('#095045'))
+            date_rect
+        
+        def update_date_rect(instance, value):
+            date_rect.pos = instance.pos
+            date_rect.size = instance.size
+        
+        date_section.bind(pos=update_date_rect, size=update_date_rect)
+        
+        date_title = Label(
+            text="Інтервал дат:",
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        date_section.add_widget(date_title)
+        
+        days = [str(i).zfill(2) for i in range(1, 32)]
+        months = [str(i).zfill(2) for i in range(1, 13)]
+        
+        current_year = datetime.now().year
+        years = [str(year) for year in range(current_year - 5, current_year + 1)]
+        
+        date_from_row = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(4))
+        date_from_label = Label(
+            text="З:",
+            size_hint=(None, 1),
+            width=dp(20),
+            color=get_color_from_hex('#FFFFFF'),
+            font_size=sp(16)
+        )
+        date_from_row.add_widget(date_from_label)
+        
+        start_day_spinner = CustomSpinner(
+            text='01',
+            values=days,
+            size_hint=(0.3, 1)
+        )
+        
+        start_month_spinner = CustomSpinner(
+            text='01',
+            values=months,
+            size_hint=(0.3, 1)
+        )
+        
+        start_year_spinner = CustomSpinner(
+            text=str(current_year - 1),
+            values=years,
+            size_hint=(0.4, 1)
+        )
+        
+        date_from_row.add_widget(start_day_spinner)
+        date_from_row.add_widget(start_month_spinner)
+        date_from_row.add_widget(start_year_spinner)
+        
+        date_to_row = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(4))
+  
+        date_to_label = Label(
+            text="До:",
+            size_hint=(None, 1),
+            width=dp(20),
+            color=get_color_from_hex('#FFFFFF'),
+            font_size=sp(16)
+        )
+        date_to_row.add_widget(date_to_label)
+        
+        end_day_spinner = CustomSpinner(
+            text=str(datetime.now().day).zfill(2),
+            values=days,
+            size_hint=(0.3, 1)
+        )
+        
+        end_month_spinner = CustomSpinner(
+            text=str(datetime.now().month).zfill(2),
+            values=months,
+            size_hint=(0.3, 1)
+        )
+        
+        end_year_spinner = CustomSpinner(
+            text=str(current_year),
+            values=years,
+            size_hint=(0.4, 1)
+        )
+        
+        date_to_row.add_widget(end_day_spinner)
+        date_to_row.add_widget(end_month_spinner)
+        date_to_row.add_widget(end_year_spinner)
+        
+        date_section.add_widget(date_from_row)
+        date_section.add_widget(date_to_row)
 
-        # styled button
+        type_label = Label(
+            text='Тип транзакції:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        type_spinner = CustomSpinner(
+            text='Всі',
+            values=['Всі', 'Доходи', 'Витрати'],
+            size_hint_y=None,
+            height=dp(45)
+        )
+        
+        payment_label = Label(
+            text='Спосіб оплати:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        
+        payment_method_spinner = CustomSpinner(
+            text='Всі',
+            values=PAYMENT_METHODS,
+            size_hint_y=None,
+            height=dp(45)
+        )
+
         class StyledButton(Button):
-            def __init__(self, bg_color, **kwargs):
-                super().__init__(**kwargs)
+            def __init__(self, **kwargs):
+                super(StyledButton, self).__init__(**kwargs)
+                self.background_normal = ''
+                self.background_down = ''
                 self.background_color = (0, 0, 0, 0)
-                self.bg_color = bg_color
-                self.color = get_color_from_hex('#FFFFFF')
-                self.bind(size=self.update_background, pos=self.update_background)
-
-            def update_background(self, *args):
+                self.color = get_color_from_hex('#0A4035')
+                self.bold = True
+                self.font_size = sp(16)
+                self.bind(pos=self.update_rect, size=self.update_rect)
+                Clock.schedule_once(lambda dt: self.update_rect(), 0)
+            
+            def update_rect(self, *args):
                 self.canvas.before.clear()
                 with self.canvas.before:
-                    Color(rgba=get_color_from_hex(self.bg_color))
-                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(8)])
+                    Color(rgba=get_color_from_hex('#D8F3EB'))
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
 
-        reset_button = StyledButton(text='Скинути', bg_color='#445555', font_size=sp(16), bold=True)
-        apply_button = StyledButton(text='Застосувати', bg_color='#0F7055', font_size=sp(16), bold=True)
+        reset_button = StyledButton(text='Скинути')
+        apply_button = StyledButton(text='Застосувати')
 
         reset_button.bind(on_press=lambda x: self.reset_filter(
-            type_spinner, category_spinner, period_spinner, min_amount, max_amount
+            type_spinner, None, min_amount, max_amount,
+            start_day_spinner, start_month_spinner, start_year_spinner,
+            end_day_spinner, end_month_spinner, end_year_spinner,
+            payment_method_spinner
         ))
         apply_button.bind(on_press=lambda x: self.apply_filter(
-            type_spinner.text, category_spinner.text, period_spinner.text,
-            min_amount.text, max_amount.text, modal
+            type_spinner.text, None,
+            min_amount.text, max_amount.text,
+            f"{start_day_spinner.text}.{start_month_spinner.text}.{start_year_spinner.text}",
+            f"{end_day_spinner.text}.{end_month_spinner.text}.{end_year_spinner.text}",
+            payment_method_spinner.text,
+            modal
         ))
 
         buttons_box = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(15))
         buttons_box.add_widget(reset_button)
         buttons_box.add_widget(apply_button)
 
-        content.add_widget(title_box)
-
-        content.add_widget(Label(
-            text='Тип транзакції:',
-            font_size=sp(16),
-            color=get_color_from_hex('#FFFFFF'),
-            halign='left',
-            size_hint_y=None,
-            height=dp(30),
-            text_size=(None, dp(30))
-        ))
+        content.add_widget(title_label)
+        content.add_widget(sum_label)
+        content.add_widget(amount_row)
+        content.add_widget(date_section)
+        content.add_widget(type_label)
         content.add_widget(type_spinner)
-
-        content.add_widget(Label(
-            text='Категорія:',
-            font_size=sp(16),
-            color=get_color_from_hex('#FFFFFF'),
-            halign='left',
-            size_hint_y=None,
-            height=dp(30),
-            text_size=(None, dp(30))
-        ))
-        content.add_widget(category_spinner)
-
-        content.add_widget(Label(
-            text='Період:',
-            font_size=sp(16),
-            color=get_color_from_hex('#FFFFFF'),
-            halign='left',
-            size_hint_y=None,
-            height=dp(30),
-            text_size=(None, dp(30))
-        ))
-        content.add_widget(period_spinner)
-
-        content.add_widget(Label(
-            text='Сума:',
-            font_size=sp(16),
-            color=get_color_from_hex('#FFFFFF'),
-            halign='left',
-            size_hint_y=None,
-            height=dp(30),
-            text_size=(None, dp(30))
-        ))
-        content.add_widget(amount_box)
-
-        content.add_widget(Widget())  # expanding space filler
+        content.add_widget(payment_label)
+        content.add_widget(payment_method_spinner)
+        
+        content.add_widget(Widget())
         content.add_widget(buttons_box)
-
 
         modal.add_widget(content)
         modal.open()
         Animation(opacity=1, d=0.3).start(content)
-
-    def reset_filter(self, type_spinner, category_spinner, period_spinner, min_amount, max_amount):
+        
+    def reset_filter(self, type_spinner, category_spinner, min_amount, max_amount, 
+                    start_day_spinner, start_month_spinner, start_year_spinner,
+                    end_day_spinner, end_month_spinner, end_year_spinner, payment_method_spinner):
         type_spinner.text = 'Всі'
-        category_spinner.text = 'Всі'
-        period_spinner.text = 'Весь час'
-        min_amount.text = ''
-        max_amount.text = ''
+        if category_spinner:
+            category_spinner.text = 'Всі'
+        payment_method_spinner.text = 'Всі'
+        min_amount.text = '0'
+        max_amount.text = '1000000'
+        
+        start_day_spinner.text = '01'
+        start_month_spinner.text = '01'
+        start_year_spinner.text = str(datetime.now().year - 1)
+        
+        end_day_spinner.text = str(datetime.now().day).zfill(2)
+        end_month_spinner.text = str(datetime.now().month).zfill(2)
+        end_year_spinner.text = str(datetime.now().year)
 
-    def apply_filter(self, type_filter, category_filter, period_filter, min_amount_text, max_amount_text, modal):
+    def apply_filter(self, type_filter, category_filter, min_amount_text, max_amount_text, 
+                     start_date, end_date, payment_method, modal):
         try:
             modal.dismiss()
-            min_amount = float(min_amount_text.replace(',', '.')) if min_amount_text else None
-            max_amount = float(max_amount_text.replace(',', '.')) if max_amount_text else None
+            min_amount = float(min_amount_text.replace(',', '.')) if min_amount_text else 0
+            max_amount = float(max_amount_text.replace(',', '.')) if max_amount_text else float('inf')
+
+            try:
+                start_day, start_month, start_year = start_date.split('.')
+                start_date_obj = datetime(int(start_year), int(start_month), int(start_day))
+            except:
+                start_date_obj = datetime(datetime.now().year - 1, 1, 1)
+                
+            try:
+                end_day, end_month, end_year = end_date.split('.')
+                end_date_obj = datetime(int(end_year), int(end_month), int(end_day))
+            except:
+                end_date_obj = datetime.now()
 
             self.transactions_container.clear_widgets()
             now = datetime.now()
-
-            if period_filter == 'Сьогодні':
-                date_from = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            elif period_filter == 'Тиждень':
-                date_from = now - timedelta(days=7)
-            elif period_filter == 'Місяць':
-                date_from = now - timedelta(days=30)
-            elif period_filter == 'Рік':
-                date_from = now - timedelta(days=365)
-            else:
-                date_from = now - timedelta(days=3650)
 
             for _ in range(15):
                 if type_filter == 'Доходи':
@@ -613,16 +834,23 @@ TransactionRow:
 
                 category = category_filter if category_filter != 'Всі' else random.choice(
                     INCOME_CATEGORIES if is_income else EXPENSE_CATEGORIES)
+                    
+                if payment_method == 'Картка':
+                    current_payment = 'Картка'
+                elif payment_method == 'Готівка':
+                    current_payment = 'Готівка'
+                else:
+                    current_payment = random.choice(['Картка', 'Готівка'])
 
                 amount = random.randint(100, 10000) if is_income else -random.randint(100, 5000)
 
-                if min_amount is not None and amount < min_amount:
+                if min_amount is not None and abs(amount) < min_amount:
                     continue
-                if max_amount is not None and amount > max_amount:
+                if max_amount is not None and abs(amount) > max_amount:
                     continue
 
                 transaction_date = now - timedelta(days=random.randint(0, 100))
-                if transaction_date < date_from:
+                if transaction_date < start_date_obj or transaction_date > end_date_obj:
                     continue
 
                 date_str = transaction_date.strftime("%d.%m.%Y")
@@ -633,6 +861,7 @@ TransactionRow:
     amount: '{amount:+,.0f}'
     date: '{date_str}'
     is_income: {is_income}
+    payment_method: '{current_payment}'
 ''')
                 self.transactions_container.add_widget(transaction_row)
 
@@ -651,15 +880,27 @@ TransactionRow:
             background='',
             background_color=(0, 0, 0, 0)
         )
+        
+        background_rect = RoundedRectangle(pos=popup.pos, size=popup.size, radius=[dp(10)])
+        success_bar = RoundedRectangle(
+            pos=(popup.x + dp(10), popup.y + popup.height - dp(3)),
+            size=(popup.width - dp(20), dp(3)),
+            radius=[dp(1.5)]
+        )
+        
         with popup.canvas.before:
             Color(rgba=get_color_from_hex('#0A4035'))
-            RoundedRectangle(pos=popup.pos, size=popup.size, radius=[dp(10)])
+            background_rect
             Color(rgba=get_color_from_hex('#66BB6A'))
-            RoundedRectangle(
-                pos=(popup.x + dp(10), popup.y + popup.height - dp(3)),
-                size=(popup.width - dp(20), dp(3)),
-                radius=[dp(1.5)]
-            )
+            success_bar
+        
+        def update_rects(instance, value):
+            background_rect.pos = instance.pos
+            background_rect.size = instance.size
+            success_bar.pos = (instance.x + dp(10), instance.y + instance.height - dp(3))
+            success_bar.size = (instance.width - dp(20), dp(3))
+        
+        popup.bind(pos=update_rects, size=update_rects)
         popup.title_color = get_color_from_hex('#FFFFFF')
         popup.title_size = sp(18)
         popup.content.color = get_color_from_hex('#FFFFFF')

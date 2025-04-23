@@ -11,6 +11,15 @@ class LoginScreen(BaseScreen):
     error_message = StringProperty("")
     show_error = NumericProperty(0)
     
+    def on_enter(self):
+        """Reset login button and input fields when screen is entered."""
+        self.login_button.text = "Увійти"
+        self.login_button.disabled = False
+        self.email_input.text = ""
+        self.password_input.text = ""
+        self.error_message = ""
+        self.show_error = 0
+    
     def go_back(self):
         self.switch_screen('first_screen', 'right')
     

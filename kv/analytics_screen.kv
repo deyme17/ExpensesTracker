@@ -76,7 +76,7 @@
             pos: self.center_x - self.width*0.75, self.center_y - self.height*0.75
             size: self.width*1.5, self.height*1.5
 
-<StatisticsScreen>:
+<AnalyticsScreen>:
     graph_container: graph_container
     histogram_btn: histogram_btn
     line_btn: line_btn
@@ -106,31 +106,22 @@
                 valign: 'middle'
                 padding_x: dp(15)
             
-            # Date filter button
+            # filter button
             Button:
                 size_hint: None, None
                 size: dp(40), dp(40)
                 pos_hint: {'center_y': 0.5}
                 background_color: 0, 0, 0, 0
-                on_press: root.show_date_filter()
-                
+                on_press: root.show_filter()
                 canvas.before:
                     Color:
                         rgba: accent_color
                     Line:
                         width: 1.5
-                        circle: (self.center_x, self.center_y, min(self.width, self.height) / 2 - dp(5), 0, 360)
-                    
-                    # Clock icon
+                        points: [self.center_x - dp(10), self.center_y + dp(8), self.center_x + dp(10), self.center_y + dp(8), self.center_x + dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(10), self.center_y + dp(8)]
                     Line:
                         width: 1.5
-                        circle: (self.center_x, self.center_y, min(self.width, self.height) / 3, 0, 360)
-                    Line:
-                        width: 1.5
-                        points: [self.center_x, self.center_y, self.center_x, self.center_y - min(self.width, self.height) / 4]
-                    Line:
-                        width: 1.5
-                        points: [self.center_x, self.center_y, self.center_x + min(self.width, self.height) / 6, self.center_y]
+                        points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(2)]
                 
             Button:
                 size_hint: None, None

@@ -11,8 +11,10 @@ from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.spinner import Spinner
+from kivy.uix.modalview import ModalView
+from kivy.uix.textinput import TextInput
 from kivy.graphics import Color, Rectangle, Ellipse, RoundedRectangle, Line, Triangle
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Load kv file
 Builder.load_file('kv/analytics_screen.kv')
@@ -31,7 +33,6 @@ class HistogramWidget(Widget):
     def __init__(self, data=None, **kwargs):
         super(HistogramWidget, self).__init__(**kwargs)
         self.data = data or []
-        self.bind(pos=self.update_canvas, size=self.update_canvas)
     
     def update_canvas(self, *args):
         self.canvas.clear()
@@ -41,54 +42,11 @@ class HistogramWidget(Widget):
         with self.canvas:
             Color(0.04, 0.25, 0.21, 1)
             Rectangle(pos=self.pos, size=self.size)
-            
-            Color(0.7, 0.7, 0.7, 1)
-            Line(points=[self.x + dp(40), self.y + dp(20), 
-                         self.x + dp(40), self.y + self.height - dp(20)])
-            Line(points=[self.x + dp(40), self.y + dp(20), 
-                         self.x + self.width - dp(20), self.y + dp(20)])
-            
-            max_value = max([item['value'] for item in self.data])
-            bar_width = (self.width - dp(70)) / len(self.data)
-            
-            for i, item in enumerate(self.data):
-                bar_height = (item['value'] / max_value) * (self.height - dp(50))
-                x1 = self.x + dp(50) + i * bar_width
-                y1 = self.y + dp(20)
-                
-                Color(*get_color_from_hex('#FF7043')[:3], 1)
-                Rectangle(pos=(x1, y1), size=(bar_width * 0.7, bar_height))
-                
-                label = Label(
-                    text=item['name'],
-                    size=(bar_width, dp(20)),
-                    pos=(x1, self.y),
-                    color=(0.8, 0.8, 0.8, 1),
-                    font_size='10sp'
-                )
-                self.add_widget(label)
-            
-            for i in range(5):
-                value = int((i / 4) * max_value)
-                y_pos = self.y + dp(20) + (i / 4) * (self.height - dp(50))
-                
-                Color(0.5, 0.5, 0.5, 0.3)
-                Line(points=[self.x + dp(40), y_pos, self.x + self.width - dp(20), y_pos])
-                
-                label = Label(
-                    text=str(value),
-                    size=(dp(35), dp(20)),
-                    pos=(self.x, y_pos - dp(10)),
-                    color=(0.8, 0.8, 0.8, 1),
-                    font_size='10sp'
-                )
-                self.add_widget(label)
 
 class LineChartWidget(Widget):
     def __init__(self, data=None, **kwargs):
         super(LineChartWidget, self).__init__(**kwargs)
         self.data = data or []
-        self.bind(pos=self.update_canvas, size=self.update_canvas)
     
     def update_canvas(self, *args):
         self.canvas.clear()
@@ -98,373 +56,22 @@ class LineChartWidget(Widget):
         with self.canvas:
             Color(0.04, 0.25, 0.21, 1)
             Rectangle(pos=self.pos, size=self.size)
-            
-            Color(0.7, 0.7, 0.7, 1)
-            Line(points=[self.x + dp(40), self.y + dp(20), 
-                         self.x + dp(40), self.y + self.height - dp(20)])
-            Line(points=[self.x + dp(40), self.y + dp(20), 
-                         self.x + self.width - dp(20), self.y + dp(20)])
-            
-            max_value = max([item['value'] for item in self.data])
-            points = []
-            x_step = (self.width - dp(70)) / (len(self.data) - 1) if len(self.data) > 1 else 0
-            
-            for i, item in enumerate(self.data):
-                x = self.x + dp(50) + i * x_step
-                y = self.y + dp(20) + (item['value'] / max_value) * (self.height - dp(50))
-                points.extend([x, y])
-                
-                label = Label(
-                    text=item['name'],
-                    size=(x_step, dp(20)),
-                    pos=(x - x_step/2, self.y),
-                    color=(0.8, 0.8, 0.8, 1),
-                    font_size='10sp'
-                )
-                self.add_widget(label)
-                
-                Color(*get_color_from_hex('#FFB74D')[:3], 1)
-                Ellipse(pos=(x - dp(4), y - dp(4)), size=(dp(8), dp(8)))
-            
-            Color(*get_color_from_hex('#FFB74D')[:3], 1)
-            Line(points=points, width=dp(2))
-            
-            for i in range(5):
-                value = int((i / 4) * max_value)
-                y_pos = self.y + dp(20) + (i / 4) * (self.height - dp(50))
-                
-                Color(0.5, 0.5, 0.5, 0.3)
-                Line(points=[self.x + dp(40), y_pos, self.x + self.width - dp(20), y_pos])
-                
-                label = Label(
-                    text=str(value),
-                    size=(dp(35), dp(20)),
-                    pos=(self.x, y_pos - dp(10)),
-                    color=(0.8, 0.8, 0.8, 1),
-                    font_size='10sp'
-                )
-                self.add_widget(label)
 
 class PieChartWidget(Widget):
     def __init__(self, data=None, **kwargs):
         super(PieChartWidget, self).__init__(**kwargs)
         self.data = data or []
-        self.bind(pos=self.update_canvas, size=self.update_canvas)
     
     def update_canvas(self, *args):
         self.canvas.clear()
         if not self.data:
             return
         
-        self.clear_widgets()
-        
         with self.canvas:
             Color(0.04, 0.25, 0.21, 1)
             Rectangle(pos=self.pos, size=self.size)
-            
-            total = sum([item['value'] for item in self.data])
-            colors = [
-                get_color_from_hex('#FF7043'),
-                get_color_from_hex('#FFB74D'),
-                get_color_from_hex('#66BB6A'),
-                get_color_from_hex('#42A5F5'),
-                get_color_from_hex('#EC407A'),
-                get_color_from_hex('#AB47BC')
-            ]
-            
-            center_x = self.x + self.width * 0.35
-            center_y = self.y + self.height * 0.5
-            radius = min(self.width, self.height) * 0.35
-            start_angle = 0
-            
-            for i, item in enumerate(self.data):
-                angle_size = item['value'] / total * 360
-                Color(*colors[i % len(colors)][:3], 1)
-                self._draw_sector(center_x, center_y, radius, start_angle, start_angle + angle_size)
-                start_angle += angle_size
-            
-            legend_x = self.x + self.width * 0.65
-            legend_y = self.y + self.height * 0.8
-            
-            for i, item in enumerate(self.data):
-                Color(*colors[i % len(colors)][:3], 1)
-                Rectangle(pos=(legend_x, legend_y - i * dp(25)), size=(dp(15), dp(15)))
-                
-                percent = item['value'] / total * 100
-                label = Label(
-                    text=f"{item['name']}: {percent:.1f}%",
-                    size=(dp(150), dp(20)),
-                    pos=(legend_x + dp(20), legend_y - i * dp(25) - dp(10)),
-                    color=(1, 1, 1, 1),
-                    font_size='12sp',
-                    halign='left',
-                    text_size=(dp(150), dp(20))
-                )
-                self.add_widget(label)
-    
-    def _draw_sector(self, center_x, center_y, radius, start_angle, end_angle):
-        from math import sin, cos, radians
-        
-        start_rad = radians(start_angle)
-        end_rad = radians(end_angle)
-        points = [center_x, center_y]
-        points.extend([
-            center_x + radius * cos(start_rad),
-            center_y + radius * sin(start_rad)
-        ])
-        
-        steps = max(1, int((end_angle - start_angle) / 5))
-        for i in range(1, steps + 1):
-            angle = start_rad + (end_rad - start_rad) * i / steps
-            points.extend([
-                center_x + radius * cos(angle),
-                center_y + radius * sin(angle)
-            ])
-        
-        self.canvas.add(Color(1, 1, 1, 0.1))
-        mesh = self.canvas.add(Line(points=points, width=dp(2), joint='round', close=True))
 
-class DateFilterPopup(Popup):
-    def __init__(self, callback, **kwargs):
-        super(DateFilterPopup, self).__init__(**kwargs)
-        self.title = 'Вибір періоду'
-        self.size_hint = (0.85, 0.45)
-        self.background = ''
-        self.background_color = (0, 0, 0, 0)
-        self.title_color = get_color_from_hex('#FFFFFF')
-        self.title_size = sp(18)
-        
-        self.callback = callback
-        
-        # Get current date
-        current_date = datetime.now()
-        day = str(current_date.day).zfill(2)
-        month = str(current_date.month).zfill(2)
-        year = str(current_date.year)
-        
-        # Create layout
-        content_layout = BoxLayout(
-            orientation='vertical',
-            spacing=dp(15),
-            padding=dp(20)
-        )
-        
-        # Add background
-        with self.canvas.before:
-            Color(rgba=get_color_from_hex('#0D5145'))  # Light shade of green
-            background_rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(15)])
-        
-        # Update rectangle positions when popup size changes
-        def update_rects(instance, value):
-            background_rect.pos = instance.pos
-            background_rect.size = instance.size
-        
-        self.bind(pos=update_rects, size=update_rects)
-        
-        # Date selectors
-        date_main_container = BoxLayout(
-            orientation='vertical',
-            spacing=dp(15),
-            size_hint_y=None,
-            height=dp(120)
-        )
-        
-        # "З:" row
-        from_row = BoxLayout(
-            orientation='horizontal',
-            spacing=dp(10),
-            size_hint_y=None,
-            height=dp(45)
-        )
-        
-        from_label = Label(
-            text='З:',
-            font_size=sp(16),
-            color=get_color_from_hex('#FFFFFF'),
-            size_hint_x=None,
-            width=dp(25)
-        )
-        
-        days = [str(i).zfill(2) for i in range(1, 32)]
-        months = [str(i).zfill(2) for i in range(1, 13)]
-        current_year = current_date.year
-        years = [str(year) for year in range(current_year - 5, current_year + 1)]
-        
-        self.from_day_spinner = Spinner(
-            text=day,
-            values=days,
-            size_hint_x=0.27,
-            background_normal='',
-            background_down='',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
-            bold=True,
-            font_size=sp(16),
-            option_cls=SpinnerOption
-        )
-        
-        self.from_month_spinner = Spinner(
-            text=month,
-            values=months,
-            size_hint_x=0.27,
-            background_normal='',
-            background_down='',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
-            bold=True,
-            font_size=sp(16),
-            option_cls=SpinnerOption
-        )
-        
-        self.from_year_spinner = Spinner(
-            text=year,
-            values=years,
-            size_hint_x=0.35,
-            background_normal='',
-            background_down='',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
-            bold=True,
-            font_size=sp(16),
-            option_cls=SpinnerOption
-        )
-        
-        from_row.add_widget(from_label)
-        from_row.add_widget(self.from_day_spinner)
-        from_row.add_widget(self.from_month_spinner)
-        from_row.add_widget(self.from_year_spinner)
-        
-        # "До:" row
-        to_row = BoxLayout(
-            orientation='horizontal',
-            spacing=dp(10),
-            size_hint_y=None,
-            height=dp(45)
-        )
-        
-        to_label = Label(
-            text='До:',
-            font_size=sp(16),
-            color=get_color_from_hex('#FFFFFF'),
-            size_hint_x=None,
-            width=dp(25)
-        )
-        
-        self.to_day_spinner = Spinner(
-            text=day,
-            values=days,
-            size_hint_x=0.27,
-            background_normal='',
-            background_down='',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
-            bold=True,
-            font_size=sp(16),
-            option_cls=SpinnerOption
-        )
-        
-        self.to_month_spinner = Spinner(
-            text=month,
-            values=months,
-            size_hint_x=0.27,
-            background_normal='',
-            background_down='',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
-            bold=True,
-            font_size=sp(16),
-            option_cls=SpinnerOption
-        )
-        
-        self.to_year_spinner = Spinner(
-            text=year,
-            values=years,
-            size_hint_x=0.35,
-            background_normal='',
-            background_down='',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
-            bold=True,
-            font_size=sp(16),
-            option_cls=SpinnerOption
-        )
-        
-        to_row.add_widget(to_label)
-        to_row.add_widget(self.to_day_spinner)
-        to_row.add_widget(self.to_month_spinner)
-        to_row.add_widget(self.to_year_spinner)
-        
-        date_main_container.add_widget(from_row)
-        date_main_container.add_widget(to_row)
-        
-        # Buttons row
-        buttons_container = BoxLayout(
-            orientation='horizontal',
-            spacing=dp(15),
-            size_hint_y=None,
-            height=dp(50),
-            padding=[0, dp(10), 0, 0]
-        )
-        
-        cancel_btn = Button(
-            text='Скасувати',
-            size_hint_x=0.5,
-            background_normal='',
-            background_down='',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
-            bold=True,
-            font_size=sp(16)
-        )
-        cancel_btn.bind(on_release=self.dismiss)
-        
-        apply_btn = Button(
-            text='Застосувати',
-            size_hint_x=0.5,
-            background_normal='',
-            background_down='',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
-            bold=True,
-            font_size=sp(16)
-        )
-        apply_btn.bind(on_release=self.apply_filter)
-        
-        buttons_container.add_widget(cancel_btn)
-        buttons_container.add_widget(apply_btn)
-        
-        # Add all sections to main layout
-        content_layout.add_widget(date_main_container)
-        content_layout.add_widget(buttons_container)
-        
-        self.content = content_layout
-    
-    def apply_filter(self, *args):
-        try:
-            # Get selected dates from spinners
-            start_date = datetime(
-                int(self.from_year_spinner.text),
-                int(self.from_month_spinner.text),
-                int(self.from_day_spinner.text)
-            )
-            
-            end_date = datetime(
-                int(self.to_year_spinner.text),
-                int(self.to_month_spinner.text),
-                int(self.to_day_spinner.text)
-            )
-            
-            if start_date <= end_date:
-                self.callback(start_date, end_date)
-                self.dismiss()
-            else:
-                # Simple error handling
-                print("Помилка: початкова дата повинна бути раніше кінцевої")
-        except Exception as e:
-            # Handle invalid date inputs
-            print(f"Помилка застосування фільтру: {e}")
-
-class StatisticsScreen(BaseScreen):
+class AnalyticsScreen(BaseScreen):
     current_chart_type = StringProperty('histogram')
     avg_value = NumericProperty(0)
     min_value = NumericProperty(0)
@@ -473,7 +80,7 @@ class StatisticsScreen(BaseScreen):
     end_date = ObjectProperty(None)
     
     def __init__(self, **kwargs):
-        super(StatisticsScreen, self).__init__(**kwargs)
+        super(AnalyticsScreen, self).__init__(**kwargs)
         self.name = 'statistics'
         self.chart_data = [
             {'name': 'Січ', 'value': 4000, 'month': 1},
@@ -484,9 +91,8 @@ class StatisticsScreen(BaseScreen):
             {'name': 'Чер', 'value': 7000, 'month': 6}
         ]
         
-        # Set default date range to current month
         now = datetime.now()
-        self.start_date = datetime(now.year, now.month, 1)
+        self.start_date = datetime(now.year - 1, 1, 1)
         self.end_date = now
         
         self._update_stats()
@@ -510,7 +116,6 @@ class StatisticsScreen(BaseScreen):
     def _update_chart(self, *args):
         self.graph_container.clear_widgets()
         
-        # Filter data by date range if needed
         filtered_data = self._filter_data_by_date()
         
         if self.current_chart_type == 'histogram':
@@ -525,7 +130,6 @@ class StatisticsScreen(BaseScreen):
         self.graph_container.add_widget(chart)
     
     def _filter_data_by_date(self):
-        # In a real app, you would filter from your database
         if not self.start_date or not self.end_date:
             return self.chart_data
         
@@ -533,7 +137,6 @@ class StatisticsScreen(BaseScreen):
                 if self.start_date.month <= item['month'] <= self.end_date.month]
     
     def _update_stats(self):
-        # Use filtered data for statistics
         filtered_data = self._filter_data_by_date()
         values = [item['value'] for item in filtered_data]
         
@@ -546,15 +149,431 @@ class StatisticsScreen(BaseScreen):
             self.min_value = 0
             self.max_value = 0
     
-    def show_date_filter(self):
-        popup = DateFilterPopup(callback=self.apply_date_filter)
-        popup.open()
+    def show_filter(self):
+        modal = ModalView(
+            size_hint=(0.9, 0.85),
+            background='',
+            background_color=(0, 0, 0, 0),
+            overlay_color=(0, 0, 0, 0.7)
+        )
+
+        content = BoxLayout(
+            orientation='vertical',
+            spacing=dp(12),
+            padding=[dp(20), dp(20), dp(20), dp(20)],
+            opacity=0
+        )
+
+        with content.canvas.before:
+            Color(rgba=get_color_from_hex('#0A4035'))
+            self.content_rect = RoundedRectangle(size=content.size, pos=content.pos, radius=[dp(20)])
+
+        content.bind(size=self._update_rect, pos=self._update_rect)
+
+        title_label = Label(
+            text='Фільтр даних',
+            font_size=sp(22),
+            bold=True,
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(50)
+        )
+
+        class StyledTextInput(TextInput):
+            def __init__(self, **kwargs):
+                super(StyledTextInput, self).__init__(**kwargs)
+                self.background_color = (0, 0, 0, 0)
+                self.cursor_color = get_color_from_hex('#0A4035')
+                self.foreground_color = get_color_from_hex('#0A4035')
+                self.font_size = sp(16)
+                self.multiline = False
+                self.padding = [dp(15), dp(10), dp(15), dp(10)]
+                self.allow_copy = False
+                self.bind(pos=self.update_rect, size=self.update_rect)
+                Clock.schedule_once(lambda dt: self.update_rect(), 0)
+
+            def update_rect(self, *args):
+                self.canvas.before.clear()
+                with self.canvas.before:
+                    Color(rgba=get_color_from_hex('#D8F3EB'))
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
+
+        sum_label = Label(
+            text='Сума:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+
+        amount_row = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(10))
+
+        min_amount_box = BoxLayout(size_hint_x=0.5, spacing=dp(5))
+        min_amount_label = Label(
+            text="З:",
+            size_hint=(None, 1),
+            width=dp(20),
+            color=get_color_from_hex('#FFFFFF'),
+            font_size=sp(16)
+        )
+        min_amount = StyledTextInput(
+            hint_text='0',
+            text='0',
+            hint_text_color=get_color_from_hex('#0A4035')
+        )
+        min_amount_box.add_widget(min_amount_label)
+        min_amount_box.add_widget(min_amount)
+
+        max_amount_box = BoxLayout(size_hint_x=0.5, spacing=dp(5))
+        max_amount_label = Label(
+            text="До:",
+            size_hint=(None, 1),
+            width=dp(25),
+            color=get_color_from_hex('#FFFFFF'),
+            font_size=sp(16)
+        )
+        max_amount = StyledTextInput(
+            hint_text='1000000',
+            text='1000000',
+            hint_text_color=get_color_from_hex('#0A4035')
+        )
+        max_amount_box.add_widget(max_amount_label)
+        max_amount_box.add_widget(max_amount)
+
+        amount_row.add_widget(min_amount_box)
+        amount_row.add_widget(max_amount_box)
+
+        date_section = BoxLayout(
+            orientation='vertical',
+            spacing=dp(8),
+            size_hint_y=None,
+            height=dp(140)
+        )
+
+        date_rect = RoundedRectangle(pos=date_section.pos, size=date_section.size, radius=[dp(12)])
+        with date_section.canvas.before:
+            Color(rgba=get_color_from_hex('#095045'))
+            date_rect
+
+        def update_date_rect(instance, value):
+            date_rect.pos = instance.pos
+            date_rect.size = instance.size
+
+        date_section.bind(pos=update_date_rect, size=update_date_rect)
+
+        date_title = Label(
+            text="Інтервал дат:",
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+        date_section.add_widget(date_title)
+
+        days = [str(i).zfill(2) for i in range(1, 32)]
+        months = [str(i).zfill(2) for i in range(1, 13)]
+
+        current_year = datetime.now().year
+        years = [str(year) for year in range(current_year - 5, current_year + 1)]
+
+        last_year = datetime(current_year - 1, 1, 1)
+
+        date_from_row = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(4))
+        date_from_label = Label(
+            text="З:",
+            size_hint=(None, 1),
+            width=dp(20),
+            color=get_color_from_hex('#FFFFFF'),
+            font_size=sp(16)
+        )
+        date_from_row.add_widget(date_from_label)
+
+        start_day_spinner = Spinner(
+            text=str(last_year.day).zfill(2),
+            values=days,
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+
+        start_month_spinner = Spinner(
+            text=str(last_year.month).zfill(2),
+            values=months,
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+
+        start_year_spinner = Spinner(
+            text=str(last_year.year),
+            values=years,
+            size_hint=(0.4, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+
+        date_from_row.add_widget(start_day_spinner)
+        date_from_row.add_widget(start_month_spinner)
+        date_from_row.add_widget(start_year_spinner)
+
+        date_to_row = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(4))
+
+        date_to_label = Label(
+            text="До:",
+            size_hint=(None, 1),
+            width=dp(20),
+            color=get_color_from_hex('#FFFFFF'),
+            font_size=sp(16)
+        )
+        date_to_row.add_widget(date_to_label)
+
+        end_day_spinner = Spinner(
+            text=str(datetime.now().day).zfill(2),
+            values=days,
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+
+        end_month_spinner = Spinner(
+            text=str(datetime.now().month).zfill(2),
+            values=months,
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+
+        end_year_spinner = Spinner(
+            text=str(current_year),
+            values=years,
+            size_hint=(0.4, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+
+        date_to_row.add_widget(end_day_spinner)
+        date_to_row.add_widget(end_month_spinner)
+        date_to_row.add_widget(end_year_spinner)
+
+        date_section.add_widget(date_from_row)
+        date_section.add_widget(date_to_row)
+
+        type_label = Label(
+            text='Тип:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            halign='center',
+            size_hint_y=None,
+            height=dp(30)
+        )
+
+        type_spinner = Spinner(
+            text='Всі',
+            values=['Всі', 'Доходи', 'Витрати'],
+            size_hint_y=None,
+            height=dp(45),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+
+        class StyledButton(Button):
+            def __init__(self, **kwargs):
+                super(StyledButton, self).__init__(**kwargs)
+                self.background_normal = ''
+                self.background_down = ''
+                self.background_color = (0, 0, 0, 0)
+                self.color = get_color_from_hex('#0A4035')
+                self.bold = True
+                self.font_size = sp(16)
+                self.bind(pos=self.update_rect, size=self.update_rect)
+                Clock.schedule_once(lambda dt: self.update_rect(), 0)
+
+            def update_rect(self, *args):
+                self.canvas.before.clear()
+                with self.canvas.before:
+                    Color(rgba=get_color_from_hex('#D8F3EB'))
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
+
+        reset_button = StyledButton(text='Скинути')
+        apply_button = StyledButton(text='Застосувати')
+
+        reset_button.bind(on_press=lambda x: self.reset_filter(
+            type_spinner, None, min_amount, max_amount,
+            start_day_spinner, start_month_spinner, start_year_spinner,
+            end_day_spinner, end_month_spinner, end_year_spinner
+        ))
+        apply_button.bind(on_press=lambda x: self.apply_filter(
+            type_spinner.text, None,
+            min_amount.text, max_amount.text,
+            f"{start_day_spinner.text}.{start_month_spinner.text}.{start_year_spinner.text}",
+            f"{end_day_spinner.text}.{end_month_spinner.text}.{end_year_spinner.text}",
+            modal
+        ))
+
+        buttons_box = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(15))
+        buttons_box.add_widget(reset_button)
+        buttons_box.add_widget(apply_button)
+
+        content.add_widget(title_label)
+        content.add_widget(sum_label)
+        content.add_widget(amount_row)
+        content.add_widget(date_section)
+        content.add_widget(type_label)
+        content.add_widget(type_spinner)
+        content.add_widget(Widget())
+        content.add_widget(buttons_box)
+
+        modal.add_widget(content)
+        modal.open()
+        Animation(opacity=1, d=0.3).start(content)
+
+    def reset_filter(self, type_spinner, category_spinner, min_amount, max_amount,
+                    start_day_spinner, start_month_spinner, start_year_spinner,
+                    end_day_spinner, end_month_spinner, end_year_spinner):
+        type_spinner.text = 'Всі'
+        if category_spinner:
+            category_spinner.text = 'Всі'
+        min_amount.text = '0'
+        max_amount.text = '1000000'
+
+        current_year = datetime.now().year
+        start_day_spinner.text = '01'
+        start_month_spinner.text = '01'
+        start_year_spinner.text = str(current_year - 1)
+
+        end_day_spinner.text = str(datetime.now().day).zfill(2)
+        end_month_spinner.text = str(datetime.now().month).zfill(2)
+        end_year_spinner.text = str(current_year)
+
+    def apply_filter(self, type_filter, category_filter, min_amount_text, max_amount_text,
+                     start_date, end_date, modal):
+        try:
+            modal.dismiss()
+            min_amount = float(min_amount_text.replace(',', '.')) if min_amount_text else 0
+            max_amount = float(max_amount_text.replace(',', '.')) if max_amount_text else float('inf')
+
+            try:
+                start_day, start_month, start_year = start_date.split('.')
+                self.start_date = datetime(int(start_year), int(start_month), int(start_day))
+            except:
+                self.start_date = datetime(datetime.now().year - 1, 1, 1)
+
+            try:
+                end_day, end_month, end_year = end_date.split('.')
+                self.end_date = datetime(int(end_year), int(end_month), int(end_day))
+            except:
+                self.end_date = datetime.now()
+
+            self._update_stats()
+            self._update_chart()
+            self.show_success_message("Фільтр застосовано")
+
+        except ValueError:
+            self.show_error_message("Некоректне значення суми")
+        except Exception as e:
+            self.show_error_message(f"Помилка фільтрації: {str(e)}")
     
-    def apply_date_filter(self, start_date, end_date):
-        self.start_date = start_date
-        self.end_date = end_date
-        self._update_stats()
-        self._update_chart()
+    def _update_rect(self, instance, value):
+        self.content_rect.pos = instance.pos
+        self.content_rect.size = instance.size
+    
+    def show_error_message(self, message):
+        label = Label(
+            text=message,
+            color=get_color_from_hex('#FFFFFF'),
+            font_size=sp(16),
+            halign='center',
+            valign='middle'
+        )
+        label.bind(size=label.setter('text_size'))
+
+        popup = Popup(
+            title='Помилка',
+            content=label,
+            size_hint=(0.7, 0.3),
+            background='',
+            background_color=(0, 0, 0, 0)
+        )
+
+        with popup.canvas.before:
+            Color(rgba=get_color_from_hex('#8B0000'))
+            background_rect = RoundedRectangle(pos=popup.pos, size=popup.size, radius=[dp(10)])
+
+        def update_rects(instance, value):
+            background_rect.pos = instance.pos
+            background_rect.size = instance.size
+
+        popup.bind(pos=update_rects, size=update_rects)
+        popup.open()
+        Clock.schedule_once(lambda dt: popup.dismiss(), 2)
+
+    def show_success_message(self, message):
+        label = Label(
+            text=message,
+            color=get_color_from_hex('#FFFFFF'),
+            font_size=sp(16),
+            halign='center',
+            valign='middle'
+        )
+        label.bind(size=label.setter('text_size'))
+
+        popup = Popup(
+            title='Успіх',
+            content=label,
+            size_hint=(0.7, 0.3),
+            background='',
+            background_color=(0, 0, 0, 0)
+        )
+
+        with popup.canvas.before:
+            Color(rgba=get_color_from_hex('#0A4035'))
+            background_rect = RoundedRectangle(pos=popup.pos, size=popup.size, radius=[dp(10)])
+
+        def update_rects(instance, value):
+            background_rect.pos = instance.pos
+            background_rect.size = instance.size
+
+        popup.bind(pos=update_rects, size=update_rects)
+        popup.open()
+        Clock.schedule_once(lambda dt: popup.dismiss(), 2)
     
     def go_to_transactions(self):
         self.switch_screen('main_screen', 'right')

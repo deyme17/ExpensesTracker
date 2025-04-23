@@ -4,4 +4,4 @@ from app.views.first_screen import FirstScreen
 from app.views.login_screen import LoginScreen
 from app.views.register_screen import RegistrationScreen
 from app.views.main_screen import MainScreen
-from app.views.analytics_screen import StatisticsScreen
+from app.views.analytics_screen import AnalyticsScreen

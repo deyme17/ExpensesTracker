@@ -8,7 +8,7 @@ from app.views.first_screen import FirstScreen
 from app.views.login_screen import LoginScreen
 from app.views.register_screen import RegistrationScreen
 from app.views.main_screen import MainScreen 
-from app.views.analytics_screen import StatisticsScreen 
+from app.views.analytics_screen import AnalyticsScreen 
 
 Window.size = (360, 640)
 
@@ -21,7 +21,7 @@ class ExpensesTrackerApp(App):
         sm.add_widget(LoginScreen(name='login_screen'))
         sm.add_widget(RegistrationScreen(name='reg_screen'))
         sm.add_widget(MainScreen(name='main_screen'))
-        sm.add_widget(StatisticsScreen(name='statistics'))
+        sm.add_widget(AnalyticsScreen(name='statistics'))
 
         Clock.schedule_once(lambda dt: self.on_splash_complete(sm), 2.5)
         return sm

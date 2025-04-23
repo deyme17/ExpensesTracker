@@ -1091,7 +1091,6 @@ class MainScreen(BaseScreen):
         popup.open()
         Clock.schedule_once(lambda dt: popup.dismiss(), 2)
 
-
     def show_success_message(self, message):
         label = Label(
             text=message,

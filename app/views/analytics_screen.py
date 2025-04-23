@@ -274,39 +274,61 @@ class StatisticsScreen(BaseScreen):
     def show_menu(self):
         popup = Popup(
             title='Меню',
-            size_hint=(0.7, 0.2),
+            size_hint=(0.7, 0.3),
             background='',
-            background_color=(0, 0, 0, 0))
-        
+            background_color=(0, 0, 0, 0)
+        )
         content = BoxLayout(
             orientation='vertical',
             spacing=dp(10),
-            padding=dp(10))
-        
+            padding=dp(10)
+        )
+
+        popup.content = content
+
         with popup.canvas.before:
-            Color(rgba=get_color_from_hex('#0A4035'))
-            RoundedRectangle(pos=popup.pos, size=popup.size, radius=[dp(10)])
-            
-            Color(rgba=get_color_from_hex('#FF7043'))
-            RoundedRectangle(
-                pos=(popup.x + dp(10), popup.y + popup.height - dp(3)),
-                size=(popup.width - dp(20), dp(3)),
-                radius=[dp(1.5)]
-            )
-        
+            color = Color(rgba=get_color_from_hex('#0A4035'))
+            background_rect = RoundedRectangle(pos=popup.pos, size=popup.size, radius=[dp(10)])
+
+        def update_rects(instance, value):
+            background_rect.pos = instance.pos
+            background_rect.size = instance.size
+
+        popup.bind(pos=update_rects, size=update_rects)
         popup.title_color = get_color_from_hex('#FFFFFF')
         popup.title_size = sp(18)
-        
-        exit_btn = Button(
-            text='Вихід',
-            background_color=get_color_from_hex('#D8F3EB'),
-            color=get_color_from_hex('#0A4035'),
+
+        class MenuButton(Button):
+            def __init__(self, **kwargs):
+                super().__init__(**kwargs)
+                self.background_color = (0, 0, 0, 0)
+                self.color = get_color_from_hex('#0A4035')
+                self.font_size = sp(16)
+                self.bind(size=self.update_bg, pos=self.update_bg)
+                Clock.schedule_once(lambda dt: self.update_bg(), 0)
+
+            def update_bg(self, *args):
+                self.canvas.before.clear()
+                with self.canvas.before:
+                    Color(rgba=get_color_from_hex('#D8F3EB'))
+                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(8)])
+
+        logout_btn = MenuButton(
+            text='Вийти з акаунту',
             size_hint_y=None,
-            height=dp(45),
-            font_size=sp(16))
+            height=dp(45)
+        )
+        logout_btn.bind(on_press=lambda x: [popup.dismiss(), self.logout()])
+
+        exit_btn = MenuButton(
+            text='Вихід із програми',
+            size_hint_y=None,
+            height=dp(45)
+        )
         exit_btn.bind(on_press=lambda x: [popup.dismiss(), self.exit_app()])
+
+        content.add_widget(logout_btn)
         content.add_widget(exit_btn)
-        
         popup.content = content
         popup.open()
     

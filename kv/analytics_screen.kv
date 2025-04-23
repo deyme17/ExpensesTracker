@@ -96,21 +96,6 @@
             height: dp(60)
             padding: [dp(10), 0]
             
-            BoxLayout:
-                size_hint_x: None
-                width: dp(50)
-                canvas.before:
-                    Color:
-                        rgba: accent_color[0], accent_color[1], accent_color[2], 0.2
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(10)]
-                
-                Label:
-                    text: '📊'
-                    font_size: '24sp'
-            
             Label:
                 text: 'Аналітика'
                 color: text_light
@@ -120,6 +105,32 @@
                 halign: 'left'
                 valign: 'middle'
                 padding_x: dp(15)
+            
+            # Date filter button
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_press: root.show_date_filter()
+                
+                canvas.before:
+                    Color:
+                        rgba: accent_color
+                    Line:
+                        width: 1.5
+                        circle: (self.center_x, self.center_y, min(self.width, self.height) / 2 - dp(5), 0, 360)
+                    
+                    # Clock icon
+                    Line:
+                        width: 1.5
+                        circle: (self.center_x, self.center_y, min(self.width, self.height) / 3, 0, 360)
+                    Line:
+                        width: 1.5
+                        points: [self.center_x, self.center_y, self.center_x, self.center_y - min(self.width, self.height) / 4]
+                    Line:
+                        width: 1.5
+                        points: [self.center_x, self.center_y, self.center_x + min(self.width, self.height) / 6, self.center_y]
                 
             Button:
                 size_hint: None, None

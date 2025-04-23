@@ -10,10 +10,22 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
-from kivy.graphics import Color, Rectangle, Ellipse, RoundedRectangle, Line
+from kivy.uix.spinner import Spinner
+from kivy.graphics import Color, Rectangle, Ellipse, RoundedRectangle, Line, Triangle
+from datetime import datetime
 
 # Load kv file
 Builder.load_file('kv/analytics_screen.kv')
+
+class SpinnerOption(Button):
+    def __init__(self, **kwargs):
+        super(SpinnerOption, self).__init__(**kwargs)
+        self.background_normal = ''
+        self.background_down = ''
+        self.background_color = get_color_from_hex('#D8F3EB')
+        self.color = get_color_from_hex('#0A4035')
+        self.font_size = sp(16)
+        self.halign = 'center'
 
 class HistogramWidget(Widget):
     def __init__(self, data=None, **kwargs):
@@ -212,11 +224,253 @@ class PieChartWidget(Widget):
         self.canvas.add(Color(1, 1, 1, 0.1))
         mesh = self.canvas.add(Line(points=points, width=dp(2), joint='round', close=True))
 
+class DateFilterPopup(Popup):
+    def __init__(self, callback, **kwargs):
+        super(DateFilterPopup, self).__init__(**kwargs)
+        self.title = 'Вибір періоду'
+        self.size_hint = (0.85, 0.45)
+        self.background = ''
+        self.background_color = (0, 0, 0, 0)
+        self.title_color = get_color_from_hex('#FFFFFF')
+        self.title_size = sp(18)
+        
+        self.callback = callback
+        
+        # Get current date
+        current_date = datetime.now()
+        day = str(current_date.day).zfill(2)
+        month = str(current_date.month).zfill(2)
+        year = str(current_date.year)
+        
+        # Create layout
+        content_layout = BoxLayout(
+            orientation='vertical',
+            spacing=dp(15),
+            padding=dp(20)
+        )
+        
+        # Add background
+        with self.canvas.before:
+            Color(rgba=get_color_from_hex('#0D5145'))  # Light shade of green
+            background_rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(15)])
+        
+        # Update rectangle positions when popup size changes
+        def update_rects(instance, value):
+            background_rect.pos = instance.pos
+            background_rect.size = instance.size
+        
+        self.bind(pos=update_rects, size=update_rects)
+        
+        # Date selectors
+        date_main_container = BoxLayout(
+            orientation='vertical',
+            spacing=dp(15),
+            size_hint_y=None,
+            height=dp(120)
+        )
+        
+        # "З:" row
+        from_row = BoxLayout(
+            orientation='horizontal',
+            spacing=dp(10),
+            size_hint_y=None,
+            height=dp(45)
+        )
+        
+        from_label = Label(
+            text='З:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            size_hint_x=None,
+            width=dp(25)
+        )
+        
+        days = [str(i).zfill(2) for i in range(1, 32)]
+        months = [str(i).zfill(2) for i in range(1, 13)]
+        current_year = current_date.year
+        years = [str(year) for year in range(current_year - 5, current_year + 1)]
+        
+        self.from_day_spinner = Spinner(
+            text=day,
+            values=days,
+            size_hint_x=0.27,
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+        
+        self.from_month_spinner = Spinner(
+            text=month,
+            values=months,
+            size_hint_x=0.27,
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+        
+        self.from_year_spinner = Spinner(
+            text=year,
+            values=years,
+            size_hint_x=0.35,
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+        
+        from_row.add_widget(from_label)
+        from_row.add_widget(self.from_day_spinner)
+        from_row.add_widget(self.from_month_spinner)
+        from_row.add_widget(self.from_year_spinner)
+        
+        # "До:" row
+        to_row = BoxLayout(
+            orientation='horizontal',
+            spacing=dp(10),
+            size_hint_y=None,
+            height=dp(45)
+        )
+        
+        to_label = Label(
+            text='До:',
+            font_size=sp(16),
+            color=get_color_from_hex('#FFFFFF'),
+            size_hint_x=None,
+            width=dp(25)
+        )
+        
+        self.to_day_spinner = Spinner(
+            text=day,
+            values=days,
+            size_hint_x=0.27,
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+        
+        self.to_month_spinner = Spinner(
+            text=month,
+            values=months,
+            size_hint_x=0.27,
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+        
+        self.to_year_spinner = Spinner(
+            text=year,
+            values=years,
+            size_hint_x=0.35,
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
+        )
+        
+        to_row.add_widget(to_label)
+        to_row.add_widget(self.to_day_spinner)
+        to_row.add_widget(self.to_month_spinner)
+        to_row.add_widget(self.to_year_spinner)
+        
+        date_main_container.add_widget(from_row)
+        date_main_container.add_widget(to_row)
+        
+        # Buttons row
+        buttons_container = BoxLayout(
+            orientation='horizontal',
+            spacing=dp(15),
+            size_hint_y=None,
+            height=dp(50),
+            padding=[0, dp(10), 0, 0]
+        )
+        
+        cancel_btn = Button(
+            text='Скасувати',
+            size_hint_x=0.5,
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16)
+        )
+        cancel_btn.bind(on_release=self.dismiss)
+        
+        apply_btn = Button(
+            text='Застосувати',
+            size_hint_x=0.5,
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16)
+        )
+        apply_btn.bind(on_release=self.apply_filter)
+        
+        buttons_container.add_widget(cancel_btn)
+        buttons_container.add_widget(apply_btn)
+        
+        # Add all sections to main layout
+        content_layout.add_widget(date_main_container)
+        content_layout.add_widget(buttons_container)
+        
+        self.content = content_layout
+    
+    def apply_filter(self, *args):
+        try:
+            # Get selected dates from spinners
+            start_date = datetime(
+                int(self.from_year_spinner.text),
+                int(self.from_month_spinner.text),
+                int(self.from_day_spinner.text)
+            )
+            
+            end_date = datetime(
+                int(self.to_year_spinner.text),
+                int(self.to_month_spinner.text),
+                int(self.to_day_spinner.text)
+            )
+            
+            if start_date <= end_date:
+                self.callback(start_date, end_date)
+                self.dismiss()
+            else:
+                # Simple error handling
+                print("Помилка: початкова дата повинна бути раніше кінцевої")
+        except Exception as e:
+            # Handle invalid date inputs
+            print(f"Помилка застосування фільтру: {e}")
+
 class StatisticsScreen(BaseScreen):
     current_chart_type = StringProperty('histogram')
     avg_value = NumericProperty(0)
     min_value = NumericProperty(0)
     max_value = NumericProperty(0)
+    start_date = ObjectProperty(None)
+    end_date = ObjectProperty(None)
     
     def __init__(self, **kwargs):
         super(StatisticsScreen, self).__init__(**kwargs)
@@ -229,6 +483,11 @@ class StatisticsScreen(BaseScreen):
             {'name': 'Тра', 'value': 5000, 'month': 5},
             {'name': 'Чер', 'value': 7000, 'month': 6}
         ]
+        
+        # Set default date range to current month
+        now = datetime.now()
+        self.start_date = datetime(now.year, now.month, 1)
+        self.end_date = now
         
         self._update_stats()
     
@@ -251,22 +510,51 @@ class StatisticsScreen(BaseScreen):
     def _update_chart(self, *args):
         self.graph_container.clear_widgets()
         
+        # Filter data by date range if needed
+        filtered_data = self._filter_data_by_date()
+        
         if self.current_chart_type == 'histogram':
-            chart = HistogramWidget(data=self.chart_data)
+            chart = HistogramWidget(data=filtered_data)
         elif self.current_chart_type == 'line':
-            chart = LineChartWidget(data=self.chart_data)
+            chart = LineChartWidget(data=filtered_data)
         elif self.current_chart_type == 'pie':
-            chart = PieChartWidget(data=self.chart_data)
+            chart = PieChartWidget(data=filtered_data)
         else:
             chart = Widget()
         
         self.graph_container.add_widget(chart)
     
+    def _filter_data_by_date(self):
+        # In a real app, you would filter from your database
+        if not self.start_date or not self.end_date:
+            return self.chart_data
+        
+        return [item for item in self.chart_data 
+                if self.start_date.month <= item['month'] <= self.end_date.month]
+    
     def _update_stats(self):
-        values = [item['value'] for item in self.chart_data]
-        self.avg_value = sum(values) / len(values)
-        self.min_value = min(values)
-        self.max_value = max(values)
+        # Use filtered data for statistics
+        filtered_data = self._filter_data_by_date()
+        values = [item['value'] for item in filtered_data]
+        
+        if values:
+            self.avg_value = sum(values) / len(values)
+            self.min_value = min(values)
+            self.max_value = max(values)
+        else:
+            self.avg_value = 0
+            self.min_value = 0
+            self.max_value = 0
+    
+    def show_date_filter(self):
+        popup = DateFilterPopup(callback=self.apply_date_filter)
+        popup.open()
+    
+    def apply_date_filter(self, start_date, end_date):
+        self.start_date = start_date
+        self.end_date = end_date
+        self._update_stats()
+        self._update_chart()
     
     def go_to_transactions(self):
         self.switch_screen('main_screen', 'right')

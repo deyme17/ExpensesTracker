@@ -52,6 +52,16 @@ class SelectableTransactionRow(BoxLayout):
             )
             return True
         return super(SelectableTransactionRow, self).on_touch_down(touch)
+    
+class SpinnerOption(Button):
+    def __init__(self, **kwargs):
+        super(SpinnerOption, self).__init__(**kwargs)
+        self.background_normal = ''
+        self.background_down = ''
+        self.background_color = get_color_from_hex('#D8F3EB')
+        self.color = get_color_from_hex('#0A4035')
+        self.font_size = sp(16)
+        self.halign = 'center'
 
 class MainScreen(BaseScreen):
     def __init__(self, **kwargs):
@@ -131,8 +141,10 @@ class MainScreen(BaseScreen):
                 self.color = get_color_from_hex('#0A4035')
                 self.bold = True
                 self.font_size = sp(16)
+                self.option_cls = SpinnerOption
                 self.bind(pos=self.update_rect, size=self.update_rect)
                 Clock.schedule_once(lambda dt: self.update_rect(), 0)
+                
 
             def update_rect(self, *args):
                 self.canvas.before.clear()
@@ -252,22 +264,43 @@ class MainScreen(BaseScreen):
         current_year = datetime.now().year
         years = [str(year) for year in range(current_year - 5, current_year + 1)]
 
-        day_spinner = CustomSpinner(
+        day_spinner = Spinner(
             text=str(datetime.now().day).zfill(2),
             values=days,
-            size_hint=(0.3, 1)
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
-        month_spinner = CustomSpinner(
+        month_spinner = Spinner(
             text=str(datetime.now().month).zfill(2),
             values=months,
-            size_hint=(0.3, 1)
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
-        year_spinner = CustomSpinner(
+        year_spinner = Spinner(
             text=str(current_year),
             values=years,
-            size_hint=(0.4, 1)
+            size_hint=(0.4, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
         date_container.add_widget(day_spinner)
@@ -692,6 +725,7 @@ class MainScreen(BaseScreen):
                 self.color = get_color_from_hex('#0A4035')
                 self.bold = True
                 self.font_size = sp(16)
+                self.option_cls = SpinnerOption
                 self.bind(pos=self.update_rect, size=self.update_rect)
                 Clock.schedule_once(lambda dt: self.update_rect(), 0)
 
@@ -814,22 +848,43 @@ class MainScreen(BaseScreen):
         current_year = datetime.now().year
         years = [str(year) for year in range(current_year - 5, current_year + 1)]
 
-        day_spinner = CustomSpinner(
-            text=day,
+        day_spinner = Spinner(
+            text=str(datetime.now().day).zfill(2),
             values=days,
-            size_hint=(0.3, 1)
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
-        month_spinner = CustomSpinner(
-            text=month,
+        month_spinner = Spinner(
+            text=str(datetime.now().month).zfill(2),
             values=months,
-            size_hint=(0.3, 1)
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
-        year_spinner = CustomSpinner(
-            text=year,
+        year_spinner = Spinner(
+            text=str(current_year),
             values=years,
-            size_hint=(0.4, 1)
+            size_hint=(0.4, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
         date_container.add_widget(day_spinner)
@@ -1226,6 +1281,7 @@ class MainScreen(BaseScreen):
                 self.color = get_color_from_hex('#0A4035')
                 self.bold = True
                 self.font_size = sp(16)
+                self.option_cls = SpinnerOption
                 self.bind(pos=self.update_rect, size=self.update_rect)
                 Clock.schedule_once(lambda dt: self.update_rect(), 0)
 
@@ -1352,22 +1408,43 @@ class MainScreen(BaseScreen):
         )
         date_from_row.add_widget(date_from_label)
 
-        start_day_spinner = CustomSpinner(
+        start_day_spinner = Spinner(
             text='01',
             values=days,
-            size_hint=(0.3, 1)
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
-        start_month_spinner = CustomSpinner(
+        start_month_spinner = Spinner(
             text='01',
             values=months,
-            size_hint=(0.3, 1)
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
-        start_year_spinner = CustomSpinner(
+        start_year_spinner = Spinner(
             text=str(current_year - 1),
             values=years,
-            size_hint=(0.4, 1)
+            size_hint=(0.4, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
         date_from_row.add_widget(start_day_spinner)
@@ -1385,22 +1462,43 @@ class MainScreen(BaseScreen):
         )
         date_to_row.add_widget(date_to_label)
 
-        end_day_spinner = CustomSpinner(
-            text=str(datetime.now().day).zfill(2),
+        end_day_spinner = Spinner(
+            text='01',
             values=days,
-            size_hint=(0.3, 1)
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
-        end_month_spinner = CustomSpinner(
-            text=str(datetime.now().month).zfill(2),
+        end_month_spinner = Spinner(
+            text='01',
             values=months,
-            size_hint=(0.3, 1)
+            size_hint=(0.3, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
-        end_year_spinner = CustomSpinner(
-            text=str(current_year),
+        end_year_spinner = Spinner(
+            text=str(current_year - 1),
             values=years,
-            size_hint=(0.4, 1)
+            size_hint=(0.4, 1),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
         date_to_row.add_widget(end_day_spinner)
@@ -1419,11 +1517,18 @@ class MainScreen(BaseScreen):
             height=dp(30)
         )
 
-        type_spinner = CustomSpinner(
+        type_spinner = Spinner(
             text='Всі',
             values=['Всі', 'Доходи', 'Витрати'],
             size_hint_y=None,
-            height=dp(45)
+            height=dp(45),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
         payment_label = Label(
@@ -1435,11 +1540,18 @@ class MainScreen(BaseScreen):
             height=dp(30)
         )
 
-        payment_method_spinner = CustomSpinner(
+        payment_method_spinner = Spinner(
             text='Всі',
             values=PAYMENT_METHODS,
             size_hint_y=None,
-            height=dp(45)
+            height=dp(45),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
         class StyledButton(Button):
@@ -1615,6 +1727,7 @@ class MainScreen(BaseScreen):
                 self.color = get_color_from_hex('#0A4035')
                 self.bold = True
                 self.font_size = sp(16)
+                self.option_cls = SpinnerOption
                 self.bind(pos=self.update_rect, size=self.update_rect)
                 Clock.schedule_once(lambda dt: self.update_rect(), 0)
 
@@ -1642,11 +1755,18 @@ class MainScreen(BaseScreen):
         )
 
         sort_fields = ['Дата', 'Сума', 'Категорія', 'Тип оплати', 'Кешбек', 'Комісія']
-        field_spinner = CustomSpinner(
+        field_spinner = Spinner(
             text=sort_fields[0],
             values=sort_fields,
             size_hint_y=None,
-            height=dp(45)
+            height=dp(45),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
         direction_label = Label(
@@ -1658,11 +1778,18 @@ class MainScreen(BaseScreen):
             height=dp(30)
         )
 
-        direction_spinner = CustomSpinner(
+        direction_spinner = Spinner(
             text='За зростанням',
             values=['За зростанням', 'За спаданням'],
             size_hint_y=None,
-            height=dp(45)
+            height=dp(45),
+            background_normal='',
+            background_down='',
+            background_color=get_color_from_hex('#D8F3EB'),
+            color=get_color_from_hex('#0A4035'),
+            bold=True,
+            font_size=sp(16),
+            option_cls=SpinnerOption
         )
 
         class StyledButton(Button):

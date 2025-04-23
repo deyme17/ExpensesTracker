@@ -847,7 +847,7 @@ class MainScreen(BaseScreen):
 
         cashback_input = StyledTextInput(
             text=cashback,
-            hint_text='Введіть відсоток кешбеку',
+            hint_text='Введіть кешбек',
             hint_text_color=get_color_from_hex('#0A4035'),
             foreground_color=get_color_from_hex('#000000'),
             size_hint_y=None,

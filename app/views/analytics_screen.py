@@ -78,6 +78,10 @@ class AnalyticsScreen(BaseScreen):
     max_value = NumericProperty(0)
     start_date = ObjectProperty(None)
     end_date = ObjectProperty(None)
+    current_type = StringProperty('Витрати')
+    
+    expense_dark_color = get_color_from_hex('#A83C36')  
+    income_dark_color = get_color_from_hex('#35884D')  
     
     def __init__(self, **kwargs):
         super(AnalyticsScreen, self).__init__(**kwargs)
@@ -151,7 +155,7 @@ class AnalyticsScreen(BaseScreen):
     
     def show_filter(self):
         modal = ModalView(
-            size_hint=(0.9, 0.85),
+            size_hint=(0.8, 0.65),
             background='',
             background_color=(0, 0, 0, 0),
             overlay_color=(0, 0, 0, 0.7)
@@ -159,8 +163,8 @@ class AnalyticsScreen(BaseScreen):
 
         content = BoxLayout(
             orientation='vertical',
-            spacing=dp(12),
-            padding=[dp(20), dp(20), dp(20), dp(20)],
+            spacing=dp(10),
+            padding=[dp(15), dp(15), dp(15), dp(15)],
             opacity=0
         )
 
@@ -172,84 +176,19 @@ class AnalyticsScreen(BaseScreen):
 
         title_label = Label(
             text='Фільтр даних',
-            font_size=sp(22),
+            font_size=sp(20),
             bold=True,
             color=get_color_from_hex('#FFFFFF'),
             halign='center',
             size_hint_y=None,
-            height=dp(50)
+            height=dp(40)
         )
-
-        class StyledTextInput(TextInput):
-            def __init__(self, **kwargs):
-                super(StyledTextInput, self).__init__(**kwargs)
-                self.background_color = (0, 0, 0, 0)
-                self.cursor_color = get_color_from_hex('#0A4035')
-                self.foreground_color = get_color_from_hex('#0A4035')
-                self.font_size = sp(16)
-                self.multiline = False
-                self.padding = [dp(15), dp(10), dp(15), dp(10)]
-                self.allow_copy = False
-                self.bind(pos=self.update_rect, size=self.update_rect)
-                Clock.schedule_once(lambda dt: self.update_rect(), 0)
-
-            def update_rect(self, *args):
-                self.canvas.before.clear()
-                with self.canvas.before:
-                    Color(rgba=get_color_from_hex('#D8F3EB'))
-                    RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
-
-        sum_label = Label(
-            text='Сума:',
-            font_size=sp(16),
-            color=get_color_from_hex('#FFFFFF'),
-            halign='center',
-            size_hint_y=None,
-            height=dp(30)
-        )
-
-        amount_row = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(10))
-
-        min_amount_box = BoxLayout(size_hint_x=0.5, spacing=dp(5))
-        min_amount_label = Label(
-            text="З:",
-            size_hint=(None, 1),
-            width=dp(20),
-            color=get_color_from_hex('#FFFFFF'),
-            font_size=sp(16)
-        )
-        min_amount = StyledTextInput(
-            hint_text='0',
-            text='0',
-            hint_text_color=get_color_from_hex('#0A4035')
-        )
-        min_amount_box.add_widget(min_amount_label)
-        min_amount_box.add_widget(min_amount)
-
-        max_amount_box = BoxLayout(size_hint_x=0.5, spacing=dp(5))
-        max_amount_label = Label(
-            text="До:",
-            size_hint=(None, 1),
-            width=dp(25),
-            color=get_color_from_hex('#FFFFFF'),
-            font_size=sp(16)
-        )
-        max_amount = StyledTextInput(
-            hint_text='1000000',
-            text='1000000',
-            hint_text_color=get_color_from_hex('#0A4035')
-        )
-        max_amount_box.add_widget(max_amount_label)
-        max_amount_box.add_widget(max_amount)
-
-        amount_row.add_widget(min_amount_box)
-        amount_row.add_widget(max_amount_box)
 
         date_section = BoxLayout(
             orientation='vertical',
-            spacing=dp(8),
+            spacing=dp(6),
             size_hint_y=None,
-            height=dp(140)
+            height=dp(120)
         )
 
         date_rect = RoundedRectangle(pos=date_section.pos, size=date_section.size, radius=[dp(12)])
@@ -401,8 +340,8 @@ class AnalyticsScreen(BaseScreen):
         )
 
         type_spinner = Spinner(
-            text='Всі',
-            values=['Всі', 'Доходи', 'Витрати'],
+            text='Витрати',
+            values=['Витрати', 'Доходи'],
             size_hint_y=None,
             height=dp(45),
             background_normal='',
@@ -436,13 +375,12 @@ class AnalyticsScreen(BaseScreen):
         apply_button = StyledButton(text='Застосувати')
 
         reset_button.bind(on_press=lambda x: self.reset_filter(
-            type_spinner, None, min_amount, max_amount,
+            type_spinner, None,
             start_day_spinner, start_month_spinner, start_year_spinner,
             end_day_spinner, end_month_spinner, end_year_spinner
         ))
         apply_button.bind(on_press=lambda x: self.apply_filter(
             type_spinner.text, None,
-            min_amount.text, max_amount.text,
             f"{start_day_spinner.text}.{start_month_spinner.text}.{start_year_spinner.text}",
             f"{end_day_spinner.text}.{end_month_spinner.text}.{end_year_spinner.text}",
             modal
@@ -453,8 +391,6 @@ class AnalyticsScreen(BaseScreen):
         buttons_box.add_widget(apply_button)
 
         content.add_widget(title_label)
-        content.add_widget(sum_label)
-        content.add_widget(amount_row)
         content.add_widget(date_section)
         content.add_widget(type_label)
         content.add_widget(type_spinner)
@@ -465,14 +401,12 @@ class AnalyticsScreen(BaseScreen):
         modal.open()
         Animation(opacity=1, d=0.3).start(content)
 
-    def reset_filter(self, type_spinner, category_spinner, min_amount, max_amount,
+    def reset_filter(self, type_spinner, category_spinner,
                     start_day_spinner, start_month_spinner, start_year_spinner,
                     end_day_spinner, end_month_spinner, end_year_spinner):
-        type_spinner.text = 'Всі'
+        type_spinner.text = 'Витрати'
         if category_spinner:
-            category_spinner.text = 'Всі'
-        min_amount.text = '0'
-        max_amount.text = '1000000'
+            category_spinner.text = 'Витрати'
 
         current_year = datetime.now().year
         start_day_spinner.text = '01'
@@ -483,12 +417,10 @@ class AnalyticsScreen(BaseScreen):
         end_month_spinner.text = str(datetime.now().month).zfill(2)
         end_year_spinner.text = str(current_year)
 
-    def apply_filter(self, type_filter, category_filter, min_amount_text, max_amount_text,
-                     start_date, end_date, modal):
+    def apply_filter(self, type_filter, category_filter, start_date, end_date, modal):
         try:
             modal.dismiss()
-            min_amount = float(min_amount_text.replace(',', '.')) if min_amount_text else 0
-            max_amount = float(max_amount_text.replace(',', '.')) if max_amount_text else float('inf')
+            self.current_type = type_filter
 
             try:
                 start_day, start_month, start_year = start_date.split('.')
@@ -506,8 +438,6 @@ class AnalyticsScreen(BaseScreen):
             self._update_chart()
             self.show_success_message("Фільтр застосовано")
 
-        except ValueError:
-            self.show_error_message("Некоректне значення суми")
         except Exception as e:
             self.show_error_message(f"Помилка фільтрації: {str(e)}")
     

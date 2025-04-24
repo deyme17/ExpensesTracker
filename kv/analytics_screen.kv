@@ -81,6 +81,7 @@
     histogram_btn: histogram_btn
     line_btn: line_btn
     pie_btn: pie_btn
+    chart_type_label: chart_type_label
     
     AnimatedBackground:
         id: animated_bg
@@ -94,17 +95,23 @@
         BoxLayout:
             size_hint_y: None
             height: dp(60)
-            padding: [dp(10), 0]
             
-            Label:
-                text: 'Аналітика'
-                color: text_light
-                font_size: '24sp'
-                bold: True
-                text_size: self.size
-                halign: 'left'
-                valign: 'middle'
-                padding_x: dp(15)
+            BoxLayout:
+                orientation: 'vertical'
+                padding: [dp(10), 0, 0, 0]
+                
+                Label:
+                    text: 'Аналітика'
+                    color: text_light
+                    font_size: '24sp'
+                    bold: True
+                    halign: 'left'
+                    valign: 'middle'
+                    size_hint_x: 1
+                    text_size: self.size
+                
+                Widget:
+                    size_hint_y: 0.2
             
             # filter button
             Button:
@@ -143,6 +150,16 @@
                         width: 1.5
                         points: [self.center_x - dp(5), self.center_y + dp(2), self.center_x + dp(5), self.center_y + dp(2)]
         
+        Label:
+            id: chart_type_label
+            text: root.current_type
+            color: root.expense_dark_color if root.current_type == 'Витрати' else root.income_dark_color
+            font_size: '13sp'
+            bold: True
+            size_hint_y: None
+            height: dp(16)
+            halign: 'center'
+            
         BoxLayout:
             id: graph_container
             orientation: 'vertical'

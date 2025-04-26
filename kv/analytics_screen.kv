@@ -44,24 +44,6 @@
         self.background_color = 0, 0, 0, 0.1
         Animation(background_color=(0, 0, 0, 0), d=0.3).start(self)
 
-<StatsTable@GridLayout>:
-    cols: 2
-    padding: dp(10)
-    spacing: dp(10)
-    canvas.before:
-        Color:
-            rgba: card_color
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [dp(12)]
-        
-        Color:
-            rgba: 1, 1, 1, 0.05
-        Line:
-            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
-            width: 1
-
 <AnimatedBackground@Widget>:
     canvas.before:
         Color:
@@ -202,77 +184,170 @@
                 text: 'Кругова'
                 on_release: root.change_chart_type('pie')
         
-        StatsTable:
+        # stats
+        GridLayout:
+            cols: 3
             size_hint_y: 0.3
+            padding: dp(10)
+            spacing: dp(5)
             
-            Label:
-                text: 'Показник'
-                color: hint_color
-                font_size: '16sp'
-                bold: True
-                text_size: self.size
-                halign: 'left'
-                valign: 'middle'
+            canvas.before:
+                Color:
+                    rgba: card_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(12)]
                 
-            Label:
-                text: 'Значення'
-                color: hint_color
-                font_size: '16sp'
-                bold: True
-                text_size: self.size
-                halign: 'right'
-                valign: 'middle'
+                Color:
+                    rgba: 1, 1, 1, 0.05
+                Line:
+                    rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+                    width: 1
             
-            Label:
-                text: 'Середнє значення'
-                color: text_light
-                font_size: '16sp'
-                text_size: self.size
-                halign: 'left'
-                valign: 'middle'
+            # mean
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.33
                 
-            Label:
-                text: str(root.avg_value)
-                color: primary_color
-                font_size: '16sp'
-                bold: True
-                text_size: self.size
-                halign: 'right'
-                valign: 'middle'
+                Label:
+                    text: 'Середнє'
+                    color: hint_color
+                    font_size: '14sp'
+                    size_hint_y: None
+                    height: dp(20)
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+                
+                Label:
+                    text: root.get_stats_display()['avg']
+                    color: primary_color
+                    font_size: '14sp'
+                    bold: True
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
             
-            Label:
-                text: 'Мінімальне'
-                color: text_light
-                font_size: '16sp'
-                text_size: self.size
-                halign: 'left'
-                valign: 'middle'
+            # min
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.33
                 
-            Label:
-                text: str(root.min_value)
-                color: expense_color
-                font_size: '16sp'
-                bold: True
-                text_size: self.size
-                halign: 'right'
-                valign: 'middle'
+                Label:
+                    text: 'Мінімум'
+                    color: hint_color
+                    font_size: '14sp'
+                    size_hint_y: None
+                    height: dp(20)
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+                
+                Label:
+                    text: root.get_stats_display()['min']
+                    color: expense_color
+                    font_size: '14sp'
+                    bold: True
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
             
-            Label:
-                text: 'Максимальне'
-                color: text_light
-                font_size: '16sp'
-                text_size: self.size
-                halign: 'left'
-                valign: 'middle'
+            # max
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.33
                 
-            Label:
-                text: str(root.max_value) 
-                color: income_color
-                font_size: '16sp'
-                bold: True
-                text_size: self.size
-                halign: 'right'
-                valign: 'middle'
+                Label:
+                    text: 'Максимум'
+                    color: hint_color
+                    font_size: '14sp'
+                    size_hint_y: None
+                    height: dp(20)
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+                
+                Label:
+                    text: root.get_stats_display()['max']
+                    color: income_color
+                    font_size: '14sp'
+                    bold: True
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+            
+            # sum
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.33
+                
+                Label:
+                    text: 'Сума'
+                    color: hint_color
+                    font_size: '14sp'
+                    size_hint_y: None
+                    height: dp(20)
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+                
+                Label:
+                    text: root.get_stats_display()['total']
+                    color: accent_color
+                    font_size: '14sp'
+                    bold: True
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+            
+            # count
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.33
+                
+                Label:
+                    text: 'Кількість'
+                    color: hint_color
+                    font_size: '14sp'
+                    size_hint_y: None
+                    height: dp(20)
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+                
+                Label:
+                    text: root.get_stats_display()['count']
+                    color: text_light
+                    font_size: '14sp'
+                    bold: True
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+
+            # top category
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.33
+                
+                Label:
+                    text: 'Топ категорія'
+                    color: hint_color
+                    font_size: '14sp'
+                    size_hint_y: None
+                    height: dp(20)
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+                
+                Label:
+                    text: root.get_stats_display()['top_category']
+                    color: primary_color
+                    font_size: '14sp'
+                    bold: True
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
         
         BoxLayout:
             size_hint_y: None

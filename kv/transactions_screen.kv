@@ -95,7 +95,7 @@
         valign: 'middle'
         bold: True
 
-<MainScreen>:
+<TransactionsScreen>:
     transactions_container: transactions_container_id
     canvas.before:
         Color:
@@ -206,6 +206,22 @@
                 halign: 'left'
                 valign: 'middle'
                 text_size: self.size
+            
+            # Кнопка оновлення
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_press: root.refresh_transactions()
+                canvas.before:
+                    Color:
+                        rgba: accent_color
+                    Line:
+                        width: 1.5
+                        circle: (self.center_x, self.center_y, dp(12), 0, 360)
+            
+            # Кнопка сортування
             Button:
                 size_hint: None, None
                 size: dp(40), dp(40)
@@ -221,6 +237,8 @@
                     Line:
                         width: 1.5
                         points: [self.center_x - dp(6), self.center_y + dp(5), self.center_x, self.center_y + dp(10), self.center_x + dp(6), self.center_y + dp(5)]
+            
+            # Кнопка фільтрації
             Button:
                 size_hint: None, None
                 size: dp(40), dp(40)
@@ -236,6 +254,8 @@
                     Line:
                         width: 1.5
                         points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(2)]
+        
+        # Список транзакцій
         ScrollView:
             do_scroll_x: False
             do_scroll_y: True
@@ -250,6 +270,8 @@
                 padding: dp(5)
                 size_hint_y: None
                 height: self.minimum_height
+        
+        # Нижня панель навігації
         BoxLayout:
             size_hint_y: None
             height: dp(60)
@@ -282,4 +304,4 @@
                         pos: self.pos
                         size: self.size
                         radius: [dp(10)]
-                on_press: root.go_statistics()
+                on_press: root.go_analytics()

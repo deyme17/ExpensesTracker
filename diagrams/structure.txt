@@ -8,10 +8,10 @@ ExpensesTracker/
 │   │
 │   ├── api/                    # API-ендпоінти
 │   │   ├── __init__.py
-│   │   ├── auth_routes.py      # Ендпоінти авторизації
+│   │   ├── auth_routes.py        # Ендпоінти авторизації
 │   │   ├── transaction_routes.py # Ендпоінти транзакцій
-│   │   ├── webhook_routes.py   # Ендпоінти для WebHook
-│   │   └── analytics_routes.py # Ендпоінти аналітики
+│   │   ├── webhook_routes.py     # Ендпоінти для WebHook
+│   │   └── analytics_routes.py   # Ендпоінти аналітики
 │   │
 │   ├── services/               # Бізнес-логіка сервера
 │   │   ├── __init__.py
@@ -49,17 +49,28 @@ ExpensesTracker/
 │
 ├── app/                        # Мобільний додаток
 │   ├── __init__.py
-│   ├── app.py                  # Основний клас додатку
+│   ├── app.py                   # Основний клас додатку
+│   ├── factory.py               # фабрика для створення додатку
 │   │
-│   ├── views/                  # Екрани додатку
+│   ├── views/                  # UI компоненти
 │   │   ├── __init__.py
-│   │   ├── main_screen.py      # Головний екран
-│   │   ├── login_screen.py     # Екран входу
-│   │   ├── register_screen.py  # Екран реєстрації
-│   │   ├── screens.py          # Базовий клас екранів
-│   │   ├── first_screen.py      # перший екран
-│   │   ├── analytics_screen.py # Екран аналітики
-│   │   └── splash_screen.py   # Екран завантаження
+│   │   ├── screens/            # екрани
+│   │   │   ├── __init__.py
+│   │   │   ├── base_screen.py  # базовий клас вікна
+│   │   │   ├── splash_screen.py
+│   │   │   ├── first_screen.py
+│   │   │   ├── login_screen.py
+│   │   │   ├── register_screen.py
+│   │   │   ├── transactions_screen.py
+│   │   │   └── analytics_screen.py
+│   │   │
+│   │   └── widgets/            # кастомні віджети
+│   │       ├── __init__.py
+│   │       ├── transaction_row.py
+│   │       ├── chart_widgets.py
+│   │       ├── custom_buttons.py
+│   │       ├── custom_inputs.py
+│   │       └── custom_popups.py
 │   │
 │   ├── controllers/            # Контролери додатку
 │   │   ├── __init__.py
@@ -67,13 +78,11 @@ ExpensesTracker/
 │   │   ├── transaction_controller.py # Контролер транзакцій
 │   │   └── analytics_controller.py # Контролер аналітики
 │   │
-│   ├── services/               # Сервіси додатку
+│   ├── services/               # сервіси додатку
 │   │   ├── __init__.py
-│   │   ├── auth_service.py     # Сервіс авторизації
-│   │   ├── transaction_service.py # Сервіс транзакцій
-│   │   ├── analytics_service.py # Сервіс аналітики
-│   │   ├── api_service.py      # Сервіс для роботи з сервером
-│   │   └── monobank_api.py     # Прямі запити до Monobank API
+│   │   ├── api_service.py      # АПІ сервіс
+│   │   ├── monobank_service.py # монобанкАПІ сервіс
+│   │   └── local_storage.py    # локальне сховище
 │   │
 │   ├── models/                 # Моделі даних додатку
 │   │   ├── __init__.py
@@ -82,10 +91,10 @@ ExpensesTracker/
 │   │   ├── category.py         # Модель категорії
 │   │   └── graphs/             # Класи для графіків
 │   │        ├── __init__.py
-│   │        ├── base_graph.py  # Базовий клас графіка
+│   │        ├── base_graph.py         # Базовий клас графіка
 │   │        ├── distribution_graph.py # Розподіл витрат
-│   │        ├── share_graph.py # Частка витрат по категоріям
-│   │        └── dynamics_graph.py # Динаміка витрат
+│   │        ├── share_graph.py        # Частка витрат по категоріям
+│   │        └── dynamics_graph.py     # Динаміка витрат
 │   │
 │   ├── database/               # Локальна база даних
 │   │   ├── __init__.py
@@ -96,15 +105,12 @@ ExpensesTracker/
 │   │       ├── transaction_repository.py
 │   │       └── category_repository.py
 │   │
-│   ├── utils/                  # Утиліти додатку
-│   │   ├── __init__.py
-│   │   ├── encryption.py       # Шифрування локальних даних
-│   │   ├── connectivity.py     # Робота з мережею
-│   │   └── formatters.py       # Форматування даних
-│   │
-│   └── cache/                  # Кешування даних
+│   └── utils/                  # Uдодаткові функції
 │       ├── __init__.py
-│       └── cache_manager.py    # Управління кешем
+│       ├── constants.py        # констаннти
+│       ├── formatters.py       # форматування дат
+│       ├── validators.py       # валідація
+│       └── theme.py            # теми
 │
 ├── resources/                  # Ресурси додатку
 │   └── images/

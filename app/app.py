@@ -1,31 +1,94 @@
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, FadeTransition
 from kivy.core.window import Window
-from kivy.clock import Clock
+from kivy.uix.screenmanager import ScreenManager
+from kivy.utils import get_color_from_hex
 
-from app.views.splash_screen import SplashScreen
-from app.views.first_screen import FirstScreen
-from app.views.login_screen import LoginScreen
-from app.views.register_screen import RegistrationScreen
-from app.views.main_screen import MainScreen 
-from app.views.analytics_screen import AnalyticsScreen 
+from app.utils.constants import APP_TITLE
+from app.utils.theme import BACKGROUND_COLOR
 
-Window.size = (360, 640)
 
 class ExpensesTrackerApp(App):
+    def __init__(self, 
+                 storage_service, 
+                 monobank_service, 
+                 auth_controller, 
+                 transaction_controller, 
+                 analytics_controller, 
+                 splash_screen_cls, 
+                 first_screen_cls, 
+                 login_screen_cls, 
+                 register_screen_cls, 
+                 transactions_screen_cls, 
+                 analytics_screen_cls,
+                 **kwargs):
+        
+        super().__init__(**kwargs)
+        self.storage_service = storage_service
+        self.monobank_service = monobank_service
+        self.auth_controller = auth_controller
+        self.transaction_controller = transaction_controller
+        self.analytics_controller = analytics_controller
+
+        # screen classes
+        self.splash_screen_cls = splash_screen_cls
+        self.first_screen_cls = first_screen_cls
+        self.login_screen_cls = login_screen_cls
+        self.register_screen_cls = register_screen_cls
+        self.transactions_screen_cls = transactions_screen_cls
+        self.analytics_screen_cls = analytics_screen_cls
+
+        self.screen_manager = ScreenManager()
+
     def build(self):
-        sm = ScreenManager(transition=FadeTransition())
-
-        sm.add_widget(SplashScreen(name='splash'))
-        sm.add_widget(FirstScreen(name='first_screen'))
-        sm.add_widget(LoginScreen(name='login_screen'))
-        sm.add_widget(RegistrationScreen(name='reg_screen'))
-        sm.add_widget(MainScreen(name='main_screen'))
-        sm.add_widget(AnalyticsScreen(name='statistics'))
-
-        Clock.schedule_once(lambda dt: self.on_splash_complete(sm), 2.5)
-        return sm
+        self.title = APP_TITLE
+        Window.clearcolor = get_color_from_hex(BACKGROUND_COLOR)
+        Window.size = (360, 640)
+        
+        self._add_screens()
+        
+        return self.screen_manager
     
-    def on_splash_complete(self, sm):
-        sm.transition.direction = 'left'
-        sm.current = 'first_screen'
+    def _add_screens(self):
+        # create instances of screens
+        splash_screen = self.splash_screen_cls(name='splash_screen')
+        first_screen = self.first_screen_cls(name='first_screen')
+        login_screen = self.login_screen_cls(
+            name='login_screen',
+            controller=self.auth_controller
+        )
+        register_screen = self.register_screen_cls(
+            name='reg_screen',
+            controller=self.auth_controller
+        )
+        transactions_screen = self.transactions_screen_cls(
+            name='transactions_screen',
+            controller=self.transaction_controller
+        )
+        analytics_screen = self.analytics_screen_cls(
+            name='analytics',
+            controller=self.analytics_controller
+        )
+
+        # add screens to screen manager
+        self.screen_manager.add_widget(splash_screen)
+        self.screen_manager.add_widget(first_screen)
+        self.screen_manager.add_widget(login_screen)
+        self.screen_manager.add_widget(register_screen)
+        self.screen_manager.add_widget(transactions_screen)
+        self.screen_manager.add_widget(analytics_screen)
+
+        self.screen_manager.current = 'splash_screen'
+    
+    def on_start(self):
+        from kivy.clock import Clock
+        Clock.schedule_once(lambda dt: self._check_auth_status(), 2)
+    
+    def _check_auth_status(self):
+        if self.auth_controller.is_authenticated():
+            self.screen_manager.current = 'transactions_screen'
+        else:
+            self.screen_manager.current = 'first_screen'
+    
+    def stop(self):
+        self.storage_service.close()
+        return super().stop()

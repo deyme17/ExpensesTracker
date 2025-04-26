@@ -8,17 +8,30 @@ from kivy.graphics import Color, Ellipse
 from kivy.metrics import dp
 import random
 
+
 class BaseScreen(Screen):
     opacity = NumericProperty(0)
+    controller = ObjectProperty(None)
     
     def __init__(self, **kwargs):
         super(BaseScreen, self).__init__(**kwargs)
-        Animation(opacity=1, d=0.8).start(self)
+        self._animate_entrance()
         Clock.schedule_once(self._animate_particles, 0.5)
     
+    def on_enter(self):
+        """Called when the screen enters the view."""
+        pass
+    
+    def on_leave(self):
+        """Called when the screen leaves the view."""
+        pass
+    
+    def _animate_entrance(self):
+        """Animate the screen's entrance with a fade-in effect."""
+        Animation(opacity=1, d=0.8).start(self)
+    
     def _animate_particles(self, dt):
-        import random
-        
+        """Create animated background particles for visual effect."""
         for _ in range(20):
             particle = Widget(
                 size_hint=(None, None),
@@ -54,6 +67,25 @@ class BaseScreen(Screen):
             anim.start(particle)
     
     def switch_screen(self, screen_name, direction='left'):
+        """
+        Switch to another screen with a slide transition.
+        
+        Args:
+            screen_name (str): The name of the screen to switch to
+            direction (str): The direction of the slide transition (left, right, up, down)
+        """
         if self.manager:
             self.manager.transition = SlideTransition(direction=direction)
             self.manager.current = screen_name
+    
+    def show_error_message(self, message):
+        """Display an error message to the user."""
+        from app.views.widgets.custom_popups import ErrorPopup
+        popup = ErrorPopup(message=message)
+        popup.open()
+    
+    def show_success_message(self, message):
+        """Display a success message to the user."""
+        from app.views.widgets.custom_popups import SuccessPopup
+        popup = SuccessPopup(message=message)
+        popup.open()

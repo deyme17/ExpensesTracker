@@ -1,6 +1,8 @@
 import os
 import sys
-from app.app import ExpensesTrackerApp
+
+from app.factory import create_app
 
 if __name__ == '__main__':
-    ExpensesTrackerApp().run()
+    app = create_app()
+    app.run()

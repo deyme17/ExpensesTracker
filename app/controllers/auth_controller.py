@@ -62,7 +62,7 @@ class AuthController:
         Clock.schedule_once(authenticate, 1)
         return True
     
-    def register(self, name, email, password, confirm_password, monobank_token=None, callback=None):  # TODO
+    def register(self, email, password, confirm_password, monobank_token=None, callback=None):  # TODO
         """
         Register a new user with the provided information.
         
@@ -75,10 +75,7 @@ class AuthController:
             callback: Function to call with result (success, message)
         """
         # validation
-        if not name:
-            if callback:
-                callback(False, "Будь ласка, введіть ім'я")
-            return False
+        name=email.split('@')[0]
         
         if not email:
             if callback:

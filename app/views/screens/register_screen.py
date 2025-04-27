@@ -64,8 +64,6 @@ class RegistrationScreen(BaseScreen):
         super(RegistrationScreen, self).on_enter()
         
         # reset input fields and buttons
-        if hasattr(self, 'name_input'):
-            self.name_input.text = ""
         if hasattr(self, 'email_input'):
             self.email_input.text = ""
         if hasattr(self, 'password_input'):
@@ -153,16 +151,10 @@ class RegistrationScreen(BaseScreen):
         
         Validates input fields and delegates account creation to the controller.
         """
-        name = self.name_input.text.strip()
         email = self.email_input.text.strip()
         password = self.password_input.text
         confirm_password = self.confirm_password_input.text
         monobank_token = self.monobank_token_input.text.strip()
-      
-        if not name:
-            self.error_message = "Будь ласка, введіть ім'я"
-            self._show_error()
-            return
         
         if not email:
             self.error_message = "Будь ласка, введіть email"
@@ -176,6 +168,11 @@ class RegistrationScreen(BaseScreen):
         
         if not password:
             self.error_message = "Будь ласка, введіть пароль"
+            self._show_error()
+            return
+        
+        if not monobank_token:
+            self.error_message = "Будь ласка, введіть токен"
             self._show_error()
             return
         
@@ -203,7 +200,6 @@ class RegistrationScreen(BaseScreen):
         
         if self.controller:
             self.controller.register(
-                name=name,
                 email=email,
                 password=password,
                 confirm_password=confirm_password,

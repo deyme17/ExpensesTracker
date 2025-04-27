@@ -1417,12 +1417,12 @@ class TransactionsScreen(BaseScreen):
     
     def show_menu(self):
         """Show application menu."""
-        # popup
-        popup = Popup(
-            title='Меню',
-            size_hint=(0.7, 0.3),
+        # modal
+        popup = ModalView(
+            size_hint=(0.7, 0.25),
             background='',
-            background_color=(0, 0, 0, 0)
+            background_color=(0, 0, 0, 0),
+            overlay_color=(0, 0, 0, 0.7)
         )
         
         # content
@@ -1434,13 +1434,19 @@ class TransactionsScreen(BaseScreen):
         
         with content.canvas.before:
             Color(rgba=get_primary_color())
-            background_rect = RoundedRectangle(pos=content.pos, size=content.size, radius=[dp(10)])
+            self.content_rect = RoundedRectangle(size=content.size, pos=content.pos, radius=[dp(10)])
         
-        def update_rects(instance, value):
-            background_rect.pos = instance.pos
-            background_rect.size = instance.size
+        content.bind(size=self._update_rect, pos=self._update_rect)
         
-        content.bind(pos=update_rects, size=update_rects)
+        # title
+        title_label = Label(
+            text='Меню',
+            font_size=sp(18),
+            bold=True,
+            color=get_text_primary_color(),
+            size_hint_y=None,
+            height=dp(40)
+        )
         
         # buttons
         logout_btn = RoundedButton(
@@ -1463,13 +1469,12 @@ class TransactionsScreen(BaseScreen):
         logout_btn.bind(on_press=lambda x: [popup.dismiss(), self.logout()])
         exit_btn.bind(on_press=lambda x: [popup.dismiss(), self.exit_app()])
         
+        # add elements to content
+        content.add_widget(title_label)
         content.add_widget(logout_btn)
         content.add_widget(exit_btn)
         
-        popup.content = content
-        
-        popup.title_color = get_text_primary_color()
-        popup.title_size = sp(18)
+        popup.add_widget(content)
         
         popup.open()
 

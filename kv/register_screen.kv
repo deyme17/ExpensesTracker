@@ -83,7 +83,6 @@
     email_input: email_input
     password_input: password_input
     confirm_password_input: confirm_password_input
-    name_input: name_input
     monobank_token_input: monobank_token_input
     error_label: error_label
     register_button: register_button
@@ -155,22 +154,6 @@
                         Rectangle:
                             pos: self.pos
                             size: self.size
-            
-            Label:
-                text: "Ім'я"
-                size_hint_y: None
-                height: dp(30)
-                color: text_light
-                font_size: '16sp'
-                halign: 'left'
-                text_size: self.width, None
-                
-            FancyTextInput:
-                id: name_input
-                hint_text: "Введіть ім'я"
-                size_hint_y: None
-                height: dp(55)
-                required: True
             
             Label:
                 text: "Email"

@@ -524,7 +524,7 @@ class AnalyticsScreen(BaseScreen):
         """Show application menu."""
         # modal
         popup = ModalView(
-            size_hint=(0.7, 0.3),
+            size_hint=(0.7, 0.25),
             background='',
             background_color=(0, 0, 0, 0),
             overlay_color=(0, 0, 0, 0.7)

@@ -1,3 +1,5 @@
+from app.utils.constants import CHART_TYPE_HISTOGRAM, CHART_TYPE_LINE, CHART_TYPE_PIE
+
 class AnalyticsData:
     def __init__(self, stats, bar_chart_data, pie_chart_data, line_chart_data,
                 transaction_type, start_date, end_date):
@@ -22,44 +24,44 @@ class AnalyticsData:
         self.end_date = end_date
     
     def get_avg_value(self):
-        """Отримати середнє значення транзакцій"""
+        """Get the average value of transactions"""
         return self.stats.get('avg_value', 0)
-    
+
     def get_min_value(self):
-        """Отримати мінімальне значення транзакцій"""
+        """Get the minimum value of transactions"""
         return self.stats.get('min_value', 0)
-    
+
     def get_max_value(self):
-        """Отримати максимальне значення транзакцій"""
+        """Get the maximum value of transactions"""
         return self.stats.get('max_value', 0)
-    
+
     def get_total(self):
-        """Отримати загальну суму транзакцій"""
+        """Get the total amount of transactions"""
         return self.stats.get('total', 0)
-    
+
     def get_count(self):
-        """Отримати кількість транзакцій"""
+        """Get the number of transactions"""
         return self.stats.get('count', 0)
-    
+
     def get_top_category(self):
-        """Отримати топ-категорію за сумою"""
-        return self.stats.get('top_category', 'Немає даних')
-    
+        """Get the top category by amount"""
+        return self.stats.get('top_category', 'No data')
+
     def get_chart_data(self, chart_type):
         """
-        Отримати дані для конкретного типу діаграми.
-        
+        Get data for a specific chart type.
+
         Args:
-            chart_type: Тип діаграми ('histogram', 'pie', 'line')
-            
+            chart_type: Chart type ('histogram', 'pie', 'line')
+
         Returns:
-            Дані для вказаного типу діаграми
+            Data for the given chart type
         """
-        if chart_type == 'histogram':
+        if chart_type == CHART_TYPE_HISTOGRAM:
             return self.bar_chart_data
-        elif chart_type == 'pie':
+        elif chart_type == CHART_TYPE_PIE:
             return self.pie_chart_data
-        elif chart_type == 'line':
+        elif chart_type == CHART_TYPE_LINE:
             return self.line_chart_data
         else:
             return []

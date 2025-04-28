@@ -138,9 +138,9 @@ class AnalyticsController:
                 'top_category': 'Помилка обчислення'
             }
     
-    def _prepare_bar_chart_data(self, transactions, start_date, end_date):
+    def _prepare_bar_chart_data(self, transactions, start_date, end_date): # TODO Тут треба розподіл величин витрат/доходів а не місяців
         """
-        Prepare data for the bar chart (monthly distribution).
+        Prepare data for the bar chart (amount distribution).
         
         Args:
             transactions: List of Transaction objects

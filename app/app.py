@@ -65,7 +65,7 @@ class ExpensesTrackerApp(App):
             controller=self.transaction_controller
         )
         analytics_screen = self.analytics_screen_cls(
-            name='analytics',
+            name='analytics_screen',
             controller=self.analytics_controller
         )
 

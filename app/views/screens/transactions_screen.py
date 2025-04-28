@@ -1046,19 +1046,30 @@ class TransactionsScreen(BaseScreen):
         buttons_box = BoxLayout(
             size_hint_y=None,
             height=dp(45),
-            spacing=dp(15)
+            spacing=dp(10)
+        )
+
+        reset_button = RoundedButton(
+            text='[b]Скинути[/b]',
+            bg_color='#445555',
+            font_size=sp(12),
+            markup=True
         )
         
-        reset_button = RoundedButton(
-            text='Скинути',
-            bg_color='#445555'
+        close_button = RoundedButton(
+            text='[b]Закрити[/b]',
+            bg_color='#666666',
+            font_size=sp(12),
+            markup=True
         )
         
         apply_button = RoundedButton(
-            text='Застосувати',
-            bg_color='#0F7055'
+            text='[b]Застосувати[/b]',
+            bg_color='#0F7055',
+            font_size=sp(12),
+            markup=True
         )
-        
+
         # bind button actions
         reset_button.bind(on_press=lambda x: self._reset_filter(
             type_spinner=type_spinner, 
@@ -1072,7 +1083,9 @@ class TransactionsScreen(BaseScreen):
             end_year_spinner=end_year_spinner,
             payment_method_spinner=payment_method_spinner
         ))
-        
+                
+        close_button.bind(on_press=lambda x: modal.dismiss())
+
         apply_button.bind(on_press=lambda x: self._apply_filter(
             type_spinner.text,
             min_amount.text, 
@@ -1082,8 +1095,9 @@ class TransactionsScreen(BaseScreen):
             payment_method_spinner.text,
             modal
         ))
-        
+
         buttons_box.add_widget(reset_button)
+        buttons_box.add_widget(close_button)
         buttons_box.add_widget(apply_button)
         
         # add all elements to content
@@ -1413,7 +1427,7 @@ class TransactionsScreen(BaseScreen):
     
     def go_analytics(self):
         """Navigate to the analytics screen."""
-        self.switch_screen('analytics', 'left')
+        self.switch_screen('analytics_screen', 'left')
     
     def show_menu(self):
         """Show application menu."""

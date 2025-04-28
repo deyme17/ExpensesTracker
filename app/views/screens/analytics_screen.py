@@ -57,7 +57,7 @@ class AnalyticsScreen(BaseScreen):
     
     def __init__(self, **kwargs):
         super(AnalyticsScreen, self).__init__(**kwargs)
-        self.name = 'analytics'
+        self.name = 'analytics_screen'
     
         now = datetime.now()
         self.start_date = datetime(now.year - 1, 1, 1)
@@ -370,17 +370,28 @@ class AnalyticsScreen(BaseScreen):
         buttons_box = BoxLayout(
             size_hint_y=None,
             height=dp(45),
-            spacing=dp(15)
+            spacing=dp(10)
         )
         
         reset_button = RoundedButton(
-            text='Скинути',
-            bg_color='#445555'
+            text='[b]Скинути[/b]',
+            bg_color='#445555',
+            font_size=sp(12),
+            markup=True
+        )
+        
+        close_button = RoundedButton(
+            text='[b]Закрити[/b]',
+            bg_color='#666666',
+            font_size=sp(12),
+            markup=True
         )
         
         apply_button = RoundedButton(
-            text='Застосувати',
-            bg_color='#0F7055'
+            text='[b]Застосувати[/b]',
+            bg_color='#0F7055',
+            font_size=sp(12),
+            markup=True
         )
         
         # bind button actions
@@ -444,9 +455,11 @@ class AnalyticsScreen(BaseScreen):
                 self.show_error_message(f"Помилка фільтрації: {str(e)}")
         
         reset_button.bind(on_press=reset_filter)
+        close_button.bind(on_press=lambda x: modal.dismiss())
         apply_button.bind(on_press=apply_filter)
         
         buttons_box.add_widget(reset_button)
+        buttons_box.add_widget(close_button)
         buttons_box.add_widget(apply_button)
         
         # Add all elements to content

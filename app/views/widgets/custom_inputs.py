@@ -8,6 +8,7 @@ from kivy.properties import StringProperty, BooleanProperty, NumericProperty, Li
 from kivy.metrics import dp, sp
 from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
+from datetime import datetime
 
 from app.utils.theme import (
     get_text_dark_color, get_secondary_color, get_text_primary_color,
@@ -283,13 +284,15 @@ class DateInput(BoxLayout):
         kwargs.setdefault('size_hint_y', None)
         kwargs.setdefault('height', dp(45))
         kwargs.setdefault('spacing', dp(5))
-        
+
         super(DateInput, self).__init__(**kwargs)
-        
-        if not self.year:
-            from datetime import datetime
-            self.year = str(datetime.now().year)
-        
+
+        now = datetime.now()
+        # current date
+        self.day = now.strftime("%d")
+        self.month = now.strftime("%m")
+        self.year = now.strftime("%Y")
+
         # day spinner
         days = [str(i).zfill(2) for i in range(1, 32)]
         self.day_spinner = CustomSpinner(
@@ -298,7 +301,7 @@ class DateInput(BoxLayout):
             size_hint=(0.33, 1),
             padding_x=dp(2)
         )
-        
+
         # month spinner
         months = [str(i).zfill(2) for i in range(1, 13)]
         self.month_spinner = CustomSpinner(
@@ -307,26 +310,25 @@ class DateInput(BoxLayout):
             size_hint=(0.33, 1),
             padding_x=dp(2)
         )
-        
+
         # year spinner
-        from datetime import datetime
-        current_year = datetime.now().year
+        current_year = now.year
         years = [str(year) for year in range(current_year - 5, current_year + 1)]
         self.year_spinner = CustomSpinner(
             text=self.year,
             values=years,
             size_hint=(0.33, 1),
-            padding_x=dp(5)  
+            padding_x=dp(5)
         )
-        
+
         self.add_widget(self.day_spinner)
         self.add_widget(self.month_spinner)
         self.add_widget(self.year_spinner)
-        
+
         self.day_spinner.bind(text=self._on_day_changed)
         self.month_spinner.bind(text=self._on_month_changed)
         self.year_spinner.bind(text=self._on_year_changed)
-        
+
         self._update_date_text()
     
     def _on_day_changed(self, instance, value):

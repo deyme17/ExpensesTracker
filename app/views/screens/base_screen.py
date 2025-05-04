@@ -80,12 +80,12 @@ class BaseScreen(Screen):
     
     def show_error_message(self, message):
         """Display an error message to the user."""
-        from app.views.widgets.custom_popups import ErrorPopup
+        from app.views.widgets.popups.alert_popup import ErrorPopup
         popup = ErrorPopup(message=message)
         popup.open()
     
     def show_success_message(self, message):
         """Display a success message to the user."""
-        from app.views.widgets.custom_popups import SuccessPopup
+        from app.views.widgets.popups.alert_popup import SuccessPopup
         popup = SuccessPopup(message=message)
         popup.open()

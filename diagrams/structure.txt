@@ -64,13 +64,25 @@ ExpensesTracker/
 │   │   │   ├── transactions_screen.py
 │   │   │   └── analytics_screen.py
 │   │   │
-│   │   └── widgets/            # кастомні віджети
-│   │       ├── __init__.py
-│   │       ├── transaction_row.py
-│   │       ├── chart_widgets.py
-│   │       ├── custom_buttons.py
-│   │       ├── custom_inputs.py
-│   │       └── custom_popups.py
+│   │   └── widgets/
+│   │         ├── buttons/
+│   │         │   ├── __init__.py
+│   │         │   ├── rounded_button.py
+│   │         │   ├── icon_button.py
+│   │         │   ├── floating_button.py
+│   │         │   ├── segmented_button.py
+│   │         │   └── tab_button.py
+│   │         ├── inputs/
+│   │         │   ├── __init__.py
+│   │         │   ├── styled_text_input.py
+│   │         │   ├── custom_spinner.py
+│   │         │   └── date_input.py
+│   │         └── popups/
+│   │             ├── __init__.py
+│   │             ├── base_popup.py
+│   │             ├── alert_popup.py
+│   │             ├── confirmation_popup.py
+│   │             └── info_popup.py
 │   │
 │   ├── controllers/            # Контролери додатку
 │   │   ├── __init__.py

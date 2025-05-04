@@ -1,15 +1,8 @@
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.graphics import Color, Rectangle
-from kivy.metrics import dp, sp
 from kivy.lang import Builder
 from kivy.animation import Animation
 from kivy.clock import Clock
 
 from app.views.screens.base_screen import BaseScreen
-from app.views.widgets.custom_buttons import RoundedButton
-from app.utils.theme import get_text_primary_color, get_accent_color, get_primary_color
 
 # Load kv file
 Builder.load_file('kv/first_screen.kv')

@@ -16,22 +16,20 @@ from datetime import datetime, timedelta
 
 from app.views.screens.base_screen import BaseScreen
 from app.views.widgets.chart_widgets import ChartContainer
-from app.views.widgets.custom_buttons import RoundedButton, SegmentedButton
-from app.views.widgets.custom_inputs import DateInput, SpinnerOption, CustomSpinner
-from app.views.widgets.custom_popups import ErrorPopup, SuccessPopup
+from app.views.widgets.buttons.rounded_button import RoundedButton
+from app.views.widgets.buttons.segmented_button import  SegmentedButton
+from app.views.widgets.inputs.custom_spinner import CustomSpinner
 from app.utils.constants import (
     TRANSACTION_TYPE_INCOME, TRANSACTION_TYPE_EXPENSE,
     CHART_TYPE_HISTOGRAM, CHART_TYPE_PIE, CHART_TYPE_LINE
 )
 from app.utils.formatters import format_amount, format_date_range
 from app.utils.theme import (
-    get_primary_color, get_secondary_color, get_text_primary_color,
-    get_income_color, get_expense_color
+    get_primary_color, get_text_primary_color,
 )
 
 # Load kv file
 Builder.load_file('kv/analytics_screen.kv')
-
 
 class AnalyticsScreen(BaseScreen):
     """

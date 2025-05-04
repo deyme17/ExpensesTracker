@@ -19,13 +19,17 @@ from datetime import datetime, timedelta
 import random
 
 from app.views.screens.base_screen import BaseScreen
+
 from app.views.widgets.transaction_row import TransactionRow
-from app.views.widgets.custom_buttons import RoundedButton, FloatingActionButton, SegmentedButton
-from app.views.widgets.custom_inputs import (
-    StyledTextInput, CustomSpinner, SpinnerOption, DateInput, 
-    LabeledInput, LabeledSpinner, LabeledDateInput
-)
-from app.views.widgets.custom_popups import ConfirmationPopup, ErrorPopup, SuccessPopup
+from app.views.widgets.buttons.rounded_button import RoundedButton
+from app.views.widgets.buttons.floating_button import FloatingActionButton
+from app.views.widgets.buttons.segmented_button import SegmentedButton
+from app.views.widgets.inputs.date_input import DateInput, LabeledDateInput
+from app.views.widgets.inputs.styled_text_input import StyledTextInput, LabeledInput
+from app.views.widgets.inputs.custom_spinner import CustomSpinner, LabeledSpinner, SpinnerOption
+from app.views.widgets.popups.confirmation_popup import ConfirmationPopup
+from app.views.widgets.popups.alert_popup import ErrorPopup, SuccessPopup
+
 from app.utils.constants import (
     PAYMENT_METHOD_ALL, PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH,
     TRANSACTION_TYPE_ALL, TRANSACTION_TYPE_INCOME, TRANSACTION_TYPE_EXPENSE,

@@ -2,14 +2,14 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.modalview import ModalView
-from app.views.widgets.buttons.tab_button import RoundedButton
+from app.views.widgets.buttons.styled_button import RoundedButton
 from kivy.properties import StringProperty
 from kivy.utils import get_color_from_hex
 from kivy.graphics import Color, RoundedRectangle
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.metrics import dp
 from app.utils.constants import TOKEN_HINT
-from app.views.widgets.buttons.rounded_button import StyledButton
+from app.views.widgets.buttons.styled_button import StyledButton
 from app.utils.theme import get_background_color
 
 

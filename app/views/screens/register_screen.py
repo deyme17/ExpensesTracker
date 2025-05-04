@@ -10,7 +10,7 @@ from kivy.utils import get_color_from_hex
 from kivy.lang import Builder
 
 from app.views.screens.base_screen import BaseScreen
-from app.views.widgets.buttons.rounded_button import RoundedButton
+from app.views.widgets.buttons.styled_button import RoundedButton
 from app.views.widgets.inputs.styled_text_input import StyledTextInput
 from app.utils.theme import get_text_primary_color
 from app.utils.validators import validate_registration_inputs

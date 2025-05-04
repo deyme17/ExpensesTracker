@@ -6,7 +6,7 @@ from kivy.uix.button import Button
 from kivy.properties import StringProperty
 from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp, sp
-from app.views.widgets.buttons.rounded_button import StyledButton
+from app.views.widgets.buttons.styled_button import StyledButton
 
 
 from app.utils.theme import (

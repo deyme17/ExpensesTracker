@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 
 from app.views.screens.base_screen import BaseScreen
 from app.views.widgets.chart_widgets import ChartContainer
-from app.views.widgets.buttons.rounded_button import RoundedButton
+from app.views.widgets.buttons.styled_button import RoundedButton
 from app.views.widgets.buttons.segmented_button import  SegmentedButton
 from app.views.widgets.inputs.custom_spinner import CustomSpinner
 from app.utils.constants import (

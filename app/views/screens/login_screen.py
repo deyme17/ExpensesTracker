@@ -10,7 +10,7 @@ from kivy.lang import Builder
 
 from app.views.screens.base_screen import BaseScreen
 from app.views.widgets.inputs.styled_text_input import StyledTextInput
-from app.views.widgets.buttons.rounded_button import RoundedButton
+from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import (
     get_text_primary_color, get_primary_color, get_accent_color,
     FONT_SIZE_MEDIUM, FONT_SIZE_LARGE

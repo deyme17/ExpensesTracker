@@ -3,7 +3,8 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty
 from kivy.clock import Clock
-from kivy.graphics import Color, StyledButton
+from kivy.graphics import Color
+from app.views.widgets.buttons.styled_button import StyledButton
 from kivy.metrics import dp, sp
 
 

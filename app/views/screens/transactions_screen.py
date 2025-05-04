@@ -21,7 +21,7 @@ import random
 from app.views.screens.base_screen import BaseScreen
 
 from app.views.widgets.transaction_row import TransactionRow
-from app.views.widgets.buttons.rounded_button import RoundedButton
+from app.views.widgets.buttons.styled_button import RoundedButton
 from app.views.widgets.buttons.floating_button import FloatingActionButton
 from app.views.widgets.buttons.segmented_button import SegmentedButton
 from app.views.widgets.inputs.date_input import DateInput, LabeledDateInput

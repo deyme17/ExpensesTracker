@@ -18,6 +18,10 @@ CURRENCY_UAH = "UAH"
 CURRENCY_USD = "USD"
 CURRENCY_EUR = "EUR"
 
+# Monobank token hint
+TOKEN_HINT = 'Монобанк API токен дозволяє автоматично імпортувати ваші транзакції.\n\n'\
+             'Отримати його можна у додатку Монобанк або на сайті api.monobank.ua.\n'
+
 # Default currency
 DEFAULT_CURRENCY = CURRENCY_UAH
 

@@ -111,3 +111,37 @@ def validate_date(date_str):
             return False, None
         except Exception:
             return False, None
+        
+def validate_registration_inputs(inputs):
+    """
+    Validate registration inputs.
+
+    Args:
+        inputs (dict): {
+            'email': str,
+            'password': str,
+            'confirm_password': str,
+            'monobank_token': str
+        }
+
+    Returns:
+        (bool, str): (is_valid, error_message)
+    """
+    email = inputs.get('email', '').strip()
+    password = inputs.get('password', '')
+    confirm_password = inputs.get('confirm_password', '')
+    token = inputs.get('monobank_token', '').strip()
+
+    if not validate_email(email):
+        return False, "Некоректний email"
+
+    if not validate_password(password):
+        return False, "Пароль має містити не менше 6 символів"
+
+    if password != confirm_password:
+        return False, "Паролі не співпадають"
+
+    if token and not validate_monobank_token(token):
+        return False, "Невірний формат токену Монобанк (має бути 32 символи)"
+
+    return True, ""

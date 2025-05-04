@@ -1,12 +1,17 @@
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.modalview import ModalView
+from app.views.widgets.custom_buttons import RoundedButton
 from kivy.uix.button import Button
 from kivy.properties import StringProperty, NumericProperty
 from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
 from kivy.graphics import Color, RoundedRectangle
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.metrics import dp, sp
+from app.utils.constants import TOKEN_HINT
+
 
 from app.utils.theme import (
     get_error_color, get_success_color, 
@@ -257,3 +262,53 @@ class InfoPopup(Popup):
         if hasattr(self, '_bg_rect'):
             self._bg_rect.pos = instance.pos
             self._bg_rect.size = instance.size
+
+class MonobankTokenInfoPopup(ModalView):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.size_hint = (0.8, 0.5)
+
+        layout = BoxLayout(orientation='vertical', padding=dp(20), spacing=dp(10))
+
+        with layout.canvas.before:
+            from kivy.graphics import Color, RoundedRectangle
+            Color(rgba=get_color_from_hex('#0A4035'))
+            self.rect = RoundedRectangle(pos=layout.pos, size=layout.size, radius=[dp(10)])
+        layout.bind(size=self._update_rect, pos=self._update_rect)
+
+        layout.add_widget(Label(
+            text='Монобанк API Токен',
+            font_size='20sp',
+            bold=True,
+            size_hint_y=None,
+            height=dp(40),
+            color=get_color_from_hex('#FFFFFF')
+        ))
+
+        token_label = Label(
+            text=TOKEN_HINT,
+            font_size='16sp',
+            halign='left',
+            valign='top',
+            color=get_color_from_hex('#FFFFFF')
+        )
+        token_label.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, None)))
+        layout.add_widget(token_label)
+
+        button = RoundedButton(
+            text='Зрозуміло',
+            size_hint=(None, None),
+            size=(dp(150), dp(50)),
+            bg_color='#FF7043'
+        )
+        button.bind(on_press=lambda x: self.dismiss())
+
+        button_container = AnchorLayout(size_hint_y=None, height=dp(60))
+        button_container.add_widget(button)
+        layout.add_widget(button_container)
+
+        self.add_widget(layout)
+
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size

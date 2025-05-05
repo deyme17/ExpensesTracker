@@ -20,9 +20,9 @@ class GraphFactory:
         if not graph_class:
             raise ValueError(f"Невідомий тип графіка: {chart_type}")
 
-        return graph_class(
-            controller=controller,
-            transaction_type=transaction_type,
-            period=period,
-            category=category
-        )
+        widget = graph_class()
+        widget.controller = controller
+        widget.transaction_type = transaction_type
+        widget.period = period
+        widget.category = category
+        return widget

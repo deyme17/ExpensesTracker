@@ -5,33 +5,43 @@ from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.metrics import dp, sp
 from kivy.graphics import Color, RoundedRectangle
-from kivy.properties import StringProperty, ObjectProperty
-from datetime import datetime
+from kivy.properties import ObjectProperty, StringProperty
+from datetime import datetime, timedelta
 
-from app.views.widgets.inputs.custom_spinner import CustomSpinner
+from app.views.widgets.inputs.date_input import LabeledDateInput
+from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
+from app.utils.constants import TRANSACTION_TYPE_INCOME, TRANSACTION_TYPE_EXPENSE
 from app.utils.theme import get_primary_color, get_text_primary_color
 
-class AnalyticsFilterPopup(ModalView):
-    current_type = StringProperty("Витрати")
-    start_date = ObjectProperty()
-    end_date = ObjectProperty()
 
-    def __init__(self, **kwargs):
+class AnalyticsFilterPopup(ModalView):
+    """
+    A simplified popup for analytics filtering: date interval and transaction type only.
+    """
+    on_apply = ObjectProperty(None)
+
+    def __init__(self, current_type=TRANSACTION_TYPE_EXPENSE, start_date=None, end_date=None, **kwargs):
         super().__init__(**kwargs)
-        self.size_hint = (0.8, 0.8)
+        self.size_hint = (0.85, 0.65)
+        self.auto_dismiss = False
         self.background = ''
         self.background_color = (0, 0, 0, 0)
         self.overlay_color = (0, 0, 0, 0.7)
 
-        now = datetime.now()
-        self.start_date = datetime(now.year - 1, 1, 1)
-        self.end_date = now
+        self._initial_type = current_type
+        self._initial_start = start_date or (datetime.now() - timedelta(days=365))
+        self._initial_end = end_date or datetime.now()
 
-        self._build_content()
+        Clock.schedule_once(lambda dt: self._build_ui(), 0)
 
-    def _build_content(self):
-        self.content = BoxLayout(orientation='vertical', spacing=dp(15), padding=dp(15), opacity=0)
+    def _build_ui(self):
+        self.content = BoxLayout(
+            orientation='vertical',
+            spacing=dp(12),
+            padding=dp(20),
+            opacity=0
+        )
 
         with self.content.canvas.before:
             Color(rgba=get_primary_color())
@@ -39,111 +49,67 @@ class AnalyticsFilterPopup(ModalView):
         self.content.bind(size=self._update_rect, pos=self._update_rect)
 
         # title
-        self.content.add_widget(Label(
-            text='Фільтр транзакцій', font_size=sp(20), bold=True,
-            color=get_text_primary_color(), size_hint_y=None, height=dp(40)))
-
-        # type
-        self.type_spinner = CustomSpinner(
-            text=self.current_type, values=['Витрати', 'Доходи'],
-            size_hint_y=None, height=dp(45), padding_x=dp(25))
-        self.content.add_widget(Label(
-            text='Тип:', font_size=sp(16), color=get_text_primary_color(), size_hint_y=None, height=dp(30)))
-        self.content.add_widget(self.type_spinner)
+        title = Label(
+            text='Фільтр транзакцій',
+            font_size=sp(22),
+            bold=True,
+            color=get_text_primary_color(),
+            size_hint_y=None,
+            height=dp(50),
+            halign='center'
+        )
+        title.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, None)))
+        self.content.add_widget(title)
 
         # date
-        self._build_date_section()
-        self._build_buttons()
-        self.add_widget(self.content)
-        Clock.schedule_once(lambda dt: Animation(opacity=1, d=0.3).start(self.content))
+        self.start_date_input = LabeledDateInput(label_text='Початкова дата:')
+        self.start_date_input.date_text = self._initial_start.strftime('%d.%m.%Y')
+        self.end_date_input = LabeledDateInput(label_text='Кінцева дата:')
+        self.end_date_input.date_text = self._initial_end.strftime('%d.%m.%Y')
+        self.content.add_widget(self.start_date_input)
+        self.content.add_widget(self.end_date_input)
 
-    def _build_date_section(self):
-        date_section = BoxLayout(orientation='vertical', spacing=dp(10), size_hint_y=None, height=dp(200))
-        with date_section.canvas.before:
-            Color(rgba=(0.09, 0.50, 0.45, 1))
-            self.date_rect = RoundedRectangle(pos=date_section.pos, size=date_section.size, radius=[dp(12)])
-        date_section.bind(pos=self._update_date_rect, size=self._update_date_rect)
-
-        self.start_spinners = self._create_date_row(self.start_date)
-        date_section.add_widget(Label(text='З:', font_size=sp(16), color=get_text_primary_color(),
-                                      size_hint_y=None, height=dp(30)))
-        date_section.add_widget(self.start_spinners['row'])
-
-        self.end_spinners = self._create_date_row(self.end_date)
-        date_section.add_widget(Label(text='До:', font_size=sp(16), color=get_text_primary_color(),
-                                      size_hint_y=None, height=dp(30)))
-        date_section.add_widget(self.end_spinners['row'])
-
-        self.content.add_widget(Label(size_hint_y=None, height=dp(10)))
-        self.content.add_widget(date_section)
-
-    def _create_date_row(self, date):
-        days = [str(i).zfill(2) for i in range(1, 32)]
-        months = [str(i).zfill(2) for i in range(1, 13)]
-        years = [str(y) for y in range(datetime.now().year - 5, datetime.now().year + 1)]
-
-        row = BoxLayout(orientation='horizontal', spacing=dp(5), size_hint_y=None, height=dp(45))
-        day = CustomSpinner(text=str(date.day).zfill(2), values=days, size_hint=(0.3, 1), padding_x=dp(25))
-        month = CustomSpinner(text=str(date.month).zfill(2), values=months, size_hint=(0.3, 1), padding_x=dp(25))
-        year = CustomSpinner(text=str(date.year), values=years, size_hint=(0.4, 1), padding_x=dp(25))
-
-        row.add_widget(day)
-        row.add_widget(month)
-        row.add_widget(year)
-
-        return {'day': day, 'month': month, 'year': year, 'row': row}
-
-    def _build_buttons(self):
-        box = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(10))
-
-        reset_btn = RoundedButton(text='[b]Скинути[/b]', bg_color='#445555', markup=True)
-        close_btn = RoundedButton(text='[b]Закрити[/b]', bg_color='#666666', markup=True)
-        apply_btn = RoundedButton(text='[b]Застосувати[/b]', bg_color='#0F7055', markup=True)
-
-        reset_btn.bind(on_press=self._on_reset)
-        close_btn.bind(on_press=lambda x: self.dismiss())
-        apply_btn.bind(on_press=self._on_apply)
-
-        box.add_widget(reset_btn)
-        box.add_widget(close_btn)
-        box.add_widget(apply_btn)
-
-        self.content.add_widget(Label(size_hint_y=None, height=dp(10)))
-        self.content.add_widget(box)
-
-    def _on_reset(self, instance):
-        now = datetime.now()
-        last_year = datetime(now.year - 1, 1, 1)
-        self.type_spinner.text = 'Витрати'
-
-        for key in ['day', 'month', 'year']:
-            self.start_spinners[key].text = getattr(last_year, key if key != 'day' else 'day').__str__().zfill(2)
-            self.end_spinners[key].text = getattr(now, key if key != 'day' else 'day').__str__().zfill(2)
-
-    def _on_apply(self, instance):
-        try:
-            start = self._parse_date(self.start_spinners)
-            end = self._parse_date(self.end_spinners)
-            self.current_type = self.type_spinner.text
-            self.start_date = start
-            self.end_date = end
-            if hasattr(self, 'on_apply_callback'):
-                self.on_apply_callback(self.current_type, start, end)
-            self.dismiss()
-        except Exception as e:
-            print(f"Помилка фільтрації: {e}")
-
-    def _parse_date(self, spinners):
-        return datetime(
-            int(spinners['year'].text), int(spinners['month'].text), int(spinners['day'].text)
+        # type
+        self.type_spinner = LabeledSpinner(
+            label_text='Тип транзакції:',
+            values=[TRANSACTION_TYPE_EXPENSE, TRANSACTION_TYPE_INCOME],
+            selected=self._initial_type
         )
+        self.content.add_widget(self.type_spinner)
+
+        # space
+        self.content.add_widget(BoxLayout(size_hint_y=1))
+
+        # buttons
+        btn_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
+        close_btn = RoundedButton(text='Закрити', bg_color='#666666', font_size=sp(14))
+        apply_btn = RoundedButton(text='Застосувати', bg_color='#0F7055', font_size=sp(14))
+        close_btn.bind(on_press=lambda *a: self.dismiss())
+        apply_btn.bind(on_press=self._apply_fields)
+        btn_box.add_widget(close_btn)
+        btn_box.add_widget(apply_btn)
+        self.content.add_widget(btn_box)
+
+        self.add_widget(self.content)
+        Animation(opacity=1, d=0.3).start(self.content)
+
+    def _apply_fields(self, *args):
+        try:
+            sd, sm, sy = self.start_date_input.date_text.split('.')
+            ed, em, ey = self.end_date_input.date_text.split('.')
+            start_date = datetime(int(sy), int(sm), int(sd))
+            end_date = datetime(int(ey), int(em), int(ed))
+            transaction_type = self.type_spinner.selected
+
+            if self.on_apply:
+                self.on_apply(transaction_type, start_date, end_date)
+
+            self.dismiss()
+
+        except Exception as e:
+            print(f"[AnalyticsFilterPopup] Filter error: {e}")
 
     def _update_rect(self, instance, value):
         if hasattr(self, 'bg_rect'):
             self.bg_rect.pos = instance.pos
             self.bg_rect.size = instance.size
-
-    def _update_date_rect(self, instance, value):
-        if hasattr(self, 'date_rect'):
-            self.date_rect.pos = instance.pos
-            self.date_rect.size = instance.size

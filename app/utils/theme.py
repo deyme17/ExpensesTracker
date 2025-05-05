@@ -109,3 +109,13 @@ FONT_SIZE_MEDIUM = 16
 FONT_SIZE_LARGE = 18
 FONT_SIZE_EXTRA_LARGE = 22
 FONT_SIZE_TITLE = 24
+
+# stats colors
+STAT_COLORS = {
+    'avg': get_color_from_hex('#E09B40'),        # помаранч
+    'min': get_color_from_hex('#4DD0E1'),        # блакитний
+    'max': get_color_from_hex('#EF5350'),        # червоний
+    'total': get_color_from_hex('#AED581'),      # лайм
+    'count': get_color_from_hex('#CFD8DC'),      # білий
+    'top_category': get_color_from_hex('#FFF176') #  жовтий
+}

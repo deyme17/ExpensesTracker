@@ -71,7 +71,7 @@ class TransactionDetailsPopup(ModalView):
                 text=str(value_text),
                 font_size=sp(16),
                 color=get_color_from_hex('#D8F3EB'),
-                size_hint_x=0.65,
+                size_hint_x=0.40,
                 halign='left',
                 valign='middle'
             )
@@ -94,7 +94,7 @@ class TransactionDetailsPopup(ModalView):
         try:
             cb = float(t.cashback)
             if cb > 0:
-                details_layout.add_widget(add_detail('Кешбек', f"{cb}%"))
+                details_layout.add_widget(add_detail('Кешбек', cb))
         except:
             pass
         try:

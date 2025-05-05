@@ -56,7 +56,7 @@ ExpensesTracker/
 │   │   ├── __init__.py
 │   │   ├── screens/            # екрани
 │   │   │   ├── __init__.py
-│   │   │   ├── base_screen.py  # базовий клас вікна
+│   │   │   ├── base_screen.py
 │   │   │   ├── splash_screen.py
 │   │   │   ├── first_screen.py
 │   │   │   ├── login_screen.py
@@ -64,25 +64,39 @@ ExpensesTracker/
 │   │   │   ├── transactions_screen.py
 │   │   │   └── analytics_screen.py
 │   │   │
-│   │   └── widgets/
-│   │         ├── buttons/
-│   │         │   ├── __init__.py
-│   │         │   ├── rounded_button.py
-│   │         │   ├── icon_button.py
-│   │         │   ├── floating_button.py
-│   │         │   ├── segmented_button.py
-│   │         │   └── tab_button.py
-│   │         ├── inputs/
-│   │         │   ├── __init__.py
-│   │         │   ├── styled_text_input.py
-│   │         │   ├── custom_spinner.py
-│   │         │   └── date_input.py
-│   │         └── popups/
-│   │             ├── __init__.py
-│   │             ├── base_popup.py
-│   │             ├── alert_popup.py
-│   │             ├── confirmation_popup.py
-│   │             └── info_popup.py
+│   │   └──widgets/
+│   │      ├── analytics_widgets/
+│   │      │   ├── analytics_filter_popup.py
+│   │      │   ├── chart_widgets.py
+│   │      │   ├── graph_section.py
+│   │      │   └── stats_section.py
+│   │      ├── buttons/
+│   │      │   ├── __init__.py
+│   │      │   ├── floating_button.py
+│   │      │   ├── icon_button.py
+│   │      │   ├── rounded_button.py        
+│   │      │   ├── segmented_button.py
+│   │      │   ├── styled_button.py
+│   │      │   └── tab_button.py
+│   │      ├── inputs/
+│   │      │   ├── __init__.py
+│   │      │   ├── custom_spinner.py
+│   │      │   ├── date_input.py
+│   │      │   └── styled_text_input.py
+│   │      ├── popups/
+│   │      │   ├── __init__.py
+│   │      │   ├── alert_popup.py
+│   │      │   ├── base_popup.py
+│   │      │   ├── confirmation_popup.py   
+│   │      │   └── info_popup.py
+│   │      └── transactions_widgets/
+│   │           ├── confirm_delete_popup.py   
+│   │           ├── filter_transaction_popup.py
+│   │           ├── add_transaction_popup.py
+│   │           ├── sort_transaction_popup.py
+│   │           ├── transaction_details_popup.py
+│   │           └── transaction_row.py
+│   │                 
 │   │
 │   ├── controllers/            # Контролери додатку
 │   │   ├── __init__.py

@@ -119,7 +119,6 @@ class TransactionsScreen(BaseScreen):
     def confirm_delete_transaction(self, transaction_id):
         popup = ConfirmDeletePopup(on_confirm=lambda: self._delete(transaction_id))
         popup.open()
-
     def _delete(self, transaction_id):
         result = self.controller.delete_transaction(transaction_id)
         if isinstance(result, tuple):
@@ -135,7 +134,6 @@ class TransactionsScreen(BaseScreen):
     def show_filter(self):
         popup = FilterPopup(on_apply=self._apply_filter)
         popup.open()
-
     def _apply_filter(self, min_amount, max_amount, start_date, end_date, is_income, payment_method):
         filtered = self.controller.filter_transactions(
             min_amount=min_amount,
@@ -152,7 +150,6 @@ class TransactionsScreen(BaseScreen):
     def show_sort(self):
         popup = SortPopup(on_sort=self._apply_sort)
         popup.open()
-
     def _apply_sort(self, field_text, ascending):
         field_map = {'Дата': 'date', 'Сума': 'amount', 'Кешбек': 'cashback', 'Комісія': 'commission'}
         key = field_map.get(field_text, 'date')
@@ -196,6 +193,5 @@ class TransactionsScreen(BaseScreen):
 
     def show_success_message(self, message):
         SuccessPopup(message=message).open()
-
     def show_error_message(self, message):
         ErrorPopup(message=message).open()

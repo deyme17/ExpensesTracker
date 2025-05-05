@@ -1,17 +1,18 @@
-from kivy.uix.widget import Widget
-from kivy.clock import Clock
+from abc import ABCMeta, abstractmethod
+from kivy.uix.boxlayout import BoxLayout
 
-class BaseGraphWidget(Widget):
+class BaseGraphWidget(BoxLayout):
+    """
+    Abstract base class for graphic widgets.
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data = []
-        Clock.schedule_once(lambda dt: self._build())
 
-    def on_size(self, *args):
-        self._build()
-
-    def on_pos(self, *args):
-        self._build()
-
-    def _build(self):
-        pass
+    def fit(self, transactions):
+        """
+        Process transactions and generate data for the graph.
+        Args:
+            Transactions: List of Transaction Objects
+        """
+        raise NotImplementedError("The class should implement the method fit(transactions)")

@@ -9,7 +9,7 @@ from kivy.metrics import dp, sp
 
 
 from app.utils.theme import (
-    get_background_color, get_text_primary_color,
+    get_background_color, get_text_primary_color, get_color_from_hex,
     FONT_SIZE_MEDIUM
 )
 
@@ -26,11 +26,9 @@ class BasePopup(Popup):
         self.background_color = (0, 0, 0, 0)
         self.auto_dismiss = True
         
-        # content setup
         content = self._create_content()
         self.content = content
         
-        # auto-dismiss after 2 seconds
         Clock.schedule_once(lambda dt: self.dismiss(), 2)
     
     def _create_content(self):
@@ -55,7 +53,11 @@ class BasePopup(Popup):
         
         with self.canvas.before:
             self._bg_color = Color(rgba=self._get_background_color())
-            self._bg_rect = StyledButton(pos=self.pos, size=self.size, radius=[dp(10)])
+            self._bg_rect = StyledButton(
+                pos=self.pos, size=self.size, radius=[dp(10)],
+                bg_color=get_color_from_hex('#0A4035')
+            )
+
 
         self.bind(pos=self._update_canvas, size=self._update_canvas)
     

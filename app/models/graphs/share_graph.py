@@ -1,32 +1,25 @@
-from kivy.graphics import Color, Ellipse
 from app.models.graphs.base_graph import BaseGraphWidget
-from app.utils.theme import get_category_color
+from app.utils.formatters import format_amount
+
 
 class ShareGraph(BaseGraphWidget):
-    def __init__(self, controller, transaction_type, period, **kwargs):
-        self.controller = controller
-        self.transaction_type = transaction_type
-        self.period = period
-        super().__init__(**kwargs)
+    """
+    Circular distribution chart by categories.
+    """
 
-    def _build(self):
-        self.data = self.controller.get_category_share_data(self.transaction_type, self.period)
-        self.canvas.clear()
-        if not self.data:
-            return
+    def fit(self, transactions):
+        if not transactions:
+            return []
 
-        total = sum(amount for _, amount, _ in self.data)
-        if total == 0:
-            return
+        category_totals = {}
+        for t in transactions:
+            category = t.category or 'Невідомо'
+            category_totals[category] = category_totals.get(category, 0) + t.amount
 
-        angle_start = 0
-        size = min(self.width, self.height) * 0.9
-        center_x = self.center_x - size / 2
-        center_y = self.center_y - size / 2
-
-        with self.canvas:
-            for i, (category, amount, _) in enumerate(self.data):
-                angle_end = angle_start + 360 * (amount / total)
-                Color(*get_category_color(category))
-                Ellipse(pos=(center_x, center_y), size=(size, size), angle_start=angle_start, angle_end=angle_end)
-                angle_start = angle_end
+        total = sum(category_totals.values()) or 1
+        data = [
+            (cat, round(value, 2), round(value / total * 100, 2))
+            for cat, value in category_totals.items()
+        ]
+        data.sort(key=lambda x: x[1], reverse=True)
+        return data

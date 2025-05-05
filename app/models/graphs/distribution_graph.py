@@ -1,36 +1,23 @@
-from kivy.graphics import Color, Rectangle
 from app.models.graphs.base_graph import BaseGraphWidget
-from app.utils.theme import get_primary_color
+from app.utils.formatters import format_amount
+
 
 class DistributionGraph(BaseGraphWidget):
-    def __init__(self, controller, transaction_type, period, category, **kwargs):
-        self.controller = controller
-        self.transaction_type = transaction_type
-        self.period = period
-        self.category = category
-        super().__init__(**kwargs)
+    """
+    Histogram of the distribution of transaction amounts.
+    """
 
-    def _build(self):
-        self.data = self.controller.get_distribution_data(
-            self.transaction_type, self.period, self.category
-        )
-        self.canvas.clear()
-        if not self.data:
-            return
+    def fit(self, transactions):
+        amounts = [t.amount for t in transactions if not getattr(self, 'category', None) or t.category == self.category]
 
-        num_bars = len(self.data)
-        max_count = max((count for _, count in self.data), default=0)
-        if max_count == 0:
-            return
+        if not amounts:
+            return []
 
-        spacing = 10
-        bar_width = (self.width - (num_bars + 1) * spacing) / max(num_bars, 1)
-        chart_height = self.height * 0.9
-        base_y = self.y + self.height * 0.05
+        bin_size = max(amounts) / 5 or 1
+        bins = {}
+        for amt in amounts:
+            index = int(amt // bin_size) * bin_size
+            bins[index] = bins.get(index, 0) + 1
 
-        with self.canvas:
-            Color(*get_primary_color())
-            for i, (_, count) in enumerate(self.data):
-                bar_height = (count / max_count) * chart_height
-                x = self.x + spacing + i * (bar_width + spacing)
-                Rectangle(pos=(x, base_y), size=(bar_width, bar_height))
+        sorted_bins = sorted(bins.items())
+        return [(format_amount(k), v) for k, v in sorted_bins]

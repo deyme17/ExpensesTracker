@@ -13,11 +13,12 @@ from app.utils.theme import (
 
 class StyledButton(Button):
     """Custom styled button with rounded corners and background color."""
-    
+    radius = ListProperty([dp(8)])
+
     def __init__(self, bg_color, **kwargs):
+        self.bg_color = bg_color
         super(StyledButton, self).__init__(**kwargs)
         self.background_color = (0, 0, 0, 0)
-        self.bg_color = bg_color
         self.color = get_text_primary_color()
         self.bold = True
         
@@ -29,8 +30,12 @@ class StyledButton(Button):
         """Update the button's background canvas."""
         self.canvas.before.clear()
         with self.canvas.before:
-            Color(rgba=get_color_from_hex(self.bg_color))
-            RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(8)])
+            if isinstance(self.bg_color, str):
+                Color(rgba=get_color_from_hex(self.bg_color))
+            else:
+                Color(rgba=self.bg_color)
+
+            RoundedRectangle(pos=self.pos, size=self.size, radius=self.radius)
 
             
 class RoundedButton(Button):

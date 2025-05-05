@@ -20,8 +20,8 @@ def create_app():
     monobank_service = MonobankService()
 
     auth_controller = AuthController(storage_service)
-    transaction_controller = TransactionController(storage_service, monobank_service)
-    analytics_controller = AnalyticsController(storage_service)
+    transaction_controller = TransactionController(storage_service)
+    analytics_controller = AnalyticsController()
 
     return ExpensesTrackerApp(
         storage_service=storage_service,

@@ -79,7 +79,7 @@ class LocalStorageService:
         with open(self.transactions_file, 'w', encoding='utf-8') as f:
             json.dump(transaction_dicts, f, ensure_ascii=False, indent=2)
     
-    def get_transactions(self):
+    def get_transactions(self, force_refresh=False):
         """
         Load transaction data from storage.
         

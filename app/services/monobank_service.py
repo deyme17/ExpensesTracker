@@ -83,7 +83,7 @@ class MonobankService:
             account_id = client_info['accounts'][0]['id']
         
         if not from_time:
-            # Default to 100 days ago
+            # default to 100 days ago
             from_time = int((current_time - timedelta(days=100)).timestamp())
         elif isinstance(from_time, datetime):
             from_time = int(from_time.timestamp())

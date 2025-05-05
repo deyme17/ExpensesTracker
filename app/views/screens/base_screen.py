@@ -83,9 +83,24 @@ class BaseScreen(Screen):
         from app.views.widgets.popups.alert_popup import ErrorPopup
         popup = ErrorPopup(message=message)
         popup.open()
-    
     def show_success_message(self, message):
         """Display a success message to the user."""
         from app.views.widgets.popups.alert_popup import SuccessPopup
         popup = SuccessPopup(message=message)
         popup.open()
+
+    def show_menu(self, *args):
+        from app.views.widgets.popups.menu_popup import MenuPopup
+        popup = MenuPopup(on_logout=self._logout, on_exit=self._exit_app)
+        popup.open()
+
+    def _logout(self):
+        from kivy.app import App
+        app = App.get_running_app()
+        if hasattr(app, 'auth_controller'):
+            app.auth_controller.logout()
+        self.switch_screen('first_screen', 'right')
+
+    def _exit_app(self):
+        from kivy.core.window import Window
+        Window.close()

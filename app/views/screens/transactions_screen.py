@@ -171,27 +171,7 @@ class TransactionsScreen(BaseScreen):
         )
         popup.open()
 
-    def show_menu(self, *args):
-        popup = MenuPopup(on_logout=self._logout, on_exit=self._exit_app)
-        popup.open()
-
     def go_analytics(self):
         if self.manager:
             self.manager.transition.direction = 'left'
             self.manager.current = 'analytics_screen'
-
-    def _logout(self):
-        from kivy.app import App
-        app = App.get_running_app()
-        if hasattr(app, 'auth_controller'):
-            app.auth_controller.logout()
-        self.switch_screen('first_screen', 'right')
-
-    def _exit_app(self):
-        from kivy.core.window import Window
-        Window.close()
-
-    def show_success_message(self, message):
-        SuccessPopup(message=message).open()
-    def show_error_message(self, message):
-        ErrorPopup(message=message).open()

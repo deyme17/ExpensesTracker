@@ -100,6 +100,9 @@ class FilterPopup(ModalView):
         )
         content.add_widget(self.payment_spinner)
 
+        # space
+        content.add_widget(BoxLayout(size_hint_y=1))
+
         # buttons
         btn_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
         reset_btn = RoundedButton(text='Скинути', bg_color='#445555', font_size=sp(14))

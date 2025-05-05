@@ -4,7 +4,7 @@
 #:import Clock kivy.clock.Clock
 #:import Animation kivy.animation.Animation
 
-# Кольорова гамма
+# colors
 #:set primary_color get_color_from_hex('#FF7043')
 #:set secondary_color get_color_from_hex('#0F7055')
 #:set accent_color get_color_from_hex('#FFB74D')
@@ -57,7 +57,7 @@
     orientation: 'horizontal'
     size_hint_y: None
     height: dp(60)
-    padding: [dp(12), dp(8)]  # horizontal, vertical padding for natural spacing
+    padding: [dp(12), dp(8)]
     spacing: dp(8)
     canvas.before:
         Color:
@@ -109,7 +109,7 @@
         padding: dp(10)
         spacing: dp(10)
 
-        # Верхня панель з балансом і меню
+        # menu/balance
         BoxLayout:
             size_hint_y: None
             height: dp(70)
@@ -161,7 +161,7 @@
                         width: 1.5
                         points: [self.center_x - dp(5), self.center_y + dp(2), self.center_x + dp(5), self.center_y + dp(2)]
 
-        # Кнопки "Дохід" і "Витрати"
+        # expenses/income
         BoxLayout:
             size_hint_y: None
             height: dp(50)
@@ -193,7 +193,7 @@
                         size: self.size
                         radius: [dp(10)]
 
-        # Заголовок "Останні транзакції" з кнопками
+        # title
         BoxLayout:
             size_hint_y: None
             height: dp(50)
@@ -206,7 +206,7 @@
                     size: self.size
                     radius: [dp(10)]
             Label:
-                text: 'Останні транзакції'
+                text: 'Транзакції'
                 font_size: '18sp'
                 bold: True
                 color: text_light
@@ -259,7 +259,7 @@
                         width: 1.5
                         points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(2)]
 
-        # Список транзакцій
+        # transactions
         ScrollView:
             do_scroll_x: False
             do_scroll_y: True
@@ -275,7 +275,7 @@
                 size_hint_y: None
                 height: self.minimum_height
 
-        # Нижнє меню
+        # bottom menu
         BoxLayout:
             size_hint_y: None
             height: dp(60)

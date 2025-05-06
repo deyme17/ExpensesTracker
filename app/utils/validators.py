@@ -30,8 +30,18 @@ def validate_password(password):
     if not password:
         return False
     
-    # Password must be at least 6 characters   # TODO
-    return len(password) >= 6
+    if len(password) < 6:
+        return False, "Пароль має містити щонайменше 6 символів"
+    
+    has_digit = any(char.isdigit() for char in password)
+    if not has_digit:
+        return False, "Пароль повинен містити щонайменше одну цифру"
+    
+    has_letter = any(char.isalpha() for char in password)
+    if not has_letter:
+        return False, "Пароль повинен містити щонайменше одну дітеру"
+    
+    return True, ""
 
 def validate_monobank_token(token):
     """
@@ -45,10 +55,9 @@ def validate_monobank_token(token):
     """
     if not token:
         return False
-    
-    # Monobank token is a 32-character alphanumeric string  # TODO
-    pattern = r'^[a-zA-Z0-9]{32}$'
-    return bool(re.match(pattern, token))
+
+    pattern = r'^[a-zA-Z0-9]{44}$'
+    return bool(re.fullmatch(pattern, token))
 
 def validate_amount(amount_str):
     """
@@ -142,6 +151,6 @@ def validate_registration_inputs(inputs):
         return False, "Паролі не співпадають"
 
     if token and not validate_monobank_token(token):
-        return False, "Невірний формат токену Монобанк (має бути 32 символи)"
+        return False, "Невірний формат токену Монобанк"
 
     return True, ""

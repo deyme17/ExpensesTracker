@@ -103,8 +103,10 @@ ExpensesTracker/
 │   ├── services/                          # бізнес-логіка додатку
 │   │   ├── __init__.py
 │   │   ├── api_service.py
-│   │   ├── monobank_service.p
-│   │   └── local_storage.py
+│   │   ├── local_storage.py
+│   │   └── bank_services/
+│   │       ├── bank_service.py
+│   │       └── monobank_service.py
 │   │
 │   ├── models/                             # моделі
 │   │   ├── __init__.py

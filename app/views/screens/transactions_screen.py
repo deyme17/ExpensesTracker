@@ -2,6 +2,7 @@ from kivy.properties import ObjectProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.lang import Builder
+from app.app import App
 
 from kivy.uix.boxlayout import BoxLayout
 
@@ -16,11 +17,13 @@ from app.views.widgets.transactions_widgets.confirm_delete_popup import ConfirmD
 from app.views.widgets.popups.alert_popup import ErrorPopup, SuccessPopup
 from app.views.widgets.popups.menu_popup import MenuPopup
 from app.utils.theme import get_accent_color
+from kivy.properties import StringProperty
 
 Builder.load_file('kv/transactions_screen.kv')
 
 class TransactionsScreen(BaseScreen):
     controller = ObjectProperty(None)
+    balance_text = StringProperty("Баланс: 0")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -62,6 +65,10 @@ class TransactionsScreen(BaseScreen):
         self._clear_list()
         for tx in transactions:
             self._add_row(tx)
+
+    def update_balance_label(self):
+        user = App.get_running_app().user
+        self.balance_text = f"Баланс: {int(user.balance)}"
 
     def add_transaction(self, is_income=True):
         popup = AddTransactionPopup(is_income=is_income, on_save=self._on_save)

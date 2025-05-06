@@ -39,7 +39,7 @@ class AnalyticsData:
         return self.stats['top_category']
 
     def get_chart_data(self, chart_type):
-        strategy = self._chart.get(chart_type)
-        if not strategy:
+        chart = self._chart.get(chart_type)
+        if not chart:
             return []
-        return strategy.fit(self.raw_transactions)
+        return chart.fit(self.raw_transactions)

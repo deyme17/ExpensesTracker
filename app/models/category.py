@@ -10,7 +10,7 @@ class Category:
             color (str, optional): Color hex code for the category
         """
         self.name = name
-        self.is_income = is_income # TODO
+        self.is_income = is_income
         self.mcc_code = mcc_code
         self.color = color 
     

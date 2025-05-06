@@ -17,7 +17,7 @@ class MonobankService(BankService):
             dict: {
                 "user_id": Monobank ID,
                 "name": user name,
-                "balance": current balance
+                "uah_balances": list of UAH account balances (in UAH)
             }
         """
         url = f"{self.BASE_URL}/personal/client-info"
@@ -28,13 +28,13 @@ class MonobankService(BankService):
         
         data = response.json()
         accounts = data.get("accounts", [])
-        if not accounts:
-            raise Exception("[Monobank] No accounts found for client.")
+
+        uah_balances = [acc.get("balance", 0) / 100.0 for acc in accounts if acc.get("currencyCode") == 980]
 
         return {
             "user_id": data["clientId"],
             "name": data["name"],
-            "balance": accounts[0]["balance"] / 100.0
+            "balances": uah_balances
         }
 
 

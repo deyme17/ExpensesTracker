@@ -10,7 +10,6 @@ from app.utils.theme import BACKGROUND_COLOR
 class ExpensesTrackerApp(App):
     def __init__(self, 
                  storage_service, 
-                 monobank_service, 
                  auth_controller, 
                  transaction_controller, 
                  analytics_controller, 
@@ -24,7 +23,6 @@ class ExpensesTrackerApp(App):
         
         super().__init__(**kwargs)
         self.storage_service = storage_service
-        self.monobank_service = monobank_service
         self.auth_controller = auth_controller
         self.transaction_controller = transaction_controller
         self.analytics_controller = analytics_controller

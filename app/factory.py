@@ -17,7 +17,6 @@ from app.app import ExpensesTrackerApp
 
 def create_app():
     storage_service = LocalStorageService()
-    monobank_service = MonobankService()
 
     auth_controller = AuthController(storage_service)
     transaction_controller = TransactionController(storage_service)
@@ -25,7 +24,6 @@ def create_app():
 
     return ExpensesTrackerApp(
         storage_service=storage_service,
-        monobank_service=monobank_service,
         auth_controller=auth_controller,
         transaction_controller=transaction_controller,
         analytics_controller=analytics_controller,

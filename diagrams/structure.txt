@@ -104,6 +104,7 @@ ExpensesTracker/
 │   │   ├── __init__.py
 │   │   ├── api_service.py
 │   │   ├── local_storage.py
+│   │   ├── transaction_processor.py
 │   │   └── bank_services/
 │   │       ├── bank_service.py
 │   │       └── monobank_service.py

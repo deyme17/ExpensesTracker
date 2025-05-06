@@ -13,7 +13,7 @@ CREATE TABLE "category" (
 );
 
 CREATE TABLE "transactions" (
-    "transaction_id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    "transaction_id" VARCHAR PRIMARY KEY,
     "user_id" VARCHAR NOT NULL,
     "amount" DECIMAL(19,4) NOT NULL,
     "date" DATE NOT NULL DEFAULT CURRENT_DATE,

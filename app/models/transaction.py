@@ -3,7 +3,8 @@ from datetime import datetime
 
 class Transaction:
     def __init__(self, transaction_id, user_id, amount, date, category, description,
-                is_income, payment_method, currency='UAH', cashback=0, commission=0):
+                is_income, payment_method, currency='UAH', cashback=0, commission=0, 
+                is_synced=True):
         """
         Initialize a Transaction instance.
         
@@ -43,6 +44,7 @@ class Transaction:
         self.currency = currency
         self.cashback = float(cashback)
         self.commission = float(commission)
+        self.is_synced = is_synced
     
     def to_dict(self):
         """
@@ -62,7 +64,8 @@ class Transaction:
             'payment_method': self.payment_method,
             'currency': self.currency,
             'cashback': self.cashback,
-            'commission': self.commission
+            'commission': self.commission,
+            'is_synced': self.is_synced
         }
     
     @classmethod
@@ -98,7 +101,8 @@ class Transaction:
             payment_method=data.get('payment_method', 'Картка'),
             currency=data.get('currency', 'UAH'),
             cashback=data.get('cashback', 0.0),
-            commission=data.get('commission', 0.0)
+            commission=data.get('commission', 0.0),
+            is_synced=data.get('is_synced', True)
         )
     
     def get_formatted_amount(self):

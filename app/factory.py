@@ -9,7 +9,7 @@ from app.controllers.auth_controller import AuthController
 from app.controllers.transaction_controller import TransactionController
 from app.controllers.analytics_controller import AnalyticsController
 
-from app.services.monobank_service import MonobankService
+from app.services.bank_services.monobank_service import MonobankService
 from app.services.local_storage import LocalStorageService
 
 from app.app import ExpensesTrackerApp

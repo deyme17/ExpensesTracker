@@ -21,22 +21,22 @@ class AnalyticsData:
         }
 
     def get_avg_value(self):
-        return self.stats['avg']
+        return self.stats["avg"]
 
     def get_min_value(self):
-        return self.stats['min']
+        return self.stats["min"]
 
     def get_max_value(self):
-        return self.stats['max']
+        return self.stats["max"]
 
     def get_total(self):
-        return self.stats['total']
+        return self.stats["total"]
 
     def get_count(self):
-        return self.stats['count']
+        return self.stats["count"]
 
     def get_top_category(self):
-        return self.stats['top_category']
+        return self.stats["top_category"]
 
     def get_chart_data(self, chart_type):
         chart = self._chart.get(chart_type)

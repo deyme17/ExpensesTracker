@@ -11,13 +11,9 @@ from kivy.lang import Builder
 from app.views.screens.base_screen import BaseScreen
 from app.views.widgets.inputs.styled_text_input import StyledTextInput
 from app.views.widgets.buttons.styled_button import RoundedButton
-from app.utils.theme import (
-    get_text_primary_color, get_primary_color, get_accent_color,
-    FONT_SIZE_MEDIUM, FONT_SIZE_LARGE
-)
 
 # Load kv file
-Builder.load_file('kv/login_screen.kv')
+Builder.load_file("kv/login_screen.kv")
 
 
 class LoginScreen(BaseScreen):
@@ -46,11 +42,11 @@ class LoginScreen(BaseScreen):
     
     def go_back(self):
         """Navigate back to the first screen."""
-        self.switch_screen('first_screen', 'right')
+        self.switch_screen("first_screen", "right")
     
     def go_to_registration(self):
         """Navigate to the registration screen."""
-        self.switch_screen('reg_screen', 'left')
+        self.switch_screen("reg_screen", "left")
     
     def login(self):
         """
@@ -76,7 +72,7 @@ class LoginScreen(BaseScreen):
         
         def auth_callback(success, message):
             if success:
-                self.switch_screen('transactions_screen', 'left')
+                self.switch_screen("transactions_screen", "left")
             else:
                 self.error_message = message
                 self._show_error()

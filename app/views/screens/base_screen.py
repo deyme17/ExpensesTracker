@@ -97,9 +97,9 @@ class BaseScreen(Screen):
     def _logout(self):
         from kivy.app import App
         app = App.get_running_app()
-        if hasattr(app, 'auth_controller'):
+        if hasattr(app, "auth_controller"):
             app.auth_controller.logout()
-        self.switch_screen('first_screen', 'right')
+        self.switch_screen("first_screen", "right")
 
     def _exit_app(self):
         from kivy.core.window import Window

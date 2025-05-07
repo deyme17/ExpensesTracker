@@ -11,7 +11,7 @@ from app.views.screens.base_screen import BaseScreen
 from app.utils.constants import APP_NAME
 
 # Load kv file
-Builder.load_file('kv/splash_screen.kv')
+Builder.load_file("kv/splash_screen.kv")
 
 
 class SplashScreen(BaseScreen):
@@ -28,7 +28,7 @@ class SplashScreen(BaseScreen):
         """Called when the screen enters the view."""
         super(SplashScreen, self).on_enter()
         
-        if hasattr(self, 'logo_image'):
+        if hasattr(self, "logo_image"):
             self.logo_image.opacity = 0
             self.logo_image.size_hint = (0.5, 0.5)
             
@@ -39,7 +39,7 @@ class SplashScreen(BaseScreen):
             )
             anim.start(self.logo_image)
         
-        if hasattr(self, 'app_name_label'):
+        if hasattr(self, "app_name_label"):
             self.app_name_label.opacity = 0
             
             Clock.schedule_once(
@@ -53,13 +53,13 @@ class SplashScreen(BaseScreen):
         """
         Check authentication status and navigate to appropriate screen.
         
-        This is a fallback in case the App class doesn't handle navigation.
+        This is a fallback in case the App class doesn"t handle navigation.
         """
         app = self.get_app()
-        if hasattr(app, 'auth_controller') and app.auth_controller.is_authenticated():
-            self.switch_screen('transactions_screen', 'left')
+        if hasattr(app, "auth_controller") and app.auth_controller.is_authenticated():
+            self.switch_screen("transactions_screen", "left")
         else:
-            self.switch_screen('first_screen', 'left')
+            self.switch_screen("first_screen", "left")
     
     def get_app(self):
         """Get the running App instance."""

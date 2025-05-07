@@ -2,6 +2,7 @@ import hashlib
 from uuid import uuid4
 from kivy.clock import Clock
 from app.models.user import User
+from app.models.account import Account
 from app.models.transaction import Transaction
 from app.services.bank_services.monobank_service import MonobankService
 from app.services.encryption_service import EncryptionService
@@ -97,18 +98,29 @@ class AuthService:
                 mono_service = MonobankService(token=raw_token)
                 client_info = mono_service.get_client_info()
 
+                # user
                 user = User(
                     user_id=client_info["user_id"],
                     name=client_info["name"],
                     email=email,
-                    balance=client_info["balance"],
-                    token=raw_token,
-                    password_hash=password_hash
+                    password_hash=password_hash,
+                    encrypted_token=EncryptionService.encrypt(raw_token)
                 )
-
-                self.current_user = user
                 self.storage_service.save_user(user)
+                self.current_user = user
 
+                # accounts
+                account_objects = [
+                    Account.from_monobank_dict(acc, user.user_id)
+                    for acc in client_info["accounts"]
+                ]
+                self.storage_service.save_accounts(account_objects)
+
+                uah_accounts = [a for a in account_objects if a.currency_code == 980]
+                if uah_accounts:
+                    self.storage_service.set_active_account(uah_accounts[0].account_id)
+
+                # transactions
                 transactions_data = mono_service.get_transactions(days=90)
                 transactions = [Transaction.from_dict(t) for t in transactions_data]
                 self.storage_service.save_transactions(transactions)
@@ -119,7 +131,7 @@ class AuthService:
 
             except Exception as e:
                 if callback:
-                    callback(False, f"{str(e)}")
+                    callback(False, f"Помилка реєстрації: {str(e)}")
                 return False
 
         Clock.schedule_once(process_registration, 1.5)

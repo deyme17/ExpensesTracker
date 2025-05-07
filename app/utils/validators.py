@@ -127,19 +127,19 @@ def validate_registration_inputs(inputs):
 
     Args:
         inputs (dict): {
-            'email': str,
-            'password': str,
-            'confirm_password': str,
-            'monobank_token': str
+            "email": str,
+            "password": str,
+            "confirm_password": str,
+            "monobank_token": str
         }
 
     Returns:
         (bool, str): (is_valid, error_message)
     """
-    email = inputs.get('email', '').strip()
-    password = inputs.get('password', '')
-    confirm_password = inputs.get('confirm_password', '')
-    token = inputs.get('monobank_token', '').strip()
+    email = inputs.get("email", "").strip()
+    password = inputs.get("password", "")
+    confirm_password = inputs.get("confirm_password", "")
+    token = inputs.get("monobank_token", "").strip()
 
     if not validate_email(email):
         return False, "Некоректний email"

@@ -18,14 +18,14 @@ class StyledTextInput(TextInput):
     A styled text input with dark visible text and proper padding.
     """
     def __init__(self, **kwargs):
-        kwargs.setdefault('background_color', (0, 0, 0, 0)) 
-        kwargs.setdefault('foreground_color', get_color_from_hex('#212121')) 
-        kwargs.setdefault('cursor_color', get_color_from_hex('#212121'))  
-        kwargs.setdefault('hint_text_color', get_color_from_hex('#B0BEC5'))  
-        kwargs.setdefault('font_size', sp(16))
-        kwargs.setdefault('multiline', False)
-        kwargs.setdefault('padding', [dp(15), dp(12), dp(15), dp(12)])
-        kwargs.setdefault('write_tab', False)
+        kwargs.setdefault("background_color", (0, 0, 0, 0)) 
+        kwargs.setdefault("foreground_color", get_color_from_hex('#212121')) 
+        kwargs.setdefault("cursor_color", get_color_from_hex('#212121'))  
+        kwargs.setdefault("hint_text_color", get_color_from_hex('#B0BEC5'))  
+        kwargs.setdefault("font_size", sp(16))
+        kwargs.setdefault("multiline", False)
+        kwargs.setdefault("padding", [dp(15), dp(12), dp(15), dp(12)])
+        kwargs.setdefault("write_tab", False)
         
         super(StyledTextInput, self).__init__(**kwargs)
         
@@ -73,10 +73,10 @@ class LabeledInput(BoxLayout):
     text = StringProperty("")
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('size_hint_y', None)
-        kwargs.setdefault('height', dp(80))
-        kwargs.setdefault('spacing', dp(5))
+        kwargs.setdefault("orientation", "vertical")
+        kwargs.setdefault("size_hint_y", None)
+        kwargs.setdefault("height", dp(80))
+        kwargs.setdefault("spacing", dp(5))
         
         super(LabeledInput, self).__init__(**kwargs)
         
@@ -87,8 +87,8 @@ class LabeledInput(BoxLayout):
             height=dp(25),
             font_size=sp(FONT_SIZE_MEDIUM),
             color=get_text_primary_color(),
-            halign='center',
-            valign='bottom', 
+            halign="center",
+            valign="bottom", 
             text_size=(None, dp(25))
         )
 

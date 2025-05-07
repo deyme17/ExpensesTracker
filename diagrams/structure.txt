@@ -32,6 +32,7 @@ ExpensesTracker/
 │   │   └── repositories/
 │   │       ├── __init__.py
 │   │       ├── user_repository.py
+│   │       ├── account_repository.py
 │   │       ├── transaction_repository.py
 │   │       └── category_repository.py
 │   │

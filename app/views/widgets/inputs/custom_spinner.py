@@ -23,11 +23,11 @@ class CustomSpinner(Spinner):
     padding_x = NumericProperty(dp(15))
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('background_color', (0, 0, 0, 0))
-        kwargs.setdefault('color', get_text_dark_color())
-        kwargs.setdefault('bold', True)
-        kwargs.setdefault('font_size', sp(FONT_SIZE_MEDIUM))
-        kwargs.setdefault('option_cls', SpinnerOption)
+        kwargs.setdefault("background_color", (0, 0, 0, 0))
+        kwargs.setdefault("color", get_text_dark_color())
+        kwargs.setdefault("bold", True)
+        kwargs.setdefault("font_size", sp(FONT_SIZE_MEDIUM))
+        kwargs.setdefault("option_cls", SpinnerOption)
         
         super(CustomSpinner, self).__init__(**kwargs)
         
@@ -69,10 +69,10 @@ class LabeledSpinner(BoxLayout):
     selected = StringProperty("")
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('size_hint_y', None)
-        kwargs.setdefault('height', dp(75))
-        kwargs.setdefault('spacing', dp(5))
+        kwargs.setdefault("orientation", "vertical")
+        kwargs.setdefault("size_hint_y", None)
+        kwargs.setdefault("height", dp(75))
+        kwargs.setdefault("spacing", dp(5))
         
         super(LabeledSpinner, self).__init__(**kwargs)
         
@@ -82,8 +82,8 @@ class LabeledSpinner(BoxLayout):
             size_hint_y=None,
             height=dp(25),
             font_size=sp(FONT_SIZE_MEDIUM),
-            halign='left',
-            valign='bottom',
+            halign="left",
+            valign="bottom",
             text_size=(None, dp(25))
         )
         
@@ -138,4 +138,4 @@ class SpinnerOption(Button):
         self.background_color = get_secondary_color()
         self.color = get_text_dark_color()
         self.font_size = sp(FONT_SIZE_MEDIUM)
-        self.halign = 'center'
+        self.halign = "center"

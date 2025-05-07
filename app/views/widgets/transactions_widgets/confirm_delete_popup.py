@@ -7,11 +7,12 @@ from kivy.animation import Animation
 from kivy.graphics import Color, RoundedRectangle
 
 from app.views.widgets.buttons.styled_button import RoundedButton
+from app.utils.constants import CONFIRMATION_TEXT
 from app.utils.theme import get_primary_color, get_text_primary_color
 
 
 class ConfirmDeletePopup(ModalView):
-    def __init__(self, on_confirm, on_cancel=None, message="Ви впевнені, що хочете видалити цю транзакцію?", **kwargs):
+    def __init__(self, on_confirm, on_cancel=None, message=CONFIRMATION_TEXT, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (0.85, None)
         self.height = dp(220)
@@ -20,7 +21,7 @@ class ConfirmDeletePopup(ModalView):
         self.background_color = (0, 0, 0, 0)
         self.overlay_color = (0, 0, 0, 0.65)
 
-        layout = BoxLayout(orientation='vertical', padding=dp(20), spacing=dp(20))
+        layout = BoxLayout(orientation="vertical", padding=dp(20), spacing=dp(20))
 
         with layout.canvas.before:
             Color(rgba=get_primary_color())
@@ -30,8 +31,8 @@ class ConfirmDeletePopup(ModalView):
 
         label = Label(
             text=message,
-            halign='center',
-            valign='middle',
+            halign="center",
+            valign="middle",
             color=get_text_primary_color(),
             font_size=sp(16),
             size_hint_y=None,

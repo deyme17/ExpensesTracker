@@ -5,7 +5,6 @@ from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp, sp
 from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
-
 from app.utils.theme import get_income_color, get_expense_color, get_text_primary_color
 from app.utils.formatters import format_amount
 
@@ -17,10 +16,10 @@ class TransactionRow(BoxLayout):
     category = StringProperty('')
     amount = StringProperty('')
     date = StringProperty('')
-    is_income = BooleanProperty(False)
-    payment_method = StringProperty('Картка')
+    type = StringProperty('')
+    payment_method = StringProperty("card")
     description = StringProperty('')
-    currency = StringProperty('UAH')
+    currency = StringProperty("UAH")
     cashback = StringProperty('0')
     commission = StringProperty('0')
     transaction_id = StringProperty('')
@@ -42,7 +41,7 @@ class TransactionRow(BoxLayout):
         self.clear_widgets()
         
         with self.canvas.before:
-            color = get_income_color(0.2) if self.is_income else get_expense_color(0.2)
+            color = get_income_color(0.2) if self.type=="income" else get_expense_color(0.2)
             self.background_color = Color(*color)
             self.background_rect = RoundedRectangle(
                 pos=self.pos,
@@ -93,7 +92,7 @@ class TransactionRow(BoxLayout):
         try:
             amount_value = float(self.amount.replace(',', '.').replace('+', '').replace('-', ''))
             formatted_amount = format_amount(
-                amount_value if self.is_income else -amount_value,
+                amount_value if self.type=="income" else -amount_value,
                 self.currency,
                 show_sign=True
             )

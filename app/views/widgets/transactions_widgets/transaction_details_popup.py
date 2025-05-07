@@ -24,7 +24,7 @@ class TransactionDetailsPopup(ModalView):
 
     def build_ui(self):
         content = BoxLayout(
-            orientation='vertical',
+            orientation="vertical",
             spacing=dp(12),
             padding=[dp(20), dp(10), dp(20), dp(20)],
             opacity=0
@@ -35,26 +35,26 @@ class TransactionDetailsPopup(ModalView):
         content.bind(size=self._update_bg, pos=self._update_bg)
 
         title = Label(
-            text='Деталі транзакції',
+            text="Деталі транзакції",
             font_size=sp(20),
             bold=True,
             color=get_color_from_hex('#FFFFFF'),
             size_hint_y=None,
             height=dp(40),
-            halign='center',
-            valign='middle'
+            halign="center",
+            valign="middle"
         )
-        title.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, inst.height)))
+        title.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, inst.height)))
         content.add_widget(title)
 
         scroll = ScrollView(size_hint=(1, 1))
         details_layout = BoxLayout(
-            orientation='vertical',
+            orientation="vertical",
             spacing=dp(10),
             size_hint_y=None,
             padding=[0, 0, 0, dp(10)]
         )
-        details_layout.bind(minimum_height=details_layout.setter('height'))
+        details_layout.bind(minimum_height=details_layout.setter("height"))
 
         def add_detail(label_text, value_text):
             row = BoxLayout(size_hint_y=None, height=dp(32), spacing=dp(12))
@@ -63,58 +63,58 @@ class TransactionDetailsPopup(ModalView):
                 font_size=sp(16),
                 color=get_color_from_hex('#FFFFFF'),
                 size_hint_x=0.35,
-                halign='left',
-                valign='middle'
+                halign="left",
+                valign="middle"
             )
-            lbl.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, inst.height)))
+            lbl.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, inst.height)))
             val = Label(
                 text=str(value_text),
                 font_size=sp(16),
                 color=get_color_from_hex('#D8F3EB'),
                 size_hint_x=0.40,
-                halign='left',
-                valign='middle'
+                halign="left",
+                valign="middle"
             )
-            val.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, inst.height)))
+            val.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, inst.height)))
             row.add_widget(lbl)
             row.add_widget(val)
             return row
 
         t = self.transaction
-        details_layout.add_widget(add_detail('Категорія', t.category))
+        details_layout.add_widget(add_detail("Категорія", t.category))
         try:
             amt = abs(float(t.amount))
-            amt_text = f"{'+' if t.is_income else '-'}{amt:,.2f} {t.currency}"
+            amt_text = f"{"+" if t.type=='income' else "-"}{amt:,.2f} {t.currency}"
         except:
             amt_text = f"{t.amount} {t.currency}"
-        details_layout.add_widget(add_detail('Сума', amt_text))
-        details_layout.add_widget(add_detail('Дата', t.get_formatted_date()))
-        details_layout.add_widget(add_detail('Спосіб оплати', t.payment_method))
+        details_layout.add_widget(add_detail("Сума", amt_text))
+        details_layout.add_widget(add_detail("Дата", t.get_formatted_date()))
+        details_layout.add_widget(add_detail("Спосіб оплати", t.payment_method))
 
         try:
             cb = float(t.cashback)
             if cb > 0:
-                details_layout.add_widget(add_detail('Кешбек', cb))
+                details_layout.add_widget(add_detail("Кешбек", cb))
         except:
             pass
         try:
             cm = float(t.commission)
             if cm > 0:
-                details_layout.add_widget(add_detail('Комісія', cm))
+                details_layout.add_widget(add_detail("Комісія", cm))
         except:
             pass
 
         if t.description and t.description.strip():
             desc_lbl = Label(
-                text='Опис:',
+                text="Опис:",
                 font_size=sp(16),
                 color=get_color_from_hex('#FFFFFF'),
                 size_hint_y=None,
                 height=dp(32),
-                halign='left',
-                valign='middle'
+                halign="left",
+                valign="middle"
             )
-            desc_lbl.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, inst.height)))
+            desc_lbl.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, inst.height)))
             details_layout.add_widget(desc_lbl)
 
             desc_text = Label(
@@ -123,10 +123,10 @@ class TransactionDetailsPopup(ModalView):
                 color=get_color_from_hex('#D8F3EB'),
                 size_hint_y=None,
                 height=dp(60),
-                halign='center',
-                valign='middle'
+                halign="center",
+                valign="middle"
             )
-            desc_text.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, inst.height)))
+            desc_text.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, inst.height)))
             details_layout.add_widget(desc_text)
 
         scroll.add_widget(details_layout)
@@ -134,9 +134,9 @@ class TransactionDetailsPopup(ModalView):
 
 
         btn_box = BoxLayout(size_hint_y=None, height=dp(48), spacing=dp(10))
-        btn_edit = RoundedButton(text='Редагувати', bg_color='#0F7055', font_size=sp(13))
-        btn_delete = RoundedButton(text='Видалити', bg_color='#F44336', font_size=sp(13))
-        btn_close = RoundedButton(text='Закрити', bg_color='#445555', font_size=sp(13))
+        btn_edit = RoundedButton(text="Редагувати", bg_color='#0F7055', font_size=sp(13))
+        btn_delete = RoundedButton(text="Видалити", bg_color='#F44336', font_size=sp(13))
+        btn_close = RoundedButton(text="Закрити", bg_color='#445555', font_size=sp(13))
         btn_edit.bind(on_press=lambda inst: (self.dismiss(), self.on_edit()))
         btn_delete.bind(on_press=lambda inst: (self.dismiss(), self.on_delete()))
         btn_close.bind(on_press=lambda inst: self.dismiss())

@@ -15,14 +15,13 @@ from kivy.animation import Animation
 from kivy.graphics import Color, RoundedRectangle
 
 from app.utils.constants import (
-    INCOME_CATEGORIES, EXPENSE_CATEGORIES,
-    PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH,
-    CURRENCY_UAH, CURRENCY_EUR, CURRENCY_USD
+    CATEGORIES, PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH,
+    CURRENCY_UAH, CURRENCY_EUR, CURRENCY_USD, TRANSACTION_TYPE_INCOME
 )
 from app.utils.theme import get_color_from_hex, get_text_primary_color
 
 class AddTransactionPopup(ModalView):
-    is_income = BooleanProperty(True)
+    type = ObjectProperty(None)
     on_save = ObjectProperty(None)
     existing_transaction = ObjectProperty(None)
 
@@ -41,7 +40,7 @@ class AddTransactionPopup(ModalView):
 
     def build_ui(self):
         self.content = BoxLayout(
-            orientation='vertical',
+            orientation="vertical",
             spacing=dp(15),
             padding=[dp(20), dp(20), dp(20), dp(20)],
             opacity=0
@@ -54,28 +53,28 @@ class AddTransactionPopup(ModalView):
         self.content.bind(size=self._update_bg, pos=self._update_bg)
 
         title = Label(
-            text='Додати дохід' if self.is_income else 'Додати витрату',
+            text="Додати дохід" if self.type==TRANSACTION_TYPE_INCOME else "Додати витрату",
             font_size=sp(20),
             bold=True,
             color=get_text_primary_color(),
-            halign='center',
+            halign="center",
             size_hint_y=None,
             height=dp(40)
         )
 
         scroll = ScrollView()
-        fields_container = BoxLayout(orientation='vertical', spacing=dp(10), size_hint_y=None)
-        fields_container.bind(minimum_height=fields_container.setter('height'))
+        fields_container = BoxLayout(orientation="vertical", spacing=dp(10), size_hint_y=None)
+        fields_container.bind(minimum_height=fields_container.setter("height"))
 
-        categories = INCOME_CATEGORIES if self.is_income else EXPENSE_CATEGORIES
-        self.category_input = LabeledSpinner(label_text='Категорія:', values=categories, selected=categories[0])
-        self.payment_input = LabeledSpinner(label_text='Тип оплати:', values=[PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH], selected=PAYMENT_METHOD_CARD)
-        self.amount_input = LabeledInput(label_text='Сума:', hint_text='Введіть суму')
-        self.currency_input = LabeledSpinner(label_text='Валюта:', values=[CURRENCY_UAH, CURRENCY_EUR, CURRENCY_USD], selected=CURRENCY_UAH)
-        self.date_input = LabeledDateInput(label_text='Дата:')
-        self.cashback_input = LabeledInput(label_text='Кешбек:', hint_text='Введіть кешбек', text='0')
-        self.commission_input = LabeledInput(label_text='Комісія:', hint_text='Введіть комісію', text='0')
-        self.description_input = LabeledInput(label_text='Опис:', hint_text='Додайте опис транзакції')
+        categories = CATEGORIES
+        self.category_input = LabeledSpinner(label_text="Категорія:", values=categories, selected=categories[0])
+        self.payment_input = LabeledSpinner(label_text="Тип оплати:", values=[PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH], selected=PAYMENT_METHOD_CARD)
+        self.amount_input = LabeledInput(label_text="Сума:", hint_text="Введіть суму")
+        self.currency_input = LabeledSpinner(label_text="Валюта:", values=[CURRENCY_UAH, CURRENCY_EUR, CURRENCY_USD], selected=CURRENCY_UAH)
+        self.date_input = LabeledDateInput(label_text="Дата:")
+        self.cashback_input = LabeledInput(label_text="Кешбек:", hint_text="Введіть кешбек", text="0")
+        self.commission_input = LabeledInput(label_text="Комісія:", hint_text="Введіть комісію", text="0")
+        self.description_input = LabeledInput(label_text="Опис:", hint_text="Додайте опис транзакції")
 
         for widget in [self.category_input, self.payment_input, self.amount_input, self.currency_input,
                        self.date_input, self.cashback_input, self.commission_input, self.description_input]:
@@ -84,8 +83,8 @@ class AddTransactionPopup(ModalView):
         scroll.add_widget(fields_container)
 
         buttons = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(15))
-        cancel_btn = RoundedButton(text='Скасувати', bg_color='#445555', on_press=lambda x: self.dismiss())
-        save_btn = RoundedButton(text='Зберегти', bg_color='#0F7055', on_press=self._save_transaction)
+        cancel_btn = RoundedButton(text="Скасувати", bg_color='#445555', on_press=lambda x: self.dismiss())
+        save_btn = RoundedButton(text="Зберегти", bg_color='#0F7055', on_press=self._save_transaction)
         buttons.add_widget(cancel_btn)
         buttons.add_widget(save_btn)
 
@@ -103,7 +102,7 @@ class AddTransactionPopup(ModalView):
     def _save_transaction(self, *args):
         if self.on_save:
             self.on_save(
-                self.is_income,
+                self.type,
                 self.category_input.selected,
                 self.amount_input.text,
                 self.date_input.date_text,

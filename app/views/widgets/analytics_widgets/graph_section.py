@@ -3,11 +3,6 @@ from kivy.animation import Animation
 from kivy.metrics import dp
 from kivy.clock import Clock
 from kivy.properties import StringProperty, ObjectProperty
-
-from app.models.graphs.distribution_graph import DistributionGraph
-from app.models.graphs.share_graph import ShareGraph
-from app.models.graphs.dynamics_graph import DynamicsGraph
-from app.utils.constants import CHART_TYPE_HISTOGRAM, CHART_TYPE_PIE, CHART_TYPE_LINE
 from app.services.graph_factory import GraphFactory
 
 
@@ -23,7 +18,7 @@ class GraphSection(BoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.orientation = 'vertical'
+        self.orientation = "vertical"
         self.padding = dp(10)
         self.graph_widget = None
         Clock.schedule_once(lambda dt: self._load_graph())

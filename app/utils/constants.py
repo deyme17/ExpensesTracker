@@ -22,6 +22,12 @@ CURRENCY_EUR = "EUR"
 TOKEN_HINT = 'Монобанк API токен дозволяє автоматично імпортувати ваші транзакції.\n\n'\
              'Отримати його можна у додатку Монобанк або на сайті api.monobank.ua.\n'
 
+# Confirmation text
+CONFIRMATION_TEXT = "Ви впевнені, що хочете видалити цю транзакцію?"
+# Unable to delete the transaction
+UNABLE_DEL_TR = "Неможливо видалити транзакцію"
+TR_NOT_FOUND = "Транзакцію не знайдено"
+
 # Default currency
 DEFAULT_CURRENCY = CURRENCY_UAH
 
@@ -30,18 +36,14 @@ CHART_TYPE_HISTOGRAM = "histogram"
 CHART_TYPE_PIE = "pie"
 CHART_TYPE_LINE = "line"
 
-# Income categories    # TODO
-INCOME_CATEGORIES = [
+# categories    # TODO
+CATEGORIES = [
     'Зарплата',
     'Подарунок',
     'Дивіденди',
     'Фріланс',
     'Відсотки',
-    'Інше'
-]
-
-# Expense categories    # TODO
-EXPENSE_CATEGORIES = [
+    'Інше',
     'Продукти',
     'Транспорт',
     'Розваги',
@@ -49,8 +51,20 @@ EXPENSE_CATEGORIES = [
     'Одяг',
     'Кафе',
     'Зв\'язок',
-    'Інше'
 ]
+
+# months
+LONG_MONTHS = [
+    "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+    "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
+]
+SHORT_MONTHS = [
+    "Січ", "Лют", "Бер", "Кві", "Тра", "Чер",
+    "Лип", "Сер", "Вер", "Жов", "Лис", "Гру"
+]
+
+# sort fields
+SORT_FIELDS = ['Дата', 'Сума', 'Кешбек', 'Комісія']
 
 # MCC code mappings (Merchant Category Codes)
 # Maps MCC codes from banks to our expense categories

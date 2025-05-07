@@ -7,6 +7,7 @@ from kivy.metrics import dp, sp
 from kivy.graphics import Color, RoundedRectangle
 from kivy.animation import Animation
 
+from app.utils.constants import SORT_FIELDS
 from app.views.widgets.inputs.custom_spinner import CustomSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
@@ -15,8 +16,8 @@ from app.utils.theme import get_primary_color, get_text_primary_color
 class SortPopup(ModalView):
     on_sort = ObjectProperty(None)  # callable(field: str, ascending: bool)
 
-    sort_fields = ListProperty(['Дата', 'Сума', 'Кешбек', 'Комісія'])
-    selected_field = StringProperty('Дата')
+    sort_fields = ListProperty(SORT_FIELDS)
+    selected_field = StringProperty("Дата")
     ascending = BooleanProperty(True)
 
     def __init__(self, **kwargs):
@@ -31,7 +32,7 @@ class SortPopup(ModalView):
 
     def build_ui(self):
         content = BoxLayout(
-            orientation='vertical',
+            orientation="vertical",
             spacing=dp(12),
             padding=[dp(20), dp(20), dp(20), dp(20)],
             opacity=0
@@ -45,18 +46,18 @@ class SortPopup(ModalView):
 
         # Title
         title_label = Label(
-            text='Сортування транзакцій',
+            text="Сортування транзакцій",
             font_size=sp(22),
             bold=True,
             color=get_text_primary_color(),
-            halign='center',
+            halign="center",
             size_hint_y=None,
             height=dp(50)
         )
 
         # Sort by field
         field_label = Label(
-            text='Сортувати за:',
+            text="Сортувати за:",
             font_size=sp(16),
             color=get_text_primary_color(),
             size_hint_y=None,
@@ -72,7 +73,7 @@ class SortPopup(ModalView):
 
         # Direction
         direction_label = Label(
-            text='Напрямок:',
+            text="Напрямок:",
             font_size=sp(16),
             color=get_text_primary_color(),
             size_hint_y=None,
@@ -80,8 +81,8 @@ class SortPopup(ModalView):
         )
 
         self.direction_spinner = CustomSpinner(
-            text='За зростанням' if self.ascending else 'За спаданням',
-            values=['За зростанням', 'За спаданням'],
+            text="За зростанням" if self.ascending else "За спаданням",
+            values=["За зростанням", "За спаданням"],
             size_hint_y=None,
             height=dp(45)
         )
@@ -94,12 +95,12 @@ class SortPopup(ModalView):
         )
 
         cancel_button = RoundedButton(
-            text='Скасувати',
+            text="Скасувати",
             bg_color='#445555'
         )
 
         apply_button = RoundedButton(
-            text='Застосувати',
+            text="Застосувати",
             bg_color='#0F7055'
         )
 
@@ -122,7 +123,7 @@ class SortPopup(ModalView):
 
     def _apply_sort(self, *args):
         if self.on_sort:
-            ascending = self.direction_spinner.text == 'За зростанням'
+            ascending = self.direction_spinner.text == "За зростанням"
             self.on_sort(self.field_spinner.text, ascending)
         self.dismiss()
 

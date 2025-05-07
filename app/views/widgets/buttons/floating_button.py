@@ -15,16 +15,16 @@ class FloatingActionButton(Button):
     A circular floating action button.
     """
     bg_color = StringProperty(ACCENT_COLOR)
-    icon = StringProperty('+')
+    icon = StringProperty("+")
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('background_color', (0, 0, 0, 0))
-        kwargs.setdefault('size_hint', (None, None))
-        kwargs.setdefault('size', (dp(56), dp(56)))
-        kwargs.setdefault('text', self.icon)
-        kwargs.setdefault('font_size', sp(30))
-        kwargs.setdefault('bold', True)
-        kwargs.setdefault('color', get_text_primary_color())
+        kwargs.setdefault("background_color", (0, 0, 0, 0))
+        kwargs.setdefault("size_hint", (None, None))
+        kwargs.setdefault("size", (dp(56), dp(56)))
+        kwargs.setdefault("text", self.icon)
+        kwargs.setdefault("font_size", sp(30))
+        kwargs.setdefault("bold", True)
+        kwargs.setdefault("color", get_text_primary_color())
         
         super(FloatingActionButton, self).__init__(**kwargs)
         
@@ -42,7 +42,7 @@ class FloatingActionButton(Button):
             Color(0, 0, 0, 0.2)
             Ellipse(pos=(self.x + dp(2), self.y - dp(2)), size=self.size)
             
-            if self.state == 'down':
+            if self.state == "down":
                 r, g, b = get_color_from_hex(self.bg_color)[:3]
                 Color(r*0.8, g*0.8, b*0.8, 1)
             else:

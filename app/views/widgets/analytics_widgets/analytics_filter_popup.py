@@ -25,7 +25,7 @@ class AnalyticsFilterPopup(ModalView):
         super().__init__(**kwargs)
         self.size_hint = (0.85, 0.65)
         self.auto_dismiss = False
-        self.background = ''
+        self.background = ""
         self.background_color = (0, 0, 0, 0)
         self.overlay_color = (0, 0, 0, 0.7)
 
@@ -37,7 +37,7 @@ class AnalyticsFilterPopup(ModalView):
 
     def _build_ui(self):
         self.content = BoxLayout(
-            orientation='vertical',
+            orientation="vertical",
             spacing=dp(12),
             padding=dp(20),
             opacity=0
@@ -50,28 +50,28 @@ class AnalyticsFilterPopup(ModalView):
 
         # title
         title = Label(
-            text='Фільтр транзакцій',
+            text="Фільтр транзакцій",
             font_size=sp(22),
             bold=True,
             color=get_text_primary_color(),
             size_hint_y=None,
             height=dp(50),
-            halign='center'
+            halign="center"
         )
-        title.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, None)))
+        title.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, None)))
         self.content.add_widget(title)
 
         # date
-        self.start_date_input = LabeledDateInput(label_text='Початкова дата:')
-        self.start_date_input.date_text = self._initial_start.strftime('%d.%m.%Y')
-        self.end_date_input = LabeledDateInput(label_text='Кінцева дата:')
-        self.end_date_input.date_text = self._initial_end.strftime('%d.%m.%Y')
+        self.start_date_input = LabeledDateInput(label_text="Початкова дата:")
+        self.start_date_input.date_text = self._initial_start.strftime("%d.%m.%Y")
+        self.end_date_input = LabeledDateInput(label_text="Кінцева дата:")
+        self.end_date_input.date_text = self._initial_end.strftime("%d.%m.%Y")
         self.content.add_widget(self.start_date_input)
         self.content.add_widget(self.end_date_input)
 
         # type
         self.type_spinner = LabeledSpinner(
-            label_text='Тип транзакції:',
+            label_text="Тип транзакції:",
             values=[TRANSACTION_TYPE_EXPENSE, TRANSACTION_TYPE_INCOME],
             selected=self._initial_type
         )
@@ -82,8 +82,8 @@ class AnalyticsFilterPopup(ModalView):
 
         # buttons
         btn_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
-        close_btn = RoundedButton(text='Закрити', bg_color='#666666', font_size=sp(14))
-        apply_btn = RoundedButton(text='Застосувати', bg_color='#0F7055', font_size=sp(14))
+        close_btn = RoundedButton(text="Закрити", bg_color="#666666", font_size=sp(14))
+        apply_btn = RoundedButton(text="Застосувати", bg_color="#0F7055", font_size=sp(14))
         close_btn.bind(on_press=lambda *a: self.dismiss())
         apply_btn.bind(on_press=self._apply_fields)
         btn_box.add_widget(close_btn)
@@ -95,8 +95,8 @@ class AnalyticsFilterPopup(ModalView):
 
     def _apply_fields(self, *args):
         try:
-            sd, sm, sy = self.start_date_input.date_text.split('.')
-            ed, em, ey = self.end_date_input.date_text.split('.')
+            sd, sm, sy = self.start_date_input.date_text.split(".")
+            ed, em, ey = self.end_date_input.date_text.split(".")
             start_date = datetime(int(sy), int(sm), int(sd))
             end_date = datetime(int(ey), int(em), int(ed))
             transaction_type = self.type_spinner.selected
@@ -110,6 +110,6 @@ class AnalyticsFilterPopup(ModalView):
             print(f"[AnalyticsFilterPopup] Filter error: {e}")
 
     def _update_rect(self, instance, value):
-        if hasattr(self, 'bg_rect'):
+        if hasattr(self, "bg_rect"):
             self.bg_rect.pos = instance.pos
             self.bg_rect.size = instance.size

@@ -16,16 +16,16 @@ class IconButton(BoxLayout):
     """
     A button with an icon and optional text.
     """
-    text = StringProperty('')
-    icon = StringProperty('')
+    text = StringProperty("")
+    icon = StringProperty("")
     bg_color = StringProperty(PRIMARY_COLOR)
     is_selected = BooleanProperty(False)
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('size_hint', (None, None))
-        kwargs.setdefault('size', (dp(60), dp(60)))
-        kwargs.setdefault('spacing', dp(5))
+        kwargs.setdefault("orientation", "vertical")
+        kwargs.setdefault("size_hint", (None, None))
+        kwargs.setdefault("size", (dp(60), dp(60)))
+        kwargs.setdefault("spacing", dp(5))
         
         super(IconButton, self).__init__(**kwargs)
         

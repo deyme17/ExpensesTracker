@@ -1,23 +1,19 @@
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.properties import ListProperty, BooleanProperty, NumericProperty, StringProperty
-from kivy.graphics import Color, Rectangle, Line, Ellipse, RoundedRectangle
+from kivy.properties import ListProperty, BooleanProperty, StringProperty, ObjectProperty
+from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp
-from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
 
 from app.utils.theme import (
-    get_primary_color, get_secondary_color, get_category_color,
-    get_text_primary_color, get_income_color, get_expense_color,
-    CATEGORY_COLORS
+    get_primary_color, get_income_color, get_expense_color,
 )
 
 
 class BaseChartWidget(Widget):
     """Base class for chart widgets."""
     data = ListProperty([])
-    is_income = BooleanProperty(False)
+    type = ObjectProperty(False)
     
     def __init__(self, **kwargs):
         super(BaseChartWidget, self).__init__(**kwargs)
@@ -38,7 +34,7 @@ class BaseChartWidget(Widget):
     
     def get_color(self):
         """Get the main color for the chart based on whether it's for income or expenses."""
-        return get_income_color() if self.is_income else get_expense_color()
+        return get_income_color() if self.type else get_expense_color()
 
 
 class BarChartWidget(BaseChartWidget):
@@ -76,15 +72,15 @@ class LineChartWidget(BaseChartWidget):
 
 class ChartContainer(BoxLayout):
     """Container for charts with title and legend."""
-    chart_type = StringProperty('histogram')
+    chart_type = StringProperty("histogram")
     data = ListProperty([])
     title = StringProperty('')
-    is_income = BooleanProperty(False)
+    type = ObjectProperty(False)
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('spacing', dp(10))
-        kwargs.setdefault('padding', dp(5))
+        kwargs.setdefault("orientation", "vertical")
+        kwargs.setdefault("spacing", dp(10))
+        kwargs.setdefault("padding", dp(5))
         
         super(ChartContainer, self).__init__(**kwargs)
         
@@ -94,7 +90,7 @@ class ChartContainer(BoxLayout):
         
         self.bind(chart_type=self._update_chart)
         self.bind(data=self._update_data)
-        self.bind(is_income=self._update_income)
+        self.bind(type=self._update_income)
       
         Clock.schedule_once(lambda dt: self._update_chart(), 0.1)
     
@@ -103,22 +99,22 @@ class ChartContainer(BoxLayout):
         # clear
         self.remove_widget(self.chart_widget)
         
-        if self.chart_type == 'histogram':
+        if self.chart_type == "histogram":
             self.chart_widget = BarChartWidget(
                 data=self.data,
-                is_income=self.is_income,
+                type=self.type,
                 size_hint_y=1
             )
-        elif self.chart_type == 'pie':
+        elif self.chart_type == "pie":
             self.chart_widget = PieChartWidget(
                 data=self.data,
-                is_income=self.is_income,
+                type=self.type,
                 size_hint_y=1
             )
-        elif self.chart_type == 'line':
+        elif self.chart_type == "line":
             self.chart_widget = LineChartWidget(
                 data=self.data,
-                is_income=self.is_income,
+                type=self.type,
                 size_hint_y=1
             )
         else:
@@ -129,10 +125,10 @@ class ChartContainer(BoxLayout):
     
     def _update_data(self, instance, value):
         """Update chart data when data property changes."""
-        if hasattr(self.chart_widget, 'data'):
+        if hasattr(self.chart_widget, "data"):
             self.chart_widget.data = value
     
     def _update_income(self, instance, value):
-        """Update is_income when property changes."""
-        if hasattr(self.chart_widget, 'is_income'):
-            self.chart_widget.is_income = value
+        """Update type when property changes."""
+        if hasattr(self.chart_widget, "type"):
+            self.chart_widget.type = value

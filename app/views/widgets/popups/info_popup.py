@@ -25,15 +25,15 @@ class InfoPopup(Popup):
         self.background = ""
         self.background_color = (0, 0, 0, 0)
         
-        container = BoxLayout(orientation='vertical', spacing=dp(10), padding=dp(15))
+        container = BoxLayout(orientation="vertical", spacing=dp(10), padding=dp(15))
         container.add_widget(content_widget)
         
         close_button = StyledButton(
             text="Закрити",
-            bg_color='#445555',
+            bg_color="#445555",
             size_hint=(None, None),
             size=(dp(150), dp(50)),
-            pos_hint={'center_x': 0.5}
+            pos_hint={"center_x": 0.5}
         )
         close_button.bind(on_press=self.dismiss)
         
@@ -52,7 +52,7 @@ class InfoPopup(Popup):
     
     def _update_canvas(self, instance, value):
         """Update the canvas when size or position changes."""
-        if hasattr(self, '_bg_rect'):
+        if hasattr(self, "_bg_rect"):
             self._bg_rect.pos = instance.pos
             self._bg_rect.size = instance.size
 
@@ -61,7 +61,7 @@ class MonobankTokenInfoPopup(ModalView):
         super().__init__(**kwargs)
         self.size_hint = (0.8, 0.5)
 
-        layout = BoxLayout(orientation='vertical', padding=dp(20), spacing=dp(10))
+        layout = BoxLayout(orientation="vertical", padding=dp(20), spacing=dp(10))
 
         with layout.canvas.before:
             from kivy.graphics import Color, RoundedRectangle
@@ -70,8 +70,8 @@ class MonobankTokenInfoPopup(ModalView):
         layout.bind(size=self._update_rect, pos=self._update_rect)
 
         layout.add_widget(Label(
-            text='Монобанк API Токен',
-            font_size='20sp',
+            text="Монобанк API Токен",
+            font_size="20sp",
             bold=True,
             size_hint_y=None,
             height=dp(40),
@@ -85,11 +85,11 @@ class MonobankTokenInfoPopup(ModalView):
             valign='top',
             color=get_color_from_hex('#FFFFFF')
         )
-        token_label.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, None)))
+        token_label.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, None)))
         layout.add_widget(token_label)
 
         button = RoundedButton(
-            text='Зрозуміло',
+            text="Зрозуміло",
             size_hint=(None, None),
             size=(dp(150), dp(50)),
             bg_color='#FF7043'

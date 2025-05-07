@@ -7,7 +7,7 @@ from kivy.graphics import Color, RoundedRectangle
 from kivy.utils import get_color_from_hex
 from app.utils.theme import get_text_secondary_color, get_text_primary_color, STAT_COLORS
 
-card_color = get_color_from_hex('#0A4035')
+card_color = get_color_from_hex("#0A4035")
 
 class StatsSection(GridLayout):
     """
@@ -31,35 +31,35 @@ class StatsSection(GridLayout):
         self.bind(pos=self._update_bg, size=self._update_bg)
 
         fields = [
-            ('Середнє',     'avg'),
-            ('Мінімум',     'min'),
-            ('Максимум',    'max'),
-            ('Сума',        'total'),
-            ('Кількість',   'count'),
-            ('Топ категорія','top_category'),
+            ("Середнє",     "avg"),
+            ("Мінімум",     "min"),
+            ("Максимум",    "max"),
+            ("Сума",        "total"),
+            ("Кількість",   "count"),
+            ("Топ категорія","top_category"),
         ]
         self._value_labels = {}
         for caption, key in fields:
-            box = BoxLayout(orientation='vertical', padding=0, spacing=dp(2))
+            box = BoxLayout(orientation="vertical", padding=0, spacing=dp(2))
             lbl = Label(
                 text=caption,
                 font_size=sp(12),
                 color=get_text_secondary_color(),
                 size_hint_y=None,
                 height=dp(20),
-                halign='center',
-                valign='middle'
+                halign="center",
+                valign="middle"
             )
-            lbl.bind(size=lbl.setter('text_size'))
+            lbl.bind(size=lbl.setter("text_size"))
             val = Label(
-                text='—',
+                text="—",
                 font_size=sp(14),
                 bold=True,
                 color=get_text_primary_color(),
-                halign='center',
-                valign='middle'
+                halign="center",
+                valign="middle"
             )
-            val.bind(size=val.setter('text_size'))
+            val.bind(size=val.setter("text_size"))
             box.add_widget(lbl)
             box.add_widget(val)
             self._value_labels[key] = val
@@ -75,10 +75,10 @@ class StatsSection(GridLayout):
         """
         self.stats_data = stats
         for key, lbl in self._value_labels.items():
-            value = stats.get(key, '—')
+            value = stats.get(key, "0")
             if isinstance(value, dict):
-                lbl.text = str(value.get('value', '—'))
-                lbl.color = value.get('color', STAT_COLORS.get(key, get_text_primary_color()))
+                lbl.text = str(value.get("value", "0"))
+                lbl.color = value.get("color", STAT_COLORS.get(key, get_text_primary_color()))
             else:
                 lbl.text = str(value)
                 lbl.color = STAT_COLORS.get(key, get_text_primary_color())

@@ -23,10 +23,10 @@ class TabButton(BoxLayout):
     badge_count = StringProperty('')
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('size_hint_x', None)
-        kwargs.setdefault('width', dp(80))
-        kwargs.setdefault('padding', dp(5))
+        kwargs.setdefault("orientation", "vertical")
+        kwargs.setdefault("size_hint_x", None)
+        kwargs.setdefault("width", dp(80))
+        kwargs.setdefault("padding", dp(5))
         
         super(TabButton, self).__init__(**kwargs)
         

@@ -48,11 +48,11 @@ class RoundedButton(Button):
     text_color = ListProperty([1, 1, 1, 1])
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('background_color', (0, 0, 0, 0))
-        kwargs.setdefault('color', kwargs.get('text_color', [1, 1, 1, 1]))
-        kwargs.setdefault('halign', 'center')
-        kwargs.setdefault('valign', 'middle')
-        kwargs.setdefault('font_size', sp(FONT_SIZE_MEDIUM))
+        kwargs.setdefault("background_color", (0, 0, 0, 0))
+        kwargs.setdefault("color", kwargs.get("text_color", [1, 1, 1, 1]))
+        kwargs.setdefault("halign", "center")
+        kwargs.setdefault("valign", "middle")
+        kwargs.setdefault("font_size", sp(FONT_SIZE_MEDIUM))
         
         super(RoundedButton, self).__init__(**kwargs)
         
@@ -75,7 +75,7 @@ class RoundedButton(Button):
         """Update the button's background canvas."""
         self.canvas.before.clear()
         with self.canvas.before:
-            if self.state == 'down':
+            if self.state == "down":
                 Color(*get_color_from_hex(self.bg_color_down))
             else:
                 Color(*get_color_from_hex(self.bg_color))

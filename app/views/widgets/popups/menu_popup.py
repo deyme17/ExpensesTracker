@@ -22,7 +22,7 @@ class MenuPopup(ModalView):
         self._build_content()
 
     def _build_content(self):
-        content = BoxLayout(orientation='vertical', spacing=dp(10), padding=dp(10))
+        content = BoxLayout(orientation="vertical", spacing=dp(10), padding=dp(10))
         with content.canvas.before:
             Color(rgba=get_primary_color())
             self.content_rect = RoundedRectangle(size=content.size, pos=content.pos, radius=[dp(10)])
@@ -30,7 +30,7 @@ class MenuPopup(ModalView):
 
         # title
         title_label = Label(
-            text='Меню',
+            text="Меню",
             font_size=sp(18),
             bold=True,
             color=get_text_primary_color(),
@@ -40,14 +40,14 @@ class MenuPopup(ModalView):
 
         # buttons
         logout_btn = RoundedButton(
-            text='Вийти з акаунту',
+            text="Вийти з акаунту",
             size_hint_y=None,
             height=dp(45),
             bg_color='#D8F3EB',
             text_color=[0.04, 0.25, 0.21, 1]
         )
         exit_btn = RoundedButton(
-            text='Вихід із програми',
+            text="Вихід із програми",
             size_hint_y=None,
             height=dp(45),
             bg_color='#D8F3EB',
@@ -64,6 +64,6 @@ class MenuPopup(ModalView):
         self.add_widget(content)
 
     def _update_rect(self, instance, value):
-        if hasattr(self, 'content_rect'):
+        if hasattr(self, "content_rect"):
             self.content_rect.pos = instance.pos
             self.content_rect.size = instance.size

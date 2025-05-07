@@ -19,10 +19,10 @@ class DateInput(BoxLayout):
     date_text = StringProperty("")
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'horizontal')
-        kwargs.setdefault('size_hint_y', None)
-        kwargs.setdefault('height', dp(45))
-        kwargs.setdefault('spacing', dp(5))
+        kwargs.setdefault("orientation", "horizontal")
+        kwargs.setdefault("size_hint_y", None)
+        kwargs.setdefault("height", dp(45))
+        kwargs.setdefault("spacing", dp(5))
 
         super(DateInput, self).__init__(**kwargs)
 
@@ -97,10 +97,10 @@ class LabeledDateInput(BoxLayout):
     date_text = StringProperty("")
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('size_hint_y', None)
-        kwargs.setdefault('height', dp(75))
-        kwargs.setdefault('spacing', dp(5))
+        kwargs.setdefault("orientation", "vertical")
+        kwargs.setdefault("size_hint_y", None)
+        kwargs.setdefault("height", dp(75))
+        kwargs.setdefault("spacing", dp(5))
         
         super(LabeledDateInput, self).__init__(**kwargs)
         
@@ -110,8 +110,8 @@ class LabeledDateInput(BoxLayout):
             size_hint_y=None,
             height=dp(25),
             font_size=sp(FONT_SIZE_MEDIUM),
-            halign='left',
-            valign='bottom',
+            halign="left",
+            valign="bottom",
             text_size=(None, dp(25))
         )
         
@@ -141,7 +141,7 @@ class LabeledDateInput(BoxLayout):
         """Update the date input when the date_text property changes."""
         if value:
             try:
-                day, month, year = value.split('.')
+                day, month, year = value.split(".")
                 self.date_input.day = day
                 self.date_input.month = month
                 self.date_input.year = year

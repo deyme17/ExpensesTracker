@@ -136,9 +136,9 @@ class LabeledDateInput(BoxLayout):
         if value:
             try:
                 day, month, year = value.split(".")
-                self.date_input.day = day
-                self.date_input.month = month
-                self.date_input.year = year
+                self.date_input.day_spinner.text = day
+                self.date_input.month_spinner.text = month
+                self.date_input.year_spinner.text = year
             except ValueError:
                 pass
     

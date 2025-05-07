@@ -10,17 +10,16 @@ from app.views.widgets.analytics_widgets.graph_section import GraphSection
 from app.views.widgets.analytics_widgets.stats_section import StatsSection
 from app.views.widgets.popups.menu_popup import MenuPopup
 from app.utils.constants import TRANSACTION_TYPE_EXPENSE, TR_TYPE_MAP_ENG_UA, CHART_TYPE_HISTOGRAM
-from app.utils.formatters import format_stats, format_date_range
-from kivy.app import App
+from app.utils.formatters import format_stats
 
 Builder.load_file("kv/analytics_screen.kv")
 
 class AnalyticsScreen(BaseScreen):
     current_chart_type = StringProperty(CHART_TYPE_HISTOGRAM)
     current_type = StringProperty(TRANSACTION_TYPE_EXPENSE)
+    translated_type = StringProperty("Витрати")
     start_date = ObjectProperty(None)
     end_date = ObjectProperty(None)
-    date_range_text = StringProperty("")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -32,6 +31,7 @@ class AnalyticsScreen(BaseScreen):
         self.stats_section = None
         self.graph_section = None
 
+        from kivy.app import App
         app = App.get_running_app()
         self.transaction_controller = app.transaction_controller
         self.analytics_controller = app.analytics_controller
@@ -52,6 +52,7 @@ class AnalyticsScreen(BaseScreen):
 
         if not transactions:
             self.data = AnalyticsData.empty()
+            self._update_sections()
             return
 
         currency = getattr(transactions[0], "currency", "UAH")
@@ -64,15 +65,22 @@ class AnalyticsScreen(BaseScreen):
             start_date=self.start_date,
             end_date=self.end_date
         )
+        self._update_sections()
 
-    def change_chart_type(self, chart_type):
-        if self.current_chart_type == chart_type:
-            return
+    def _update_sections(self):
+        if not self.graph_section:
+            self.graph_section = GraphSection(chart_type=self.current_chart_type)
+            self.ids.graph_box.clear_widgets()
+            self.ids.graph_box.add_widget(self.graph_section)
 
-        self.current_chart_type = chart_type
+        self.graph_section.update_graph(self.data.raw_transactions)
 
-        if self.graph_section:
-            self.graph_section.chart_type = chart_type
+        if not self.stats_section:
+            self.stats_section = StatsSection()
+            self.ids.stats_box.clear_widgets()
+            self.ids.stats_box.add_widget(self.stats_section)
+
+        self.stats_section.update_stats(self.data.stats)
 
     def show_filter(self):
         popup = AnalyticsFilterPopup(
@@ -85,9 +93,19 @@ class AnalyticsScreen(BaseScreen):
 
     def _apply_filter(self, transaction_type, start_date, end_date):
         self.current_type = transaction_type
+        self.translated_type = TR_TYPE_MAP_ENG_UA.get(transaction_type, transaction_type)
         self.start_date = start_date
         self.end_date = end_date
         self._load_analytics_data(0)
+        self.show_success_message("Фільтр застосовано")
+
+    def change_chart_type(self, chart_type):
+        if self.current_chart_type == chart_type:
+            return
+        self.current_chart_type = chart_type
+        if self.graph_section:
+            self.graph_section.chart_type = chart_type
+            self.graph_section.update_graph(self.data.raw_transactions)
 
     def go_to_transactions(self):
         if self.manager:

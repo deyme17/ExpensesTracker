@@ -112,13 +112,12 @@
                         width: 1.5
                         points: [self.center_x - dp(5), self.center_y + dp(2), self.center_x + dp(5), self.center_y + dp(2)]
 
-        # Current chart-type label
         Label:
             id: chart_type_label
-            text: analytics_screen_root.current_type
+            text: analytics_screen_root.translated_type
             font_size: '16sp'
             bold: True
-            color: expense_color if analytics_screen_root.current_type == 'Витрати' else income_color
+            color: expense_color if analytics_screen_root.translated_type == 'Витрати' else income_color
             size_hint_y: None
             height: dp(20)
             halign: 'center'

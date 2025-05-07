@@ -27,13 +27,18 @@ class FilterPopup(ModalView):
     on_apply = ObjectProperty(None)
     on_reset = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
+    def __init__(self, start_date=None, end_date=None, **kwargs):
         super(FilterPopup, self).__init__(**kwargs)
         self.size_hint = (0.85, 0.9)
         self.auto_dismiss = False
         self.background = ''
         self.background_color = (0, 0, 0, 0)
         self.overlay_color = (0, 0, 0, 0.7)
+
+        now = datetime.now()
+        self._initial_start = start_date or (now - timedelta(days=365))
+        self._initial_end = end_date or now
+
         self.build_ui()
 
     def build_ui(self):
@@ -76,10 +81,10 @@ class FilterPopup(ModalView):
 
         # date
         self.start_date = LabeledDateInput(label_text="Початкова дата:")
-        year_ago = datetime.now() - timedelta(days=365)
-        self.start_date.date_text = year_ago.strftime('%d.%m.%Y')
+        self.start_date.date_text = self._initial_start.strftime('%d.%m.%Y')
         self.end_date = LabeledDateInput(label_text="Кінцева дата:")
-        self.end_date.date_text = datetime.now().strftime('%d.%m.%Y')
+        self.end_date.date_text = self._initial_end.strftime('%d.%m.%Y')
+        
         content.add_widget(self.start_date)
         content.add_widget(self.end_date)
 

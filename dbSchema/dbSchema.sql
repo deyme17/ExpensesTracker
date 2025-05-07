@@ -29,6 +29,7 @@ CREATE TABLE "accounts" (
     "user_id" VARCHAR(255) NOT NULL,
     "balance" DECIMAL(19, 4) NOT NULL,
     "currency_code" BIGINT NOT NULL,
+    "type" VARCHAR(255) NOT NULL,
     PRIMARY KEY ("account_id"),
     FOREIGN KEY ("user_id") 
         REFERENCES "users"("user_id") ON DELETE CASCADE,

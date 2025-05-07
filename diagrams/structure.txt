@@ -113,6 +113,7 @@ ExpensesTracker/
 │   │   ├── __init__.py
 │   │   ├── user.py             
 │   │   ├── transaction.py     
+│   │   ├── account.py  
 │   │   ├── category.py         
 │   │   └── graphs/
 │   │        ├── __init__.py
@@ -127,6 +128,7 @@ ExpensesTracker/
 │   │   └── repositories/
 │   │       ├── __init__.py
 │   │       ├── user_repository.py
+│   │       ├── account_repository.py
 │   │       ├── transaction_repository.py
 │   │       └── category_repository.py
 │   │

@@ -19,11 +19,11 @@ class TransactionController:
     def get_transactions(self, force_refresh=False):
         return self.storage_service.get_transactions(force_refresh=force_refresh)
 
-    def filter_transactions(self, *, is_income=None, start_date=None, end_date=None, min_amount=None, max_amount=None, payment_method=None):
+    def filter_transactions(self, *, type=None, start_date=None, end_date=None, min_amount=None, max_amount=None, payment_method=None):
         transactions = self.get_transactions()
         return TransactionProcessor.filter(
             transactions,
-            is_income=is_income,
+            type=type,
             start_date=start_date,
             end_date=end_date,
             min_amount=min_amount,

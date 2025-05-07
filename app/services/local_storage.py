@@ -4,6 +4,7 @@ from datetime import datetime
 from app.models.user import User
 from app.models.transaction import Transaction
 from app.models.category import Category
+from app.models.account import Account
 
 
 class LocalStorageService:    
@@ -40,7 +41,7 @@ class LocalStorageService:
         if not user:
             return
         
-        with open(self.user_file, 'w', encoding='utf-8') as f:
+        with open(self.user_file, "w", encoding="utf-8") as f:
             json.dump(user.to_dict(), f, ensure_ascii=False, indent=2)
     
     def get_user(self):
@@ -54,7 +55,7 @@ class LocalStorageService:
             return None
         
         try:
-            with open(self.user_file, 'r', encoding='utf-8') as f:
+            with open(self.user_file, "r", encoding="utf-8") as f:
                 user_data = json.load(f)
             return User.from_dict(user_data)
         except (json.JSONDecodeError, IOError):
@@ -76,7 +77,7 @@ class LocalStorageService:
             return
         
         transaction_dicts = [t.to_dict() for t in transactions]
-        with open(self.transactions_file, 'w', encoding='utf-8') as f:
+        with open(self.transactions_file, "w", encoding="utf-8") as f:
             json.dump(transaction_dicts, f, ensure_ascii=False, indent=2)
     
     def get_transactions(self, force_refresh=False):
@@ -90,7 +91,7 @@ class LocalStorageService:
             return []
         
         try:
-            with open(self.transactions_file, 'r', encoding='utf-8') as f:
+            with open(self.transactions_file, "r", encoding="utf-8") as f:
                 transaction_dicts = json.load(f)
             return [Transaction.from_dict(td) for td in transaction_dicts]
         except (json.JSONDecodeError, IOError):
@@ -173,7 +174,7 @@ class LocalStorageService:
             return
         
         category_dicts = [c.to_dict() for c in categories]
-        with open(self.categories_file, 'w', encoding='utf-8') as f:
+        with open(self.categories_file, "w", encoding="utf-8") as f:
             json.dump(category_dicts, f, ensure_ascii=False, indent=2)
     
     def get_categories(self):
@@ -187,11 +188,35 @@ class LocalStorageService:
             return []
         
         try:
-            with open(self.categories_file, 'r', encoding='utf-8') as f:
+            with open(self.categories_file, "r", encoding="utf-8") as f:
                 category_dicts = json.load(f)
             return [Category.from_dict(cd) for cd in category_dicts]
         except (json.JSONDecodeError, IOError):
             return []
+        
+    def save_accounts(self, accounts):
+        data = [acc.to_dict() for acc in accounts]
+        with open("accounts.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+
+    def get_accounts(self):
+        try:
+            with open("accounts.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return [Account.from_dict(acc) for acc in data]
+        except FileNotFoundError:
+            return []
+
+    def set_active_account(self, account_id):
+        with open("active_account.txt", "w") as f:
+            f.write(account_id)
+
+    def get_active_account_id(self):
+        try:
+            with open("active_account.txt", "r") as f:
+                return f.read().strip()
+        except FileNotFoundError:
+            return None
     
     def close(self):
         """Close the storage service and release any resources."""

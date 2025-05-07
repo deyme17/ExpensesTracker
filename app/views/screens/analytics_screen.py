@@ -3,16 +3,18 @@ from kivy.clock import Clock
 from kivy.lang import Builder
 from datetime import datetime
 
+
 from app.views.screens.base_screen import BaseScreen
+from app.models.analytics import AnalyticsData
 from app.views.widgets.analytics_widgets.analytics_filter_popup import AnalyticsFilterPopup
 from app.views.widgets.analytics_widgets.graph_section import GraphSection
 from app.views.widgets.analytics_widgets.stats_section import StatsSection
 from app.views.widgets.popups.menu_popup import MenuPopup
 from app.utils.constants import TRANSACTION_TYPE_EXPENSE, CHART_TYPE_HISTOGRAM
-from app.utils.formatters import format_amount, format_date_range
+from app.utils.formatters import format_stats, format_date_range
 from kivy.app import App
 
-Builder.load_file('kv/analytics_screen.kv')
+Builder.load_file("kv/analytics_screen.kv")
 
 class AnalyticsScreen(BaseScreen):
     current_chart_type = StringProperty(CHART_TYPE_HISTOGRAM)
@@ -23,7 +25,7 @@ class AnalyticsScreen(BaseScreen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.name = 'analytics_screen'
+        self.name = "analytics_screen"
         now = datetime.now()
         self.start_date = datetime(now.year - 1, 1, 1)
         self.end_date = now
@@ -39,35 +41,28 @@ class AnalyticsScreen(BaseScreen):
         super().on_enter()
         Clock.schedule_once(self._load_analytics_data, 0.1)
 
-    def _load_analytics_data(self, dt):
+    def _load_analytics_data(self, *args):
         transactions = self.transaction_controller.filter_transactions(
-            is_income=(self.current_type != TRANSACTION_TYPE_EXPENSE),
+            min_amount=0,
+            max_amount=1e9,
             start_date=self.start_date,
-            end_date=self.end_date
+            end_date=self.end_date,
+            type=self.current_type
         )
 
-        stats = self.analytics_controller.get_statistics(transactions)
+        if not transactions:
+            self.data = AnalyticsData.empty()
+            return
 
-        if self.stats_section is None:
-            self.stats_section = StatsSection()
-            self.ids.stats_box.clear_widgets()
-            self.ids.stats_box.add_widget(self.stats_section)
+        currency = getattr(transactions[0], "currency", "UAH")
+        stats = self.transaction_controller.get_statistics(transactions)
 
-        stats_dict = {
-            'avg': format_amount(stats['avg_value']),
-            'min': format_amount(stats['min_value']),
-            'max': format_amount(stats['max_value']),
-            'total': format_amount(stats['total']),
-            'count': str(stats['count']),
-            'top_category': stats['top_category'],
-        }
-
-        if not self.stats_section:
-            self.stats_section = StatsSection()
-            self.ids.stats_box.clear_widgets()
-            self.ids.stats_box.add_widget(self.stats_section)
-
-        self.stats_section.update_stats(stats_dict)
+        self.data = AnalyticsData(
+            stats=format_stats(stats, currency),
+            pie_data=self.transaction_controller.get_category_distribution(transactions),
+            line_data=self.transaction_controller.get_balance_over_time(transactions),
+            histogram_data=self.transaction_controller.get_amount_distribution(transactions),
+        )
 
     def change_chart_type(self, chart_type):
         if self.current_chart_type == chart_type:
@@ -96,5 +91,5 @@ class AnalyticsScreen(BaseScreen):
 
     def go_to_transactions(self):
         if self.manager:
-            self.manager.transition.direction = 'right'
-            self.manager.current = 'transactions_screen'
+            self.manager.transition.direction = "right"
+            self.manager.current = "transactions_screen"

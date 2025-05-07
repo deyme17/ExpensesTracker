@@ -71,11 +71,12 @@
         padding: dp(10)
         spacing: dp(10)
 
-        # Header
+        # menu + balance + account
         BoxLayout:
             size_hint_y: None
             height: dp(70)
             padding: dp(5)
+            spacing: dp(10)
             canvas.before:
                 Color:
                     rgba: card_light
@@ -84,19 +85,15 @@
                     size: self.size
                     radius: [dp(10)]
 
-            BoxLayout:
-                orientation: 'vertical'
-                spacing: dp(5)
-                padding: [dp(5), 0]
-
-                Label:
-                    text: root.balance_text
-                    font_size: '20sp'
-                    bold: True
-                    color: text_dark
-                    halign: 'left'
-                    valign: 'middle'
-                    text_size: self.size
+            Label:
+                text: root.balance_text
+                font_size: '20sp'
+                bold: True
+                color: text_dark
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+                padding_x: dp(10)
 
             Button:
                 size_hint: None, None
@@ -113,6 +110,25 @@
                     Line:
                         width: 1.5
                         points: [self.x + dp(10), self.y + dp(30), self.x + dp(30), self.y + dp(30)]
+
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_press: root.show_menu()
+                canvas.before:
+                    Color:
+                        rgba: secondary_color
+                    Line:
+                        width: 1.5
+                        circle: (self.center_x, self.center_y, min(self.width, self.height) / 2 - dp(5), 0, 360)
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x + dp(5), self.center_y - dp(2)]
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(5), self.center_y + dp(2), self.center_x + dp(5), self.center_y + dp(2)]
 
         # Buttons
         BoxLayout:

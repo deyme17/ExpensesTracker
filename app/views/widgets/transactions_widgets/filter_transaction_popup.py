@@ -14,7 +14,7 @@ from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.constants import (
     TRANSACTION_TYPE_ALL, TRANSACTION_TYPE_INCOME, TRANSACTION_TYPE_EXPENSE,
-    PAYMENT_METHOD_ALL, PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH
+    PAYMENT_METHOD_ALL, PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH, CATEGORIES
 )
 from app.utils.theme import get_primary_color, get_text_primary_color
 from app.utils.validators import validate_date
@@ -23,7 +23,6 @@ from app.utils.validators import validate_date
 class FilterPopup(ModalView):
     """
     Modal window for filtration of transactions.
-    Repeats logic and ui from the initial implementation of Show_filter.
     """
     on_apply = ObjectProperty(None)
     on_reset = ObjectProperty(None)
@@ -92,6 +91,14 @@ class FilterPopup(ModalView):
         )
         content.add_widget(self.type_spinner)
 
+        # category
+        self.category_spinner = LabeledSpinner(
+            label_text="Категорія:",
+            values=["Усі"] + self._get_all_categories(),
+            selected="Усі"
+        )
+        content.add_widget(self.category_spinner)
+
         # method
         self.payment_spinner = LabeledSpinner(
             label_text="Спосіб оплати:",
@@ -132,6 +139,7 @@ class FilterPopup(ModalView):
         self.end_date.date_text = now.strftime('%d.%m.%Y')
         self.type_spinner.selected = TRANSACTION_TYPE_ALL
         self.payment_spinner.selected = PAYMENT_METHOD_ALL
+        self.category_spinner.selected = "Усі"
         if self.on_reset:
             self.on_reset()
 
@@ -149,6 +157,7 @@ class FilterPopup(ModalView):
                 end_dt = datetime.now()
 
             pay = None if self.payment_spinner.selected == PAYMENT_METHOD_ALL else self.payment_spinner.selected
+            category = None if self.category_spinner.selected == "Усі" else self.category_spinner.selected
 
             if self.on_apply:
                 self.on_apply(
@@ -157,8 +166,12 @@ class FilterPopup(ModalView):
                     start_date=start_dt,
                     end_date=end_dt,
                     type=self.type_spinner.selected,
-                    payment_method=pay
+                    payment_method=pay,
+                    category=category
                 )
             self.dismiss()
         except Exception as e:
             print(f"Filter error: {e}")
+
+    def _get_all_categories(self):
+        return CATEGORIES

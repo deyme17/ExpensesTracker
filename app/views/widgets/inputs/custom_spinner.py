@@ -21,6 +21,8 @@ class CustomSpinner(Spinner):
     """
     selected_value = StringProperty("")
     padding_x = NumericProperty(dp(15))
+    label_text = StringProperty("")
+    selected = StringProperty("")  
     
     def __init__(self, **kwargs):
         kwargs.setdefault("background_color", (0, 0, 0, 0))

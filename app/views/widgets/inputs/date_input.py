@@ -13,6 +13,7 @@ class DateInput(BoxLayout):
     """
     A compound widget for date input with day/month/year spinners.
     """
+    hint_text = StringProperty("")
     day = StringProperty("01")
     month = StringProperty("01")
     year = StringProperty("")
@@ -27,12 +28,10 @@ class DateInput(BoxLayout):
         super(DateInput, self).__init__(**kwargs)
 
         now = datetime.now()
-        # current date
         self.day = now.strftime("%d")
         self.month = now.strftime("%m")
         self.year = now.strftime("%Y")
 
-        # day spinner
         days = [str(i).zfill(2) for i in range(1, 32)]
         self.day_spinner = CustomSpinner(
             text=self.day,
@@ -41,7 +40,6 @@ class DateInput(BoxLayout):
             padding_x=dp(2)
         )
 
-        # month spinner
         months = [str(i).zfill(2) for i in range(1, 13)]
         self.month_spinner = CustomSpinner(
             text=self.month,
@@ -50,7 +48,6 @@ class DateInput(BoxLayout):
             padding_x=dp(2)
         )
 
-        # year spinner
         current_year = now.year
         years = [str(year) for year in range(current_year - 5, current_year + 1)]
         self.year_spinner = CustomSpinner(
@@ -71,23 +68,20 @@ class DateInput(BoxLayout):
         self._update_date_text()
     
     def _on_day_changed(self, instance, value):
-        """Update the day property when the spinner changes."""
         self.day = value
         self._update_date_text()
     
     def _on_month_changed(self, instance, value):
-        """Update the month property when the spinner changes."""
         self.month = value
         self._update_date_text()
     
     def _on_year_changed(self, instance, value):
-        """Update the year property when the spinner changes."""
         self.year = value
         self._update_date_text()
     
     def _update_date_text(self):
-        """Update the date_text property with the current date components."""
         self.date_text = f"{self.day}.{self.month}.{self.year}"
+
 
 class LabeledDateInput(BoxLayout):
     """

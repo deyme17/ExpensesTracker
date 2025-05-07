@@ -53,7 +53,7 @@ class AddTransactionPopup(ModalView):
         self.content.bind(size=self._update_bg, pos=self._update_bg)
 
         title = Label(
-            text="Додати дохід" if self.type==TRANSACTION_TYPE_INCOME else "Додати витрату",
+            text="Додати дохід" if self.type=='income' else "Додати витрату",
             font_size=sp(20),
             bold=True,
             color=get_text_primary_color(),

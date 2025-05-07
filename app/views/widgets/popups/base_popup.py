@@ -17,7 +17,7 @@ class BasePopup(Popup):
     """Base class for custom popups."""
     message = StringProperty("")
     
-    def __init__(self, message, **kwargs):
+    def __init__(self, message="", **kwargs):
         super(BasePopup, self).__init__(**kwargs)
         self.message = message
         self.title = ""

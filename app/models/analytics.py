@@ -43,3 +43,13 @@ class AnalyticsData:
         if not chart:
             return []
         return chart.fit(self.raw_transactions)
+
+    @staticmethod
+    def empty():
+        return AnalyticsData(
+            stats={"avg": 0, "min": 0, "max": 0, "total": 0, "count": 0, "top_category": None},
+            raw_transactions=[],
+            transaction_type="усі",
+            start_date=None,
+            end_date=None
+        )

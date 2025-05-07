@@ -14,7 +14,7 @@ from app.views.widgets.popups.alert_popup import ErrorPopup, SuccessPopup
 from app.views.widgets.popups.menu_popup import MenuPopup
 from app.views.widgets.transactions_widgets.account_select_popup import AccountSelectPopup
 from app.services.local_storage import LocalStorageService
-from app.utils.constants import UNABLE_DEL_TR, TR_NOT_FOUND
+from app.utils.constants import UNABLE_DEL_TR, TR_NOT_FOUND, TR_TYPE_MAP_UA_ENG, PYMNT_METHOD_MAP_UA_ENG, FIELD_MAP
 
 Builder.load_file("kv/transactions_screen.kv")
 
@@ -103,13 +103,15 @@ class TransactionsScreen(BaseScreen):
         popup.open()
 
     def _on_save(self, type, category, amount, date, description, payment_method, currency, cashback, commission):
+        internal_type = TR_TYPE_MAP_UA_ENG.get(type, type)
+        internal_method = PYMNT_METHOD_MAP_UA_ENG.get(payment_method, payment_method)
         success, msg = self.controller.add_transaction(
-            type=type,
+            type=internal_type,
             category=category,
             amount=amount,
             date=date,
             description=description,
-            payment_method=payment_method,
+            payment_method=internal_method,
             currency=currency,
             cashback=cashback,
             commission=commission,
@@ -123,14 +125,16 @@ class TransactionsScreen(BaseScreen):
 
     def _on_update(self, type, category, amount, date, description, payment_method, currency, cashback, commission, popup):
         tx_id = popup.transaction.transaction_id
+        internal_type = TR_TYPE_MAP_UA_ENG.get(type, type)
+        internal_method = PYMNT_METHOD_MAP_UA_ENG.get(payment_method, payment_method)
         success, msg = self.controller.update_transaction(
             transaction_id=tx_id,
-            type=type,
+            type=internal_type,
             category=category,
             amount=amount,
             date=date,
             description=description,
-            payment_method=payment_method,
+            payment_method=internal_method,
             currency=currency,
             cashback=cashback,
             commission=commission
@@ -162,13 +166,15 @@ class TransactionsScreen(BaseScreen):
         popup.open()
 
     def _apply_filter(self, min_amount, max_amount, start_date, end_date, type, payment_method, category):
+        internal_type = TR_TYPE_MAP_UA_ENG.get(type, type)
+        internal_method = PYMNT_METHOD_MAP_UA_ENG.get(payment_method, payment_method)
         filtered = self.controller.filter_transactions(
             min_amount=min_amount,
             max_amount=max_amount,
             start_date=start_date,
             end_date=end_date,
-            type=type,
-            payment_method=payment_method,
+            type=internal_type,
+            payment_method=internal_method,
             category=category
         )
         self._clear_list()
@@ -180,8 +186,7 @@ class TransactionsScreen(BaseScreen):
         popup.open()
 
     def _apply_sort(self, field_text, ascending):
-        field_map = {"Дата": "date", "Сума": "amount", "Кешбек": "cashback", "Комісія": "commission"}
-        key = field_map.get(field_text, "date")
+        key = FIELD_MAP.get(field_text, "date")
         tx_list = list(self.transactions_data.values())
         sorted_list = self.controller.sort_transactions(tx_list, field=key, ascending=ascending)
         self._clear_list()

@@ -3,14 +3,13 @@ from kivy.clock import Clock
 from kivy.lang import Builder
 from datetime import datetime
 
-
 from app.views.screens.base_screen import BaseScreen
 from app.models.analytics import AnalyticsData
 from app.views.widgets.analytics_widgets.analytics_filter_popup import AnalyticsFilterPopup
 from app.views.widgets.analytics_widgets.graph_section import GraphSection
 from app.views.widgets.analytics_widgets.stats_section import StatsSection
 from app.views.widgets.popups.menu_popup import MenuPopup
-from app.utils.constants import TRANSACTION_TYPE_EXPENSE, CHART_TYPE_HISTOGRAM
+from app.utils.constants import TRANSACTION_TYPE_EXPENSE, TR_TYPE_MAP_ENG_UA, CHART_TYPE_HISTOGRAM
 from app.utils.formatters import format_stats, format_date_range
 from kivy.app import App
 
@@ -42,12 +41,13 @@ class AnalyticsScreen(BaseScreen):
         Clock.schedule_once(self._load_analytics_data, 0.1)
 
     def _load_analytics_data(self, *args):
+        internal_type = TR_TYPE_MAP_ENG_UA.get(self.current_type, self.current_type)
         transactions = self.transaction_controller.filter_transactions(
             min_amount=0,
             max_amount=1e9,
             start_date=self.start_date,
             end_date=self.end_date,
-            type=self.current_type
+            type=internal_type
         )
 
         if not transactions:
@@ -59,20 +59,20 @@ class AnalyticsScreen(BaseScreen):
 
         self.data = AnalyticsData(
             stats=format_stats(stats, currency),
-            pie_data=self.transaction_controller.get_category_distribution(transactions),
-            line_data=self.transaction_controller.get_balance_over_time(transactions),
-            histogram_data=self.transaction_controller.get_amount_distribution(transactions),
+            raw_transactions=transactions,
+            transaction_type=internal_type,
+            start_date=self.start_date,
+            end_date=self.end_date
         )
 
     def change_chart_type(self, chart_type):
         if self.current_chart_type == chart_type:
             return
-        
+
         self.current_chart_type = chart_type
 
         if self.graph_section:
             self.graph_section.chart_type = chart_type
-
 
     def show_filter(self):
         popup = AnalyticsFilterPopup(

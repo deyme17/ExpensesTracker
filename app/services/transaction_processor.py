@@ -13,7 +13,7 @@ class TransactionProcessor:
                 continue
             if end_date and tx.date > end_date:
                 continue
-            if type and type != "усі" and tx.type != type:
+            if type and tx.type != type:
                 continue
             if payment_method and tx.payment_method != payment_method:
                 continue

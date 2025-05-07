@@ -8,10 +8,30 @@ TRANSACTION_TYPE_INCOME = "Доходи"
 TRANSACTION_TYPE_EXPENSE = "Витрати"
 TRANSACTION_TYPE_ALL = "Всі"
 
+# Internal transaction type mapping
+TR_TYPE_MAP_UA_ENG = {
+    TRANSACTION_TYPE_INCOME: "income",
+    TRANSACTION_TYPE_EXPENSE: "expense",
+    TRANSACTION_TYPE_ALL: None
+}
+
+# Reverse mapping for displaying in UI
+TR_TYPE_MAP_ENG_UA = {
+    "income": TRANSACTION_TYPE_INCOME,
+    "expense": TRANSACTION_TYPE_EXPENSE,
+    None: TRANSACTION_TYPE_ALL
+}
+
 # Payment methods
 PAYMENT_METHOD_CARD = "Картка"
 PAYMENT_METHOD_CASH = "Готівка"
 PAYMENT_METHOD_ALL = "Всі"
+
+PYMNT_METHOD_MAP_UA_ENG = {
+    PAYMENT_METHOD_CARD: "card",
+    PAYMENT_METHOD_CASH: "cash",
+    PAYMENT_METHOD_ALL: None
+}
 
 # Currency codes
 CURRENCY_UAH = "UAH"
@@ -63,8 +83,19 @@ SHORT_MONTHS = [
     "Лип", "Сер", "Вер", "Жов", "Лис", "Гру"
 ]
 
-# sort fields
 SORT_FIELDS = ['Дата', 'Сума', 'Кешбек', 'Комісія']
+FIELD_MAP = {
+    'Дата': 'date',
+    'Сума': 'amount',
+    'Кешбек': 'cashback',
+    'Комісія': 'commission'
+}
+FIELD_REVERSE = {
+    'date': 'Дата',
+    'amount': 'Сума',
+    'cashback': 'Кешбек',
+    'commission': 'Комісія'
+}
 
 # MCC code mappings (Merchant Category Codes)
 # Maps MCC codes from banks to our expense categories

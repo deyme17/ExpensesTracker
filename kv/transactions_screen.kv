@@ -1,10 +1,6 @@
 #:import get_color_from_hex kivy.utils.get_color_from_hex
-#:import SlideTransition kivy.uix.screenmanager.SlideTransition
 #:import dp kivy.metrics.dp
-#:import Clock kivy.clock.Clock
-#:import Animation kivy.animation.Animation
 
-# colors
 #:set primary_color get_color_from_hex('#FF7043')
 #:set secondary_color get_color_from_hex('#0F7055')
 #:set accent_color get_color_from_hex('#FFB74D')
@@ -17,41 +13,6 @@
 #:set error_color get_color_from_hex('#F44336')
 #:set success_color get_color_from_hex('#66BB6A')
 #:set light_bg get_color_from_hex('#D8F3EB')
-
-<CustomButton@Button>:
-    background_normal: ''
-    background_down: ''
-    background_color: (0, 0, 0, 0)
-    color: text_light
-    font_size: '16sp'
-    size_hint: None, None
-    canvas.before:
-        Color:
-            rgba: light_bg
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [dp(5)]
-
-<FilterButton@Button>:
-    background_normal: ''
-    background_down: ''
-    background_color: (0, 0, 0, 0)
-    color: get_color_from_hex('#0A4035')
-    font_size: '16sp'
-    bold: True
-    size_hint_x: 0.5
-    size_hint_y: None
-    height: dp(45)
-    canvas.before:
-        Color:
-            rgba: get_color_from_hex('#D8F3EB')
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [dp(10)]
-
-#:set bottom_bar_color get_color_from_hex('#0A4035')
 
 <TransactionRow>:
     orientation: 'horizontal'
@@ -104,12 +65,13 @@
         Rectangle:
             pos: self.pos
             size: self.size
+
     BoxLayout:
         orientation: 'vertical'
         padding: dp(10)
         spacing: dp(10)
 
-        # menu/balance
+        # Header
         BoxLayout:
             size_hint_y: None
             height: dp(70)
@@ -121,63 +83,38 @@
                     pos: self.pos
                     size: self.size
                     radius: [dp(10)]
-            Widget:
-                size_hint_x: None
-                width: dp(50)
-                canvas:
-                    Color:
-                        rgba: secondary_color
-                    Line:
-                        width: 1.5
-                        rectangle: [self.x + dp(10), self.y + dp(15), dp(30), dp(20)]
-                    Line:
-                        width: 1.5
-                        points: [self.x + dp(10), self.y + dp(35), self.x + dp(20), self.y + dp(45), self.x + dp(30), self.y + dp(45), self.x + dp(40), self.y + dp(35)]
-        
-        BoxLayout:
-            orientation: 'vertical'
-            spacing: dp(5)
 
-            Label:
-                text: root.balance_text
-                font_size: '20sp'
-                bold: True
-                color: text_dark
-                halign: 'left'
-                valign: 'middle'
-                text_size: self.size
-                padding_x: dp(10)
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: dp(5)
+                padding: [dp(5), 0]
 
-            LabeledSpinner:
-                id: account_spinner
-                label_text: "Рахунок"
-                values: root.account_options
-                selected: root.get_selected_account_text()
-                on_selected: root.on_account_selected(self.selected)
-                size_hint_y: None
-                height: dp(60)
-                pos_hint: {"center_y": 0.5}
+                Label:
+                    text: root.balance_text
+                    font_size: '20sp'
+                    bold: True
+                    color: text_dark
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
 
             Button:
                 size_hint: None, None
                 size: dp(40), dp(40)
                 pos_hint: {'center_y': 0.5}
                 background_color: 0, 0, 0, 0
-                on_press: root.show_menu()
+                on_press: root.open_account_selector()
                 canvas.before:
                     Color:
                         rgba: secondary_color
                     Line:
                         width: 1.5
-                        circle: (self.center_x, self.center_y, min(self.width, self.height) / 2 - dp(5), 0, 360)
+                        rectangle: [self.x + dp(10), self.y + dp(12), dp(20), dp(15)]
                     Line:
                         width: 1.5
-                        points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x + dp(5), self.center_y - dp(2)]
-                    Line:
-                        width: 1.5
-                        points: [self.center_x - dp(5), self.center_y + dp(2), self.center_x + dp(5), self.center_y + dp(2)]
+                        points: [self.x + dp(10), self.y + dp(30), self.x + dp(30), self.y + dp(30)]
 
-        # expenses/income
+        # Buttons
         BoxLayout:
             size_hint_y: None
             height: dp(50)
@@ -187,7 +124,7 @@
                 background_color: 0, 0, 0, 0
                 color: text_light
                 bold: True
-                on_press: root.add_transaction(is_income=True)
+                on_press: root.add_transaction(type='income')
                 canvas.before:
                     Color:
                         rgba: success_color
@@ -200,7 +137,7 @@
                 background_color: 0, 0, 0, 0
                 color: text_light
                 bold: True
-                on_press: root.add_transaction(is_income=False)
+                on_press: root.add_transaction(type='expense')
                 canvas.before:
                     Color:
                         rgba: error_color
@@ -209,7 +146,7 @@
                         size: self.size
                         radius: [dp(10)]
 
-        # title
+        # Transactions title and controls
         BoxLayout:
             size_hint_y: None
             height: dp(50)
@@ -221,6 +158,7 @@
                     pos: self.pos
                     size: self.size
                     radius: [dp(10)]
+
             Label:
                 text: 'Транзакції'
                 font_size: '18sp'
@@ -275,7 +213,7 @@
                         width: 1.5
                         points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(2)]
 
-        # transactions
+        # Transactions list
         ScrollView:
             do_scroll_x: False
             do_scroll_y: True
@@ -283,6 +221,7 @@
             bar_color: primary_color
             bar_inactive_color: hint_color
             effect_cls: 'ScrollEffect'
+
             GridLayout:
                 id: transactions_container_id
                 cols: 1
@@ -291,7 +230,7 @@
                 size_hint_y: None
                 height: self.minimum_height
 
-        # bottom menu
+        # Bottom menu
         BoxLayout:
             size_hint_y: None
             height: dp(60)

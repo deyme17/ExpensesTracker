@@ -84,13 +84,13 @@ SHORT_MONTHS = [
 ]
 
 SORT_FIELDS = ['Дата', 'Сума', 'Кешбек', 'Комісія']
-FIELD_MAP = {
+FIELD_MAP_UA_ENG = {
     'Дата': 'date',
     'Сума': 'amount',
     'Кешбек': 'cashback',
     'Комісія': 'commission'
 }
-FIELD_REVERSE = {
+FIELD_REVERSE_ENG_UA = {
     'date': 'Дата',
     'amount': 'Сума',
     'cashback': 'Кешбек',

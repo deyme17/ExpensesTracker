@@ -16,7 +16,7 @@ from app.views.widgets.popups.alert_popup import ErrorPopup, SuccessPopup
 from app.views.widgets.popups.menu_popup import MenuPopup
 from app.views.widgets.transactions_widgets.account_select_popup import AccountSelectPopup
 from app.services.local_storage import LocalStorageService
-from app.utils.constants import UNABLE_DEL_TR, TR_NOT_FOUND, TR_TYPE_MAP_UA_ENG, PYMNT_METHOD_MAP_UA_ENG, FIELD_MAP
+from app.utils.constants import UNABLE_DEL_TR, TR_NOT_FOUND, TR_TYPE_MAP_UA_ENG, PYMNT_METHOD_MAP_UA_ENG, FIELD_MAP_UA_ENG
 
 Builder.load_file("kv/transactions_screen.kv")
 
@@ -182,7 +182,7 @@ class TransactionsScreen(BaseScreen):
         popup.open()
 
     def _apply_sort(self, field_text, ascending):
-        key = FIELD_MAP.get(field_text, "date")
+        key = FIELD_MAP_UA_ENG.get(field_text, "date")
         tx_list = list(self.transactions_data.values())
         sorted_list = self.controller.sort_transactions(tx_list, field=key, ascending=ascending)
         self._clear_list()
@@ -202,6 +202,19 @@ class TransactionsScreen(BaseScreen):
             on_delete=lambda: self.confirm_delete_transaction(transaction_id)
         )
         popup.open()
+
+    def open_account_selector(self):
+        popup = AccountSelectPopup(
+            self.accounts,
+            on_account_selected=self._on_account_selected
+        )
+        popup.open()
+    def _on_account_selected(self, selected_account_id):
+        self.selected_account_id = selected_account_id
+        self.storage_service.set_active_account(selected_account_id)
+        self.update_balance_label()
+        self.refresh_transactions()
+        self.show_success_message("Рахунок змінено")
 
     def go_analytics(self):
         if self.manager:

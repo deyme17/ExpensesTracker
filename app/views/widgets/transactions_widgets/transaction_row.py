@@ -41,7 +41,7 @@ class TransactionRow(BoxLayout):
         self.clear_widgets()
         
         with self.canvas.before:
-            color = get_income_color(0.2) if self.type=="income" else get_expense_color(0.2)
+            color = get_income_color(0.45) if self.type=="income" else get_expense_color(0.45)
             self.background_color = Color(*color)
             self.background_rect = RoundedRectangle(
                 pos=self.pos,

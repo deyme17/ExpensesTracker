@@ -50,7 +50,7 @@
 
     Label:
         text: root.amount
-        color: success_color if root.is_income else error_color
+        color: success_color if root.type == 'income' else error_color
         size_hint_x: 0.35
         font_size: '15sp'
         text_size: self.size

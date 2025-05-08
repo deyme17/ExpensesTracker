@@ -39,7 +39,7 @@ class MonobankService:
             "accounts": accounts
         }
 
-    def get_transactions(self, account_id, days=90):
+    def get_transactions(self, account_id, days=31):
         """
         Gets transactions for a specific account for the last N days.
 

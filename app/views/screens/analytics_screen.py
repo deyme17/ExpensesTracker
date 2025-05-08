@@ -61,7 +61,7 @@ class AnalyticsScreen(BaseScreen):
         self.data = AnalyticsData(
             stats=format_stats(stats, currency),
             raw_transactions=transactions,
-            transaction_type=internal_type,
+            transaction_type=self.current_type,
             start_date=self.start_date,
             end_date=self.end_date
         )

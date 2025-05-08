@@ -33,22 +33,27 @@ class TransactionsScreen(BaseScreen):
         self._initialized = False
         self.filter_start_date = datetime.now() - timedelta(days=365)
         self.filter_end_date = datetime.now()
+        self._first_enter = True
 
     def on_enter(self):
-        self.storage_service = LocalStorageService()
-        self.accounts = self.storage_service.get_accounts()
-        acc_id = self.storage_service.get_active_account_id()
-        if acc_id:
-            self.selected_account_id = acc_id
+        if self._first_enter:
+            self._first_enter = False
 
-        self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
-        self.update_balance_label()
-        self.refresh_transactions()
+            self.storage_service = LocalStorageService()
+            self.accounts = self.storage_service.get_accounts()
+            acc_id = self.storage_service.get_active_account_id()
+            if acc_id:
+                self.selected_account_id = acc_id
+
+            self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
+            self.update_balance_label()
+            self.refresh_transactions()
+
 
     def update_balance_label(self):
         acc = next((a for a in self.accounts if a.account_id == self.selected_account_id), None)
         if acc:
-            self.balance_text = f"Баланс ({acc.currency_code}-{acc.type}): {acc.balance:.2f}"
+            self.balance_text = f"Баланс: {acc.balance:.2f}"
         else:
             self.balance_text = "Баланс: 0"
 
@@ -69,8 +74,8 @@ class TransactionsScreen(BaseScreen):
             category=tx.category,
             amount=str(abs(tx.amount)),
             date=tx.get_formatted_date(),
-            is_income=(tx.type == "income"),
             payment_method=tx.payment_method,
+            type=tx.type,
             description=tx.description,
             currency=tx.currency,
             cashback=str(tx.cashback),

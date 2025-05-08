@@ -1,9 +1,10 @@
 from datetime import datetime
+from app.utils.constants import MCC_MAPPING, CURRENCY_CODE_MAPPING
 
 
 class Transaction:
     def __init__(self, transaction_id, user_id, amount, date, account_id, category, description="", 
-                payment_method="card", currency="UAH", 
+                payment_method="card", currency="UAH", type='expense', 
                 cashback=0.0, commission=0.0, is_synced=True):
         """
         Initialize a Transaction instance.
@@ -39,7 +40,7 @@ class Transaction:
             self.date = date
         
         self.account_id = account_id
-        self.type = "income" if self.amount > 0 else "expense"
+        self.type = type
         self.category = category
         self.description = description
         self.payment_method = payment_method
@@ -105,7 +106,38 @@ class Transaction:
             currency=data.get("currency", "UAH"),
             cashback=data.get("cashback", 0.0),
             commission=data.get("commission", 0.0),
-            is_synced=data.get("is_synced", True)
+            is_synced=data.get("is_synced", True),
+            type=data.get("type", "expense")
+        )
+    
+    @classmethod
+    def from_monobank(cls, data, user_id, account_id):
+        """
+        Creating a Transaction object from Monobank API data.
+
+        Args:
+            data (dict): Data of the first transaction with Monobank
+            user_id (str): User ID
+            account_id (str): Account ID for which the transaction is required
+
+        Returns:
+            Transaction: a ready object
+        """
+        amount = data.get("amount", 0) / 100.0
+        return cls(
+            transaction_id=data.get("id"),
+            user_id=user_id,
+            amount=data.get("amount", 0) / 100.0,
+            date=datetime.fromtimestamp(data.get("time", datetime.now().timestamp())),
+            account_id=account_id,
+            category=MCC_MAPPING.get(data.get("mcc", 0), "Інше"),
+            type="income" if amount > 0 else "expense",
+            description=data.get("description", ""),
+            payment_method="card",
+            currency=CURRENCY_CODE_MAPPING.get(data.get("currencyCode", 980), "UAH"),
+            cashback=data.get("cashbackAmount", 0) / 100.0,
+            commission=data.get("commissionRate", 0) / 100.0,
+            is_synced=True
         )
     
     def get_formatted_amount(self):

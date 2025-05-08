@@ -36,19 +36,6 @@
         self.background_color = 0, 0, 0, 0.1
         Animation(background_color=(0, 0, 0, 0), d=0.3).start(self)
 
-<AnimatedBackground@Widget>:
-    canvas.before:
-        Color:
-            rgba: bg_color
-        Rectangle:
-            pos: self.pos
-            size: self.size
-        Color:
-            rgba: secondary_color[0], secondary_color[1], secondary_color[2], 0.15
-        Ellipse:
-            pos: self.center_x - self.width*0.75, self.center_y - self.height*0.75
-            size: self.width*1.5, self.height*1.5
-
 <AnalyticsScreen>:
     id: analytics_screen_root
 

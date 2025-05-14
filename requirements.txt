@@ -1,0 +1,10 @@
+kivy==2.3.0
+kivymd==1.1.1
+requests==2.31.0
+cryptography==42.0.5
+matplotlib==3.8.4
+flask==3.0.2
+flask-cors==4.0.0
+pg8000==1.30.5
+gunicorn==21.2.0
+pytest==8.1.1

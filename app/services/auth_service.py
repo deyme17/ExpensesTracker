@@ -1,12 +1,13 @@
 import hashlib
 from uuid import uuid4
 from kivy.clock import Clock
+from datetime import datetime
+
 from app.models.user import User
 from app.models.account import Account
 from app.models.transaction import Transaction
 from app.services.bank_services.monobank_service import MonobankService
 from app.services.encryption_service import EncryptionService
-from datetime import datetime
 from app.utils.constants import MCC_MAPPING, CURRENCY_CODE_MAPPING
 from app.utils.validators import (
     validate_email,
@@ -87,59 +88,63 @@ class AuthService:
                 callback(False, "Паролі не співпадають")
             return False
 
-        def process_registration(dt):
-            try:
-                raw_token = monobank_token.strip()
-                if not validate_monobank_token(raw_token):
-                    if callback:
-                        callback(False, "Невірний формат токену Монобанк")
-                    return False
-
-                # monobank
-                mono_service = MonobankService(token=raw_token)
-                client_info = mono_service.get_client_info()
-
-                # user
-                password_hash = hashlib.sha256(password.encode()).hexdigest()
-                user = User(
-                    user_id=client_info["user_id"],
-                    name=client_info["name"],
-                    email=email,
-                    password_hash=password_hash,
-                    token=raw_token
-                )
-
-                # accounts
-                account_objects = [
-                    Account.from_monobank_dict(acc, user.user_id)
-                    for acc in client_info["accounts"]
-                ]
-
-                uah_accounts = [a for a in account_objects if a.currency_code == 980]
-                active_account_id = uah_accounts[0].account_id if uah_accounts else account_objects[0].account_id
-
-                # transactions
-                transactions_data = mono_service.get_transactions(account_id=active_account_id, days=31)
-                transactions = [
-                    Transaction.from_monobank(t, user.user_id, active_account_id)
-                    for t in transactions_data
-                ]
-
-                # save user
-                self.storage_service.save_user(user)
-                self.current_user = user
-                self.storage_service.save_accounts(account_objects)
-                self.storage_service.save_transactions(transactions)
-                self.storage_service.set_active_account(active_account_id)
-
-                if callback:
-                    callback(True, "Реєстрація успішна")
-                return True
-
-            except Exception as e:
-                if callback:
-                    callback(False, f"Помилка реєстрації: {str(e)}")
-                return False
-
-        Clock.schedule_once(process_registration, 1.5)
+        Clock.schedule_once(lambda dt: self._process_registration(email, password, monobank_token, callback), 1.5)
         return True
+
+    def _process_registration(self, email, password, monobank_token, callback):
+        try:
+            user = self._create_user(email, password, monobank_token)
+            self.storage_service.save_user(user)
+            self.current_user = user
+
+            accounts = self._import_accounts(user)
+            self.storage_service.save_accounts(accounts)
+
+            active_account_id = self._select_active_account(accounts)
+            self.storage_service.set_active_account(active_account_id)
+
+            transactions = self._import_transactions(user.user_id, accounts)
+            self.storage_service.save_transactions(transactions)
+
+            if callback:
+                callback(True, "Реєстрація успішна")
+            return True
+        except Exception as e:
+            if callback:
+                callback(False, f"Помилка реєстрації: {str(e)}")
+            return False
+
+    def _create_user(self, email, password, token):
+        if not validate_monobank_token(token):
+            raise ValueError("Невірний формат токену Монобанк")
+
+        mono = MonobankService(token=token.strip())
+        client = mono.get_client_info()
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
+        return User(
+            user_id=client["user_id"],
+            name=client["name"],
+            email=email,
+            password_hash=password_hash,
+            token=token
+        )
+
+    def _import_accounts(self, user):
+        mono = MonobankService(token=user.token)
+        accounts_data = mono.get_client_info()["accounts"]
+        return [Account.from_monobank_dict(acc, user.user_id) for acc in accounts_data]
+
+    def _select_active_account(self, accounts):
+        uah_accounts = [a for a in accounts if a.currency_code == 980]
+        return (uah_accounts[0] if uah_accounts else accounts[0]).account_id
+
+    def _import_transactions(self, user_id, accounts):
+        mono = MonobankService(token=self.current_user.token)
+        transactions = []
+        for acc in accounts:
+            data = mono.get_transactions(account_id=acc.account_id, days=31)
+            transactions.extend([
+                Transaction.from_monobank(t, user_id, acc.account_id)
+                for t in data
+            ])
+        return transactions

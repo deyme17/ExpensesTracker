@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from server.services import user_service, transaction_service, account_service, category_service, currency_service
-from server.utils.security import create_access_token
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
@@ -9,21 +8,9 @@ def register():
     try:
         data = request.json
         user = user_service.register(data)
-        token = create_access_token({"user_id": user.user_id})
-
-        return jsonify({
-            "success": True,
-            "token": token,
-            "user": {
-                "user_id": user.user_id,
-                "name": user.name,
-                "email": user.email,
-                "balance": float(user.balance)
-            }
-        })
+        return jsonify({"success": True, "user_id": user.user_id})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
-    
 
 @api.route("/transactions/<user_id>", methods=["GET"])
 def get_transactions(user_id):

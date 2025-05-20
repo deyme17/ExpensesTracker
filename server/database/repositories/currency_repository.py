@@ -6,4 +6,8 @@ class CurrencyRepository:
         self.db = SessionLocal()
 
     def get_all(self):
+<<<<<<< HEAD
         return self.db.query(Currency).all()
+=======
+        return self.db.query(Currency).all()
+>>>>>>> 9765729 (completed api)

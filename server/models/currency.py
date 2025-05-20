@@ -6,4 +6,7 @@ class Currency(Base):
 
     currency_code = Column(BigInteger, primary_key=True)
     name = Column(String(255), nullable=False)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9765729 (completed api)

@@ -1,11 +1,14 @@
-# server/app.py
 from flask import Flask
-from server.api.auth_routes import auth_bp
-from server.api.transaction_routes import transactions_bp
+from flask_cors import CORS
+from server.api.endpoints import api
 
-app = Flask(__name__)
-app.register_blueprint(auth_bp)
-app.register_blueprint(transactions_bp)
+def create_app():
+    app = Flask(__name__)
+    CORS(app)  # дозволити запити з клієнта (Kivy, Postman тощо)
+    app.register_blueprint(api)
+    return app
+
+app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

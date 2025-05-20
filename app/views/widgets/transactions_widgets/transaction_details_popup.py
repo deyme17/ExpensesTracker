@@ -84,7 +84,7 @@ class TransactionDetailsPopup(ModalView):
         details_layout.add_widget(add_detail("Категорія", t.category))
         try:
             amt = abs(float(t.amount))
-            amt_text = f"{"+" if t.type=='income' else "-"}{amt:,.2f} {t.currency}"
+            amt_text = f"{'+' if t.type=='income' else '-'}{amt:,.2f}{t.currency}"
         except:
             amt_text = f"{t.amount} {t.currency}"
         details_layout.add_widget(add_detail("Сума", amt_text))

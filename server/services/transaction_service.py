@@ -1,9 +1,15 @@
 from server.database.repositories.transaction_repository import TransactionRepository
-from server.models.transaction import Transaction
 
-class TransactionService:
-    def __init__(self):
-        self.repo = TransactionRepository()
+repo = TransactionRepository()
 
-    def create_transaction(self, data):
-        return self.repo.create_transaction(data)
+def get_all_by_user(user_id):
+    return [t.__dict__ for t in repo.get_all_by_user(user_id)]
+
+def create(data):
+    return repo.create(data)
+
+def delete(transaction_id):
+    return repo.delete(transaction_id)
+
+def update(transaction_id, data):
+    return repo.update(transaction_id, data)

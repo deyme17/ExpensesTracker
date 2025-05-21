@@ -6,6 +6,7 @@ from kivy.metrics import dp, sp
 from kivy.properties import ListProperty, ObjectProperty
 from kivy.graphics import Color, RoundedRectangle
 
+from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_primary_color, get_text_primary_color
 from app.views.widgets.buttons.styled_button import RoundedButton
 
@@ -38,7 +39,7 @@ class AccountSelectPopup(ModalView):
         main_box.bind(size=self._update_bg, pos=self._update_bg)
 
         title = Label(
-            text="Оберіть рахунок",
+            text=LM.message("choose_account"),
             font_size=sp(22),
             bold=True,
             color=get_text_primary_color(),
@@ -50,7 +51,7 @@ class AccountSelectPopup(ModalView):
         content = BoxLayout(orientation='vertical', size_hint=(1, 1))
         if not self.accounts:
             no_accounts = Label(
-                text="Немає доступних рахунків",
+                text=LM.message("now_available_acc"),
                 font_size=sp(18),
                 color=get_text_primary_color(),
                 size_hint=(1, 1)
@@ -83,14 +84,14 @@ class AccountSelectPopup(ModalView):
         self.btn_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
 
         close_btn = RoundedButton(
-            text="Закрити",
+            text=LM.message("close_button"),
             bg_color='#666666',
             text_color=[1, 1, 1, 1]
         )
         close_btn.bind(on_press=lambda *a: self.dismiss())
 
         self.save_btn = RoundedButton(
-            text="Зберегти",
+            text=LM.message("save_button"),
             bg_color='#0F7055',
             text_color=[1, 1, 1, 1],
             disabled=True

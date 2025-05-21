@@ -7,17 +7,17 @@ from kivy.metrics import dp, sp
 from kivy.graphics import Color, RoundedRectangle
 from kivy.animation import Animation
 
-from app.utils.constants import SORT_FIELDS
 from app.views.widgets.inputs.custom_spinner import CustomSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
-
+from app.utils.language_mapper import LanguageMapper as LM
+from app.utils.constants import SORT_FIELDS
 
 class SortPopup(ModalView):
     on_sort = ObjectProperty(None)  # callable(field: str, ascending: bool)
 
-    sort_fields = ListProperty(SORT_FIELDS)
-    selected_field = StringProperty("Дата")
+    sort_fields = [LM.field_name(key) for key in SORT_FIELDS]
+    selected_field = StringProperty(LM.field_name("date"))
     ascending = BooleanProperty(True)
 
     def __init__(self, **kwargs):
@@ -46,7 +46,7 @@ class SortPopup(ModalView):
 
         # Title
         title_label = Label(
-            text="Сортування транзакцій",
+            text=LM.message("sort_transactions"),
             font_size=sp(22),
             bold=True,
             color=get_text_primary_color(),
@@ -57,7 +57,7 @@ class SortPopup(ModalView):
 
         # Sort by field
         field_label = Label(
-            text="Сортувати за:",
+            text=LM.message("sort_by"),
             font_size=sp(16),
             color=get_text_primary_color(),
             size_hint_y=None,
@@ -73,7 +73,7 @@ class SortPopup(ModalView):
 
         # Direction
         direction_label = Label(
-            text="Напрямок:",
+            text=LM.message("direction"),
             font_size=sp(16),
             color=get_text_primary_color(),
             size_hint_y=None,
@@ -81,8 +81,8 @@ class SortPopup(ModalView):
         )
 
         self.direction_spinner = CustomSpinner(
-            text="За зростанням" if self.ascending else "За спаданням",
-            values=["За зростанням", "За спаданням"],
+            text=LM.message("ascending") if self.ascending else LM.message("descending"),
+            values=[LM.message("ascending"), LM.message("descending")],
             size_hint_y=None,
             height=dp(45)
         )
@@ -95,12 +95,12 @@ class SortPopup(ModalView):
         )
 
         cancel_button = RoundedButton(
-            text="Скасувати",
+            text=LM.message("cancel_button"),
             bg_color='#445555'
         )
 
         apply_button = RoundedButton(
-            text="Застосувати",
+            text=LM.message("apply_button"),
             bg_color='#0F7055'
         )
 
@@ -123,7 +123,7 @@ class SortPopup(ModalView):
 
     def _apply_sort(self, *args):
         if self.on_sort:
-            ascending = self.direction_spinner.text == "За зростанням"
+            ascending = self.direction_spinner.text == LM.message("ascending")
             self.on_sort(self.field_spinner.text, ascending)
         self.dismiss()
 

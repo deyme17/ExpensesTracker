@@ -1,0 +1,16 @@
+TRANSACTION = {
+    "confirmation_delete": "Ви впевнені, що хочете видалити цю транзакцію?",
+    "unable_delete_transaction": "Неможливо видалити транзакцію",
+    "transaction_not_found": "Транзакцію не знайдено",
+    "transaction_type_label": "Тип транзакції:",
+    "transaction_details_title": "Деталі транзакції",
+    "edit_button": "Редагувати",
+    "delete_button": "Видалити",
+    "save_button": "Зберегти",
+    "add_income": "Додати дохід",
+    "add_expense": "Додати витрату",
+    "description_hint": "Опис",
+    "amount_hint": "Введіть суму",
+    "category_label": "Категорія",
+    "payment_method_label": "Спосіб оплати",
+}

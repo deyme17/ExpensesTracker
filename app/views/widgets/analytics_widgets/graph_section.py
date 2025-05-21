@@ -4,7 +4,6 @@ from kivy.metrics import dp
 from kivy.clock import Clock
 from kivy.properties import StringProperty, ObjectProperty
 from app.services.graph_factory import GraphFactory
-from app.utils.constants import TR_TYPE_MAP_UA_ENG
 
 
 class GraphSection(BoxLayout):
@@ -29,12 +28,10 @@ class GraphSection(BoxLayout):
             self.remove_widget(self.graph_widget)
 
         try:
-            internal_type = TR_TYPE_MAP_UA_ENG.get(self.transaction_type, self.transaction_type)
-
             self.graph_widget = GraphFactory.create_graph(
                 chart_type=self.chart_type,
                 controller=self.controller,
-                transaction_type=internal_type,
+                transaction_type=self.transaction_type,
                 period=self.period,
                 category=self.category
             )

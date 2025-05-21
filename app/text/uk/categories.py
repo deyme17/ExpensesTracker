@@ -1,4 +1,4 @@
-CATEGORIES = {
+CATEGORIES_MAP = {
     "groceries": "Продукти",
     "transport": "Транспорт",
     "entertainment": "Розваги",

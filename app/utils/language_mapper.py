@@ -1,8 +1,8 @@
-from app.text.uk.transaction import TRANSACTION_TYPES, PAYMENT_METHODS, FIELDS
-from app.text.uk.messages.analytics import CHART_TYPES
-from app.text.uk.categories import CATEGORIES
+from app.text.uk.transaction_vars import TRANSACTION_TYPES, PAYMENT_METHODS, FIELDS
+from app.text.uk.messages.analytics import CHART_TYPES, STATS_FIELDS
+from app.text.uk.categories import CATEGORIES_MAP
 from app.text.uk.messages import MESSAGES
-from app.text.uk.messages.months import LONG_MONTHS, SHORT_MONTHS
+from app.text.uk.months import LONG_MONTHS_MAP, SHORT_MONTHS_MAP
 
 class LanguageMapper:
 
@@ -21,19 +21,22 @@ class LanguageMapper:
     @staticmethod
     def chart_type(key: str) -> str:
         return CHART_TYPES.get(key, key)
+    
+    @staticmethod
+    def stat_name(key: str) -> str:
+        return STATS_FIELDS.get(key, key)
 
     @staticmethod
     def category(key: str) -> str:
-        return CATEGORIES.get(key, key)
+        return CATEGORIES_MAP.get(key, key)
 
     @staticmethod
     def message(key: str) -> str:
         return MESSAGES.get(key, key)
 
     @staticmethod
-    def months(short: bool = False) -> list[str]:
-        return SHORT_MONTHS if short else LONG_MONTHS
-    
-    @staticmethod
-    def chart_type(key: str) -> str:
-        return CHART_TYPES.get(key, key)
+    def month_name(month_name_en: str, short: bool = True) -> str:
+        if short:
+            return SHORT_MONTHS_MAP.get(month_name_en, month_name_en)
+        else:
+            return LONG_MONTHS_MAP.get(month_name_en, month_name_en)

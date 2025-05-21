@@ -12,18 +12,15 @@ from app.views.widgets.inputs.date_input import LabeledDateInput
 from app.views.widgets.inputs.styled_text_input import LabeledInput
 from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
-from app.utils.constants import (
-    TRANSACTION_TYPE_ALL, TRANSACTION_TYPE_INCOME, TRANSACTION_TYPE_EXPENSE,
-    PAYMENT_METHOD_ALL, PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH, CATEGORIES
-)
+
 from app.utils.theme import get_primary_color, get_text_primary_color
 from app.utils.validators import validate_date
+from app.utils.language_mapper import LanguageMapper as LM
+
+from app.text.uk.categories import CATEGORIES_MAP
 
 
 class FilterPopup(ModalView):
-    """
-    Modal window for filtration of transactions.
-    """
     on_apply = ObjectProperty(None)
     on_reset = ObjectProperty(None)
 
@@ -62,7 +59,7 @@ class FilterPopup(ModalView):
 
         # title
         title = Label(
-            text="Фільтр транзакцій",
+            text=LM.message("filter_title"),
             font_size=sp(22),
             bold=True,
             color=get_text_primary_color(),
@@ -74,41 +71,40 @@ class FilterPopup(ModalView):
         content.add_widget(title)
 
         # sum
-        self.min_amount = LabeledInput(label_text="Сума від:", hint_text="0", text="0")
-        self.max_amount = LabeledInput(label_text="Сума до:", hint_text="1000000", text="1000000")
+        self.min_amount = LabeledInput(label_text=LM.field_name("amount") + " " + LM.message("from") + ":", hint_text="0", text="0")
+        self.max_amount = LabeledInput(label_text=LM.field_name("amount") + " " + LM.message("to") + ":", hint_text="1000000", text="1000000")
         content.add_widget(self.min_amount)
         content.add_widget(self.max_amount)
 
         # date
-        self.start_date = LabeledDateInput(label_text="Початкова дата:")
+        self.start_date = LabeledDateInput(label_text=LM.message("start_date_label"))
         self.start_date.date_text = self._initial_start.strftime('%d.%m.%Y')
-        self.end_date = LabeledDateInput(label_text="Кінцева дата:")
+        self.end_date = LabeledDateInput(label_text=LM.message("end_date_label"))
         self.end_date.date_text = self._initial_end.strftime('%d.%m.%Y')
-        
         content.add_widget(self.start_date)
         content.add_widget(self.end_date)
 
         # type
         self.type_spinner = LabeledSpinner(
-            label_text="Тип транзакції:",
-            values=[TRANSACTION_TYPE_ALL, TRANSACTION_TYPE_INCOME, TRANSACTION_TYPE_EXPENSE],
-            selected=TRANSACTION_TYPE_ALL
+            label_text=LM.message("transaction_type_label"),
+            values=[LM.transaction_type("all"), LM.transaction_type("income"), LM.transaction_type("expense")],
+            selected=LM.transaction_type("all")
         )
         content.add_widget(self.type_spinner)
 
         # category
         self.category_spinner = LabeledSpinner(
-            label_text="Категорія:",
-            values=["Усі"] + self._get_all_categories(),
-            selected="Усі"
+            label_text=LM.message("category_label"),
+            values=[LM.transaction_type("all")] + self._get_all_categories(),
+            selected=LM.transaction_type("all")
         )
         content.add_widget(self.category_spinner)
 
         # method
         self.payment_spinner = LabeledSpinner(
-            label_text="Спосіб оплати:",
-            values=[PAYMENT_METHOD_ALL, PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH],
-            selected=PAYMENT_METHOD_ALL
+            label_text=LM.message("payment_method_label"),
+            values=[LM.payment_method("all"), LM.payment_method("card"), LM.payment_method("cash")],
+            selected=LM.payment_method("all")
         )
         content.add_widget(self.payment_spinner)
 
@@ -117,9 +113,9 @@ class FilterPopup(ModalView):
 
         # buttons
         btn_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
-        reset_btn = RoundedButton(text="Скинути", bg_color='#445555', font_size=sp(14))
-        close_btn = RoundedButton(text="Закрити", bg_color='#666666', font_size=sp(14))
-        apply_btn = RoundedButton(text="Застосувати", bg_color='#0F7055', font_size=sp(14))
+        reset_btn = RoundedButton(text=LM.message("reset_button"), bg_color='#445555', font_size=sp(14))
+        close_btn = RoundedButton(text=LM.message("close_button"), bg_color='#666666', font_size=sp(14))
+        apply_btn = RoundedButton(text=LM.message("apply_button"), bg_color='#0F7055', font_size=sp(14))
 
         reset_btn.bind(on_press=self._reset_fields)
         close_btn.bind(on_press=lambda *a: self.dismiss())
@@ -142,9 +138,9 @@ class FilterPopup(ModalView):
         year_ago = now - timedelta(days=365)
         self.start_date.date_text = year_ago.strftime('%d.%m.%Y')
         self.end_date.date_text = now.strftime('%d.%m.%Y')
-        self.type_spinner.selected = TRANSACTION_TYPE_ALL
-        self.payment_spinner.selected = PAYMENT_METHOD_ALL
-        self.category_spinner.selected = "Усі"
+        self.type_spinner.selected = LM.message("transaction_type_all")
+        self.payment_spinner.selected = LM.message("payment_method_all")
+        self.category_spinner.selected = LM.message("all_categories")
         if self.on_reset:
             self.on_reset()
 
@@ -161,8 +157,8 @@ class FilterPopup(ModalView):
             if not end_ok:
                 end_dt = datetime.now()
 
-            pay = None if self.payment_spinner.selected == PAYMENT_METHOD_ALL else self.payment_spinner.selected
-            category = None if self.category_spinner.selected == "Усі" else self.category_spinner.selected
+            pay = None if self.payment_spinner.selected == LM.message("payment_method_all") else self.payment_spinner.selected
+            category = None if self.category_spinner.selected == LM.message("all_categories") else self.category_spinner.selected
 
             if self.on_apply:
                 self.on_apply(
@@ -179,4 +175,4 @@ class FilterPopup(ModalView):
             print(f"Filter error: {e}")
 
     def _get_all_categories(self):
-        return CATEGORIES
+        return [LM.category(cat_key) for cat_key in CATEGORIES_MAP]

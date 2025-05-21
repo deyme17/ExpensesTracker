@@ -3,11 +3,10 @@ from kivy.uix.label import Label
 from kivy.properties import StringProperty, BooleanProperty, ObjectProperty
 from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp, sp
-from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
 from app.utils.theme import get_income_color, get_expense_color, get_text_primary_color
 from app.utils.formatters import format_amount
-
+from app.utils.language_mapper import LanguageMapper as LM
 
 class TransactionRow(BoxLayout):
     """
@@ -59,7 +58,7 @@ class TransactionRow(BoxLayout):
         
         # category
         category_label = Label(
-            text=self.category,
+            text=LM.category(self.category),
             font_size=sp(16),
             bold=True,
             color=get_text_primary_color(),

@@ -51,9 +51,9 @@ class TransactionsScreen(BaseScreen):
     def update_balance_label(self):
         acc = next((a for a in self.accounts if a.account_id == self.selected_account_id), None)
         if acc:
-            self.balance_text = f"{LM.message('balance')}: {acc.balance:.2f}"
+            self.balance_text = f"{LM.field_name('balance')}: {acc.balance:.2f}"
         else:
-            self.balance_text = f"{LM.message('balance')}: 0"
+            self.balance_text = f"{LM.field_name('balance')}: 0"
 
     def refresh_transactions(self):
         all_transactions = self.storage_service.get_transactions()

@@ -1,18 +1,21 @@
-from .common import COMMON
+from .transaction import TRANSACTION
+from .filter_sort import FILTER_SORT
+from .buttons import BUTTONS
+from .status import STATUS
+from .account import ACCOUNT
+from .analytics import ANALYTICS
 from .auth import AUTH
-from .months import LONG_MONTHS, SHORT_MONTHS
-from .analytics import CHART_TYPES, MESSAGES_ANALYTICS
+from .menu import MENU
 from .bank import BANK
 
 MESSAGES = {
-    **COMMON,
+    **TRANSACTION,
+    **FILTER_SORT,
+    **BUTTONS,
+    **STATUS,
+    **ACCOUNT,
+    **ANALYTICS,
     **AUTH,
-    **MESSAGES_ANALYTICS,
+    **MENU,
     **BANK,
-    "months": {
-        "long": LONG_MONTHS,
-        "short": SHORT_MONTHS,
-    }
 }
-
-CHART_TYPES = CHART_TYPES

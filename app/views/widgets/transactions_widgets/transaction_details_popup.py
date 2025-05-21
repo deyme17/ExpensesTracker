@@ -7,10 +7,10 @@ from kivy.graphics import Color, RoundedRectangle
 from kivy.utils import get_color_from_hex
 from kivy.uix.scrollview import ScrollView
 
+from app.utils.language_mapper import LanguageMapper as LM
 from app.views.widgets.buttons.styled_button import RoundedButton
 
 class TransactionDetailsPopup(ModalView):
-    """Popup to display transaction details on mobile-friendly layout."""
     def __init__(self, transaction, on_edit, on_delete, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (0.8, 0.7)
@@ -35,7 +35,7 @@ class TransactionDetailsPopup(ModalView):
         content.bind(size=self._update_bg, pos=self._update_bg)
 
         title = Label(
-            text="Деталі транзакції",
+            text=LM.message("transaction_details_title"),
             font_size=sp(20),
             bold=True,
             color=get_color_from_hex('#FFFFFF'),
@@ -56,10 +56,10 @@ class TransactionDetailsPopup(ModalView):
         )
         details_layout.bind(minimum_height=details_layout.setter("height"))
 
-        def add_detail(label_text, value_text):
+        def add_detail(label_key, value_text):
             row = BoxLayout(size_hint_y=None, height=dp(32), spacing=dp(12))
             lbl = Label(
-                text=f"{label_text}:",
+                text=f"{LM.field_name(label_key)}:",
                 font_size=sp(16),
                 color=get_color_from_hex('#FFFFFF'),
                 size_hint_x=0.35,
@@ -81,32 +81,34 @@ class TransactionDetailsPopup(ModalView):
             return row
 
         t = self.transaction
-        details_layout.add_widget(add_detail("Категорія", t.category))
+        details_layout.add_widget(add_detail("category", LM.category(t.category)))
         try:
             amt = abs(float(t.amount))
-            amt_text = f"{"+" if t.type=='income' else "-"}{amt:,.2f} {t.currency}"
-        except:
+            sign = "+" if t.type == "income" else "-"
+            amt_text = f"{sign}{amt:,.2f} {t.currency}"
+        except Exception:
             amt_text = f"{t.amount} {t.currency}"
-        details_layout.add_widget(add_detail("Сума", amt_text))
-        details_layout.add_widget(add_detail("Дата", t.get_formatted_date()))
-        details_layout.add_widget(add_detail("Спосіб оплати", t.payment_method))
+        details_layout.add_widget(add_detail("amount", amt_text))
+        details_layout.add_widget(add_detail("date", t.get_formatted_date()))
+        details_layout.add_widget(add_detail("payment_method", LM.payment_method(t.payment_method)))
 
         try:
             cb = float(t.cashback)
             if cb > 0:
-                details_layout.add_widget(add_detail("Кешбек", cb))
-        except:
+                details_layout.add_widget(add_detail("cashback", cb))
+        except Exception:
             pass
+
         try:
             cm = float(t.commission)
             if cm > 0:
-                details_layout.add_widget(add_detail("Комісія", cm))
-        except:
+                details_layout.add_widget(add_detail("commission", cm))
+        except Exception:
             pass
 
         if t.description and t.description.strip():
             desc_lbl = Label(
-                text="Опис:",
+                text=LM.field_name("description") + ":",
                 font_size=sp(16),
                 color=get_color_from_hex('#FFFFFF'),
                 size_hint_y=None,
@@ -132,11 +134,10 @@ class TransactionDetailsPopup(ModalView):
         scroll.add_widget(details_layout)
         content.add_widget(scroll)
 
-
         btn_box = BoxLayout(size_hint_y=None, height=dp(48), spacing=dp(10))
-        btn_edit = RoundedButton(text="Редагувати", bg_color='#0F7055', font_size=sp(13))
-        btn_delete = RoundedButton(text="Видалити", bg_color='#F44336', font_size=sp(13))
-        btn_close = RoundedButton(text="Закрити", bg_color='#445555', font_size=sp(13))
+        btn_edit = RoundedButton(text=LM.message("edit_button"), bg_color='#0F7055', font_size=sp(13))
+        btn_delete = RoundedButton(text=LM.message("delete_button"), bg_color='#F44336', font_size=sp(13))
+        btn_close = RoundedButton(text=LM.message("close_button"), bg_color='#445555', font_size=sp(13))
         btn_edit.bind(on_press=lambda inst: (self.dismiss(), self.on_edit()))
         btn_delete.bind(on_press=lambda inst: (self.dismiss(), self.on_delete()))
         btn_close.bind(on_press=lambda inst: self.dismiss())

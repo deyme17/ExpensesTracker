@@ -99,27 +99,6 @@ class ChartContainer(BoxLayout):
         # clear
         self.remove_widget(self.chart_widget)
         
-        if self.chart_type == "histogram":
-            self.chart_widget = BarChartWidget(
-                data=self.data,
-                type=self.type,
-                size_hint_y=1
-            )
-        elif self.chart_type == "pie":
-            self.chart_widget = PieChartWidget(
-                data=self.data,
-                type=self.type,
-                size_hint_y=1
-            )
-        elif self.chart_type == "line":
-            self.chart_widget = LineChartWidget(
-                data=self.data,
-                type=self.type,
-                size_hint_y=1
-            )
-        else:
-            self.chart_widget = Widget(size_hint_y=1)
-        
         # chart
         self.add_widget(self.chart_widget)
     

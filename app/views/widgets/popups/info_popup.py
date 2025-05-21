@@ -8,9 +8,9 @@ from kivy.utils import get_color_from_hex
 from kivy.graphics import Color, RoundedRectangle
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.metrics import dp
-from app.utils.constants import TOKEN_HINT
 from app.views.widgets.buttons.styled_button import StyledButton
 from app.utils.theme import get_background_color
+from app.utils.language_mapper import LanguageMapper as LM
 
 
 class InfoPopup(Popup):
@@ -29,7 +29,7 @@ class InfoPopup(Popup):
         container.add_widget(content_widget)
         
         close_button = StyledButton(
-            text="Закрити",
+            text=LM.message("close_button"),
             bg_color="#445555",
             size_hint=(None, None),
             size=(dp(150), dp(50)),
@@ -70,7 +70,7 @@ class MonobankTokenInfoPopup(ModalView):
         layout.bind(size=self._update_rect, pos=self._update_rect)
 
         layout.add_widget(Label(
-            text="Монобанк API Токен",
+            text=LM.message("mono_token_label"),
             font_size="20sp",
             bold=True,
             size_hint_y=None,
@@ -79,7 +79,7 @@ class MonobankTokenInfoPopup(ModalView):
         ))
 
         token_label = Label(
-            text=TOKEN_HINT,
+            text=LM.message("mono_token_hint"),
             font_size='16sp',
             halign='left',
             valign='top',
@@ -89,7 +89,7 @@ class MonobankTokenInfoPopup(ModalView):
         layout.add_widget(token_label)
 
         button = RoundedButton(
-            text="Зрозуміло",
+            text=LM.message("understand_label"),
             size_hint=(None, None),
             size=(dp(150), dp(50)),
             bg_color='#FF7043'

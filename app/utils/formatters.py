@@ -1,5 +1,6 @@
 from datetime import datetime
 from app.utils.constants import SHORT_MONTHS, LONG_MONTHS
+from app.utils.language_mapper import LanguageMapper as LM
 
 def format_amount(amount, currency, show_sign=True):
     """
@@ -81,15 +82,15 @@ def get_month_name(month_number, short=True):
     Returns:
         str: Month name
     """
-    if not isinstance(month_number, int) or month_number < 1 or month_number > 12:
+    if not 1 <= month_number <= 12:
         return ""
-    
+
     if short:
-        months = SHORT_MONTHS
+        month_en = SHORT_MONTHS[month_number - 1]
     else:
-        months = LONG_MONTHS
-    
-    return months[month_number - 1]
+        month_en = LONG_MONTHS[month_number - 1]
+
+    return LM.month_name(month_en, short=short)
 
 def format_percent(value, decimal_places=1):
     """

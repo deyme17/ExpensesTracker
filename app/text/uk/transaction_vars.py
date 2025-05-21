@@ -20,4 +20,3 @@ FIELDS = {
     "type": "Тип",
     "balance": "Баланс",
 }
-SORT_FIELDS = ['date', 'amount', 'cashback', 'commission']

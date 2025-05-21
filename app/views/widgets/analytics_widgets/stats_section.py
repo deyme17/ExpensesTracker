@@ -6,6 +6,7 @@ from kivy.properties import DictProperty
 from kivy.graphics import Color, RoundedRectangle
 from kivy.utils import get_color_from_hex
 from app.utils.theme import get_text_secondary_color, get_text_primary_color, STAT_COLORS
+from app.utils.language_mapper import LanguageMapper as LM
 
 card_color = get_color_from_hex("#0A4035")
 
@@ -31,12 +32,8 @@ class StatsSection(GridLayout):
         self.bind(pos=self._update_bg, size=self._update_bg)
 
         fields = [
-            ("Середнє",     "avg"),
-            ("Мінімум",     "min"),
-            ("Максимум",    "max"),
-            ("Сума",        "total"),
-            ("Кількість",   "count"),
-            ("Топ категорія","top_category"),
+            (LM.stat_name(key), key)
+            for key in ["avg", "min", "max", "total", "count", "top_category"]
         ]
         self._value_labels = {}
         for caption, key in fields:

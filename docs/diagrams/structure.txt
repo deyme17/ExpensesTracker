@@ -102,7 +102,7 @@ ExpensesTracker/
 │   │   ├── transaction_controller.py 
 │   │   └── analytics_controller.py
 │   │
-│   ├── services/                          # бізнес-логіка додатку
+│   ├── services/                           # бізнес-логіка додатку
 │   │   ├── __init__.py
 │   │   ├── api_service.py
 │   │   ├── local_storage.py
@@ -120,9 +120,9 @@ ExpensesTracker/
 │   │   └── graphs/
 │   │        ├── __init__.py
 │   │        ├── base_graph.py
-│   │        ├── distribution_graph.py   # розподіл витрат
-│   │        ├── share_graph.py          # частка витрат по категоріям
-│   │        └── dynamics_graph.py       # динаміка витрат
+│   │        ├── distribution_graph.py      # розподіл витрат
+│   │        ├── share_graph.py             # частка витрат по категоріям
+│   │        └── dynamics_graph.py          # динаміка витрат
 │   │
 │   ├── database/                           # локальна база даних
 │   │   ├── __init__.py
@@ -134,10 +134,16 @@ ExpensesTracker/
 │   │       ├── transaction_repository.py
 │   │       └── category_repository.py
 │   │
+│   ├── text/eng                            # локалізатори тексту з англійської на українську
+│   │    ├── messages/
+│   │    ├── categories.py                  
+│   │    ├── months.py 
+│   │    └──trainsaction_vars.py                       
 │   └── utils/                              # додаткові функції
 │       ├── __init__.py
 │       ├── constants.py        
-│       ├── formatters.py       
+│       ├── formatters.py    
+│       ├── language_mapper.py   
 │       ├── validators.py       
 │       └── theme.py            
 │

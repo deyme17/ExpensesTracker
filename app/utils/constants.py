@@ -1,105 +1,16 @@
 # Application information
 APP_NAME = "ExpensesTracker"
-APP_TITLE = "ExpensesTracker - Фінансовий моніторинг"
 APP_VERSION = "1.0.0"
-
-# Transaction types
-TRANSACTION_TYPE_INCOME = "Доходи"
-TRANSACTION_TYPE_EXPENSE = "Витрати"
-TRANSACTION_TYPE_ALL = "Всі"
-
-# Internal transaction type mapping
-TR_TYPE_MAP_UA_ENG = {
-    TRANSACTION_TYPE_INCOME: "income",
-    TRANSACTION_TYPE_EXPENSE: "expense",
-    TRANSACTION_TYPE_ALL: None
-}
-
-# Reverse mapping for displaying in UI
-TR_TYPE_MAP_ENG_UA = {
-    "income": TRANSACTION_TYPE_INCOME,
-    "expense": TRANSACTION_TYPE_EXPENSE,
-    None: TRANSACTION_TYPE_ALL
-}
-
-# Payment methods
-PAYMENT_METHOD_CARD = "Картка"
-PAYMENT_METHOD_CASH = "Готівка"
-PAYMENT_METHOD_ALL = "Всі"
-
-PYMNT_METHOD_MAP_UA_ENG = {
-    PAYMENT_METHOD_CARD: "card",
-    PAYMENT_METHOD_CASH: "cash",
-    PAYMENT_METHOD_ALL: None
-}
 
 # Currency codes
 CURRENCY_UAH = "UAH"
 CURRENCY_USD = "USD"
 CURRENCY_EUR = "EUR"
 
-# Monobank token hint
-TOKEN_HINT = 'Монобанк API токен дозволяє автоматично імпортувати ваші транзакції.\n\n'\
-             'Отримати його можна у додатку Монобанк або на сайті api.monobank.ua.\n'
-
-# Confirmation text
-CONFIRMATION_TEXT = "Ви впевнені, що хочете видалити цю транзакцію?"
-# Unable to delete the transaction
-UNABLE_DEL_TR = "Неможливо видалити транзакцію"
-TR_NOT_FOUND = "Транзакцію не знайдено"
-
 # Default currency
 DEFAULT_CURRENCY = CURRENCY_UAH
 
-# Chart types
-CHART_TYPE_HISTOGRAM = "histogram"
-CHART_TYPE_PIE = "pie"
-CHART_TYPE_LINE = "line"
-
-# categories    # TODO
-CATEGORIES = [
-    'Зарплата',
-    'Подарунок',
-    'Дивіденди',
-    'Фріланс',
-    'Відсотки',
-    'Інше',
-    'Продукти',
-    'Транспорт',
-    'Розваги',
-    'Здоров\'я',
-    'Одяг',
-    'Кафе',
-    'Зв\'язок',
-]
-
-# months
-LONG_MONTHS = [
-    "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
-    "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
-]
-SHORT_MONTHS = [
-    "Січ", "Лют", "Бер", "Кві", "Тра", "Чер",
-    "Лип", "Сер", "Вер", "Жов", "Лис", "Гру"
-]
-
-SORT_FIELDS = ['Дата', 'Сума', 'Кешбек', 'Комісія']
-FIELD_MAP_UA_ENG = {
-    'Дата': 'date',
-    'Сума': 'amount',
-    'Кешбек': 'cashback',
-    'Комісія': 'commission'
-}
-FIELD_REVERSE_ENG_UA = {
-    'date': 'Дата',
-    'amount': 'Сума',
-    'cashback': 'Кешбек',
-    'commission': 'Комісія'
-}
-
-# MCC code mappings (Merchant Category Codes)
-# Maps MCC codes from banks to our expense categories
-MCC_MAPPING = {
+MCC_MAPPING = {                                             # TODO delete this
     # Food & Supermarkets
     5411: 'Продукти',   # Grocery stores & Supermarkets
     5422: 'Продукти',   # Meat/Fish Stores
@@ -177,7 +88,7 @@ MCC_MAPPING = {
     0: 'Інше'        
 }
 
-CURRENCY_CODE_MAPPING = {
+CURRENCY_CODE_MAPPING = {                       # TODO delete this
     980: "UAH",  # Українська гривня
     840: "USD",  # Долар США
     978: "EUR",  # Євро

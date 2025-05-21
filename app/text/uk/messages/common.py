@@ -7,4 +7,5 @@ COMMON = {
     "unable_delete_transaction": "Неможливо видалити транзакцію",
     "transaction_not_found": "Транзакцію не знайдено",
     "unknown_category": "Невідомо",
+    "no_data": "Немає даних"
 }

@@ -1,4 +1,5 @@
 from app.services.graph_factory import GraphFactory
+from app.utils.language_mapper import LanguageMapper
 
 class AnalyticsController:
     def __init__(self):
@@ -12,7 +13,7 @@ class AnalyticsController:
                 'max_value': 0,
                 'total': 0,
                 'count': 0,
-                'top_category': 'Немає даних'
+                'top_category': LanguageMapper.message("no_data")
             }
 
         amounts = [abs(t.amount) for t in transactions]

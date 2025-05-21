@@ -33,6 +33,3 @@ class TransactionController:
 
     def sort_transactions(self, transactions, field='date', ascending=True):
         return TransactionProcessor.sort(transactions, field, ascending)
-
-    def get_statistics(self, transactions):
-        return self.analytics_controller.get_statistics(transactions)

@@ -1,5 +1,5 @@
 from app.models.graphs.base_graph import BaseGraphWidget
-from app.utils.formatters import format_amount
+from app.utils.language_mapper import LanguageMapper as LM
 
 
 class ShareGraph(BaseGraphWidget):
@@ -13,7 +13,7 @@ class ShareGraph(BaseGraphWidget):
 
         category_totals = {}
         for t in transactions:
-            category = t.category or 'Невідомо'
+            category = t.category or LM.message("unknown_category")
             category_totals[category] = category_totals.get(category, 0) + t.amount
 
         total = sum(category_totals.values()) or 1

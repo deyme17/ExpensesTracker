@@ -5,5 +5,6 @@ COMMON = {
     ),
     "confirmation_delete": "Ви впевнені, що хочете видалити цю транзакцію?",
     "unable_delete_transaction": "Неможливо видалити транзакцію",
-    "transaction_not_found": "Транзакцію не знайдено"
+    "transaction_not_found": "Транзакцію не знайдено",
+    "unknown_category": "Невідомо",
 }

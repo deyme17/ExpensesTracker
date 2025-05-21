@@ -7,7 +7,7 @@ from app.models.user import User
 from app.models.account import Account
 from app.models.transaction import Transaction
 from app.services.bank_services.monobank_service import MonobankService
-from app.services.encryption_service import EncryptionService
+from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.constants import MCC_MAPPING, CURRENCY_CODE_MAPPING
 from app.utils.validators import (
     validate_email,
@@ -42,7 +42,7 @@ class AuthService:
     def login(self, email, password, callback=None):
         if not email or not password:
             if callback:
-                callback(False, "Будь ласка, введіть email і пароль")
+                callback(False, LM.message("missing_credentials"))
             return False
 
         def authenticate(dt):
@@ -50,22 +50,22 @@ class AuthService:
                 user = self.storage_service.get_user()
                 if not user or user.email != email.strip():
                     if callback:
-                        callback(False, "Користувача не знайдено або email невірний")
+                        callback(False, LM.message("user_not_found"))
                     return False
 
                 if not user.check_password(password):
                     if callback:
-                        callback(False, "Невірний пароль")
+                        callback(False, LM.message("invalid_password"))
                     return False
 
                 self.current_user = user
                 if callback:
-                    callback(True, "Успішний вхід")
+                    callback(True, LM.message("login_success"))
                 return True
 
             except Exception as e:
                 if callback:
-                    callback(False, f"Помилка входу: {str(e)}")
+                    callback(False, LM.message("login_error").format(error=str(e)))
                 return False
 
         Clock.schedule_once(authenticate, 1)
@@ -74,7 +74,7 @@ class AuthService:
     def register(self, email, password, confirm_password, monobank_token, callback=None):
         if not validate_email(email):
             if callback:
-                callback(False, "Некоректний email")
+                callback(False, LM.message("invalid_email"))
             return False
 
         is_valid, message = validate_password(password)
@@ -85,7 +85,7 @@ class AuthService:
 
         if password != confirm_password:
             if callback:
-                callback(False, "Паролі не співпадають")
+                callback(False, LM.message("password_mismatch"))
             return False
 
         Clock.schedule_once(lambda dt: self._process_registration(email, password, monobank_token, callback), 1.5)
@@ -107,16 +107,16 @@ class AuthService:
             self.storage_service.save_transactions(transactions)
 
             if callback:
-                callback(True, "Реєстрація успішна")
+                callback(True, LM.message("registration_success"))
             return True
         except Exception as e:
             if callback:
-                callback(False, f"Помилка реєстрації: {str(e)}")
+                callback(False, LM.message("registration_error").format(error=str(e)))
             return False
 
     def _create_user(self, email, password, token):
         if not validate_monobank_token(token):
-            raise ValueError("Невірний формат токену Монобанк")
+            raise ValueError(LM.message("invalid_token_format"))
 
         mono = MonobankService(token=token.strip())
         client = mono.get_client_info()

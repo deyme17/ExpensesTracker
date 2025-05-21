@@ -3,3 +3,6 @@ CHART_TYPES = {
     "pie": "Секторна діаграма",
     "line": "Лінійний графік"
 }
+MESSAGES_ANALYTICS = {
+    "unknown_chart_type": "Невідомий тип графіка: {type}"
+}

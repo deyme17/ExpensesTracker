@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime, timedelta
-
+from app.utils.language_mapper import LanguageMapper as LM
 
 class MonobankService:
     BASE_URL = "https://api.monobank.ua"
@@ -26,12 +26,13 @@ class MonobankService:
         response = requests.get(url, headers=self._headers())
 
         if response.status_code != 200:
-            raise Exception(f"[Monobank] Client info error: {response.status_code} - {response.text}")
+            raise Exception(LM.message("client_info_error").format(
+                                status=response.status_code, text=response.text))
 
         data = response.json()
         accounts = data.get("accounts", [])
         if not accounts:
-            raise Exception("[Monobank] No accounts found for client.")
+            raise Exception(LM.message("no_accounts_found"))
 
         return {
             "user_id": data.get("clientId"),
@@ -51,7 +52,7 @@ class MonobankService:
             list: list of transaction dictionaries
         """
         if not account_id:
-            raise ValueError("Account ID is required")
+            raise ValueError(LM.message("missing_account_id"))
 
         to_time = int(datetime.now().timestamp())
         from_time = int((datetime.now() - timedelta(days=days)).timestamp())
@@ -64,4 +65,5 @@ class MonobankService:
         elif response.status_code == 204:
             return []
         else:
-            raise Exception(f"[Monobank] Transaction fetch error: {response.status_code} - {response.text}")
+            raise Exception(LM.message("transactions_fetch_error").format(
+                        status=response.status_code, text=response.text))

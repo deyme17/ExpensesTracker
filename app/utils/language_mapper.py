@@ -1,5 +1,5 @@
 from app.text.uk.transaction import TRANSACTION_TYPES, PAYMENT_METHODS, FIELDS
-from app.text.uk.analytics import CHART_TYPES
+from app.text.uk.messages.analytics import CHART_TYPES
 from app.text.uk.categories import CATEGORIES
 from app.text.uk.messages import MESSAGES
 from app.text.uk.messages.months import LONG_MONTHS, SHORT_MONTHS
@@ -33,3 +33,7 @@ class LanguageMapper:
     @staticmethod
     def months(short: bool = False) -> list[str]:
         return SHORT_MONTHS if short else LONG_MONTHS
+    
+    @staticmethod
+    def chart_type(key: str) -> str:
+        return CHART_TYPES.get(key, key)

@@ -1,7 +1,4 @@
 from kivy.properties import StringProperty, NumericProperty, ObjectProperty
-from kivy.uix.modalview import ModalView
-from kivy.uix.label import Label
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.animation import Animation
 from kivy.clock import Clock
@@ -12,9 +9,9 @@ from kivy.lang import Builder
 from app.views.screens.base_screen import BaseScreen
 from app.utils.validators import validate_registration_inputs
 from app.views.widgets.popups.info_popup import MonobankTokenInfoPopup
+from app.utils.language_mapper import LanguageMapper as LM
 
 Builder.load_file("kv/register_screen.kv")
-
 
 class RegistrationScreen(BaseScreen):
     error_message = StringProperty("")
@@ -50,7 +47,7 @@ class RegistrationScreen(BaseScreen):
             if hasattr(self, field):
                 getattr(self, field).text = ""
         if hasattr(self, "register_button"):
-            self.register_button.text = "Зареєструватись"
+            self.register_button.text = LM.message("register_button_action")
             self.register_button.disabled = False
         self.error_message = ""
         self.show_error = 0
@@ -82,7 +79,7 @@ class RegistrationScreen(BaseScreen):
             self._show_error()
             return
 
-        self.register_button.text = "Реєстрація..."
+        self.register_button.text = LM.message("register_button") + "..."
         self.register_button.disabled = True
 
         def reg_callback(success, message):
@@ -91,7 +88,7 @@ class RegistrationScreen(BaseScreen):
             else:
                 self.error_message = message
                 self._show_error()
-                self.register_button.text = "Зареєструватись"
+                self.register_button.text = LM.message("register_button_action")
                 self.register_button.disabled = False
 
         if self.controller:
@@ -101,9 +98,9 @@ class RegistrationScreen(BaseScreen):
                 monobank_token=inputs["monobank_token"], callback=reg_callback
             )
         else:
-            self.error_message = "Внутрішня помилка системи"
+            self.error_message = LM.message("registration_error_generic")
             self._show_error()
-            self.register_button.text = "Зареєструватись"
+            self.register_button.text = LM.message("register_button_action")
             self.register_button.disabled = False
 
     def _show_error(self):

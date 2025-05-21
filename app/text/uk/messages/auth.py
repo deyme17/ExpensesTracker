@@ -8,5 +8,14 @@ AUTH = {
     "invalid_token_format": "Невірний формат токену Монобанк",
     "registration_success": "Реєстрація успішна",
     "registration_error": "Помилка реєстрації: {error}",
-    "login_error": "Помилка входу: {error}"
+    "login_error": "Помилка входу: {error}",
+    "login_button": "Увійти",
+    "reset_password": "Скинути пароль",
+    "register_button": "Реєстрація",
+    "auth_title": "Авторизація",
+    "enter_email": "Будь ласка, введіть email",
+    "enter_password": "Будь ласка, введіть пароль",
+    "register_button_action": "Зареєструватись",
+    "cancel_button": "Скасувати",
+    "registration_error_generic": "Внутрішня помилка реєстрації",
 }

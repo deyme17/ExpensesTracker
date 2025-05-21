@@ -8,16 +8,16 @@ from app.models.analytics import AnalyticsData
 from app.views.widgets.analytics_widgets.analytics_filter_popup import AnalyticsFilterPopup
 from app.views.widgets.analytics_widgets.graph_section import GraphSection
 from app.views.widgets.analytics_widgets.stats_section import StatsSection
-from app.views.widgets.popups.menu_popup import MenuPopup
-from app.utils.constants import TRANSACTION_TYPE_EXPENSE, TR_TYPE_MAP_ENG_UA, CHART_TYPE_HISTOGRAM
+from app.utils.constants import CHART_TYPE_HISTOGRAM
+from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.formatters import format_stats
 
 Builder.load_file("kv/analytics_screen.kv")
 
 class AnalyticsScreen(BaseScreen):
     current_chart_type = StringProperty(CHART_TYPE_HISTOGRAM)
-    current_type = StringProperty(TRANSACTION_TYPE_EXPENSE)
-    translated_type = StringProperty("Витрати")
+    current_type = StringProperty("expense")
+    translated_type = StringProperty("")
     start_date = ObjectProperty(None)
     end_date = ObjectProperty(None)
 
@@ -41,13 +41,12 @@ class AnalyticsScreen(BaseScreen):
         Clock.schedule_once(self._load_analytics_data, 0.1)
 
     def _load_analytics_data(self, *args):
-        internal_type = TR_TYPE_MAP_ENG_UA.get(self.current_type, self.current_type)
         transactions = self.transaction_controller.filter_transactions(
             min_amount=0,
             max_amount=1e9,
             start_date=self.start_date,
             end_date=self.end_date,
-            type=internal_type
+            type=self.current_type
         )
 
         if not transactions:
@@ -93,11 +92,11 @@ class AnalyticsScreen(BaseScreen):
 
     def _apply_filter(self, transaction_type, start_date, end_date):
         self.current_type = transaction_type
-        self.translated_type = TR_TYPE_MAP_ENG_UA.get(transaction_type, transaction_type)
+        self.translated_type = LM.transaction_type(transaction_type)
         self.start_date = start_date
         self.end_date = end_date
         self._load_analytics_data(0)
-        self.show_success_message("Фільтр застосовано")
+        self.show_success_message(LM.message("filter_applied"))
 
     def change_chart_type(self, chart_type):
         if self.current_chart_type == chart_type:

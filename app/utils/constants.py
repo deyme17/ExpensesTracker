@@ -1,5 +1,6 @@
 # Application information
 APP_NAME = "ExpensesTracker"
+APP_TITLE = "Control your expenses with " + APP_NAME
 APP_VERSION = "1.0.0"
 
 # Currency codes

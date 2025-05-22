@@ -251,3 +251,8 @@ class TransactionsScreen(BaseScreen):
         self.update_balance_label()
         self.refresh_transactions()
         self.show_success_message(LM.message("account_changed"))
+
+    def go_analytics(self):
+        if self.manager:
+            self.manager.transition.direction = 'left'
+            self.manager.current = 'analytics_screen'

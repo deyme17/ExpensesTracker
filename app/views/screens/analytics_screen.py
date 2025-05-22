@@ -10,7 +10,7 @@ from app.views.widgets.analytics_widgets.graph_section import GraphSection
 from app.views.widgets.analytics_widgets.stats_section import StatsSection
 from app.utils.constants import CHART_TYPE_HISTOGRAM
 from app.utils.language_mapper import LanguageMapper as LM
-from app.utils.formatters import format_stats
+from app.services.local_storage import LocalStorageService
 
 Builder.load_file("kv/analytics_screen.kv")
 
@@ -24,6 +24,7 @@ class AnalyticsScreen(BaseScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "analytics_screen"
+
         now = datetime.now()
         self.start_date = datetime(now.year - 1, 1, 1)
         self.end_date = now
@@ -36,9 +37,12 @@ class AnalyticsScreen(BaseScreen):
         self.transaction_controller = app.transaction_controller
         self.analytics_controller = app.analytics_controller
 
+        self.storage = LocalStorageService()
+        self.selected_account_id = self.storage.get_active_account_id()
+
     def on_enter(self):
         super().on_enter()
-        Clock.schedule_once(self._load_analytics_data, 0.1)
+        self._load_analytics_data()
 
     def _load_analytics_data(self, *args):
         transactions = self.transaction_controller.filter_transactions(
@@ -46,7 +50,8 @@ class AnalyticsScreen(BaseScreen):
             max_amount=1e9,
             start_date=self.start_date,
             end_date=self.end_date,
-            type=self.current_type
+            type=self.current_type,
+            account_id=self.selected_account_id
         )
 
         if not transactions:
@@ -54,11 +59,10 @@ class AnalyticsScreen(BaseScreen):
             self._update_sections()
             return
 
-        currency = getattr(transactions[0], "currency", "UAH")
         stats = self.analytics_controller.get_statistics(transactions)
 
         self.data = AnalyticsData(
-            stats=format_stats(stats, currency),
+            stats=stats,
             raw_transactions=transactions,
             transaction_type=self.current_type,
             start_date=self.start_date,
@@ -79,7 +83,8 @@ class AnalyticsScreen(BaseScreen):
             self.ids.stats_box.clear_widgets()
             self.ids.stats_box.add_widget(self.stats_section)
 
-        self.stats_section.update_stats(self.data.stats)
+        self.stats_section.update_stats(self.data.stats, transaction_type=self.current_type)
+        self.translated_type = LM.transaction_type(self.current_type)
 
     def show_filter(self):
         popup = AnalyticsFilterPopup(
@@ -87,7 +92,7 @@ class AnalyticsScreen(BaseScreen):
             start_date=self.start_date,
             end_date=self.end_date
         )
-        popup.on_apply_callback = self._apply_filter
+        popup.on_apply = self._apply_filter
         popup.open()
 
     def _apply_filter(self, transaction_type, start_date, end_date):

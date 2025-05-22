@@ -1,3 +1,4 @@
+from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.constants import (
     CHART_TYPE_HISTOGRAM, CHART_TYPE_PIE, CHART_TYPE_LINE
 )
@@ -47,9 +48,9 @@ class AnalyticsData:
     @staticmethod
     def empty():
         return AnalyticsData(
-            stats={"avg": 0, "min": 0, "max": 0, "total": 0, "count": 0, "top_category": None},
+            stats={"avg": 0, "min": 0, "max": 0, "total": 0, "count": 0, "top_category": LM.message("no_data")},
             raw_transactions=[],
-            transaction_type="усі",
+            transaction_type=LM.category("all"),
             start_date=None,
             end_date=None
         )

@@ -85,9 +85,9 @@ class TransactionDetailsPopup(ModalView):
         try:
             amt = abs(float(t.amount))
             sign = "+" if t.type == "income" else "-"
-            amt_text = f"{sign}{amt:,.2f} {t.currency}"
+            amt_text = f"{sign}{amt:,.2f} ({t.currency})"
         except Exception:
-            amt_text = f"{t.amount} {t.currency}"
+            amt_text = f"{t.amount} ({t.currency})"
         details_layout.add_widget(add_detail("amount", amt_text))
         details_layout.add_widget(add_detail("date", t.get_formatted_date()))
         details_layout.add_widget(add_detail("payment_method", LM.payment_method(t.payment_method)))

@@ -13,7 +13,7 @@ class GraphSection(BoxLayout):
     chart_type = StringProperty()
     controller = ObjectProperty()
     transaction_type = StringProperty()
-    period = ObjectProperty()
+    transactions  = ObjectProperty()
     category = StringProperty(allownone=True)
 
     def __init__(self, **kwargs):
@@ -32,7 +32,7 @@ class GraphSection(BoxLayout):
                 chart_type=self.chart_type,
                 controller=self.controller,
                 transaction_type=self.transaction_type,
-                period=self.period,
+                transactions=self.transactions,
                 category=self.category
             )
             self.graph_widget.opacity = 0
@@ -42,10 +42,12 @@ class GraphSection(BoxLayout):
             print(f"[GraphSection] Помилка створення графіка: {e}")
             self.graph_widget = None
 
-    def update_graph(self, chart_type=None):
+    def update_graph(self, transactions=None, chart_type=None):
         """
         Updates the schedule. If a new type is transmitted, it changes it.
         """
-        if chart_type:
-            self.chart_type = chart_type
+        if chart_type is not None:
+            self.chart_type = str(chart_type)
+        if transactions is not None:
+            self.transactions = transactions
         self._load_graph()

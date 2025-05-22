@@ -20,8 +20,8 @@ class TransactionController:
         return self.storage_service.get_transactions(force_refresh=force_refresh)
 
     def filter_transactions(self, *, type=None, start_date=None, end_date=None, 
-                            min_amount=None, max_amount=None, payment_method=None,
-                            category=None):
+                            min_amount=0, max_amount=1e9, payment_method=None,
+                            category=None, account_id=None):
         transactions = self.get_transactions()
         return TransactionProcessor.filter(
             transactions,
@@ -31,7 +31,8 @@ class TransactionController:
             min_amount=min_amount,
             max_amount=max_amount,
             payment_method=payment_method,
-            category=category
+            category=category,
+            account_id=account_id
         )
 
     def sort_transactions(self, transactions, field='date', ascending=True):

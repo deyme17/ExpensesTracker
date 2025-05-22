@@ -15,7 +15,7 @@ class GraphFactory:
     }
 
     @classmethod
-    def create_graph(cls, chart_type, controller, transaction_type, period, category=None):
+    def create_graph(cls, chart_type, controller, transaction_type, transactions, category=None):
         graph_class = cls.chart.get(chart_type)
         if not graph_class:
             raise ValueError(LM.message("unknown_chart_type").format(type=chart_type))
@@ -23,6 +23,6 @@ class GraphFactory:
         widget = graph_class()
         widget.controller = controller
         widget.transaction_type = transaction_type
-        widget.period = period
+        widget.transactions = transactions
         widget.category = category
         return widget

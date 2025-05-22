@@ -25,7 +25,7 @@ def format_amount(amount, currency, show_sign=True):
     elif is_negative:
         formatted = f"-{formatted}"
     
-    formatted = f"{formatted} {currency}"
+    formatted = f"{formatted} ({currency})"
     
     return formatted
 
@@ -105,33 +105,3 @@ def format_percent(value, decimal_places=1):
     """
     format_str = f"{{:.{decimal_places}f}}%"
     return format_str.format(value * 100)
-
-def format_stats(stats_dict, currency="UAH"):
-    """
-    Format statistics dictionary for display.
-    
-    Args:
-        stats_dict (dict): Dictionary with statistical values
-        currency (str): Currency code
-        
-    Returns:
-        dict: Dictionary with formatted statistical values
-    """
-    formatted = {}
-    
-    if "avg_value" in stats_dict:
-        formatted["avg_value"] = format_amount(stats_dict["avg_value"], currency)
-    
-    if "min_value" in stats_dict:
-        formatted["min_value"] = format_amount(stats_dict["min_value"], currency)
-    
-    if "max_value" in stats_dict:
-        formatted["max_value"] = format_amount(stats_dict["max_value"], currency)
-    
-    if "total" in stats_dict:
-        formatted["total"] = format_amount(stats_dict["total"], currency)
-    
-    if "count" in stats_dict:
-        formatted["count"] = str(stats_dict["count"])
-    
-    return formatted

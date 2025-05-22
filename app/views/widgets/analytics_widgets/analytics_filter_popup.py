@@ -48,7 +48,6 @@ class AnalyticsFilterPopup(ModalView):
             self.bg_rect = RoundedRectangle(size=self.content.size, pos=self.content.pos, radius=[dp(20)])
         self.content.bind(size=self._update_rect, pos=self._update_rect)
 
-        # title
         title = Label(
             text=LM.message("filter_title"),
             font_size=sp(22),
@@ -61,7 +60,6 @@ class AnalyticsFilterPopup(ModalView):
         title.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, None)))
         self.content.add_widget(title)
 
-        # date
         self.start_date_input = LabeledDateInput(label_text=LM.message("start_date_label"))
         self.start_date_input.date_text = self._initial_start.strftime("%d.%m.%Y")
         self.end_date_input = LabeledDateInput(label_text=LM.message("end_date_label"))
@@ -69,18 +67,16 @@ class AnalyticsFilterPopup(ModalView):
         self.content.add_widget(self.start_date_input)
         self.content.add_widget(self.end_date_input)
 
-        # type
         self.type_spinner = LabeledSpinner(
             label_text=LM.message("transaction_type_label"),
-            values=[LM.transaction_type("expense"), LM.transaction_type("income")],
-            selected=LM.transaction_type(self._initial_type)
+            values=["expense", "income"],
+            selected=self._initial_type,
+            displayed_value=lambda val: LM.transaction_type(val)
         )
         self.content.add_widget(self.type_spinner)
 
-        # space
         self.content.add_widget(BoxLayout(size_hint_y=1))
 
-        # buttons
         btn_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
         close_btn = RoundedButton(text=LM.message("close_button"), bg_color="#666666", font_size=sp(14))
         apply_btn = RoundedButton(text=LM.message("apply_button"), bg_color="#0F7055", font_size=sp(14))

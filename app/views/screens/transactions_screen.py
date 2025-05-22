@@ -69,8 +69,7 @@ class TransactionsScreen(BaseScreen):
             self.balance_text = f"{LM.field_name('balance')}: 0"
 
     def refresh_transactions(self):
-        all_transactions = self.storage_service.get_transactions()
-        filtered = [t for t in all_transactions if t.account_id == self.selected_account_id]
+        filtered = self.controller.filter_transactions(account_id=self.selected_account_id)
         self._clear_list()
         for tx in filtered:
             self._add_row(tx)
@@ -189,7 +188,8 @@ class TransactionsScreen(BaseScreen):
             end_date=end_date,
             type=type,
             payment_method=payment_method,
-            category=category
+            category=category,
+            account_id=self.selected_account_id
         )
         self._clear_list()
         for tx in filtered:

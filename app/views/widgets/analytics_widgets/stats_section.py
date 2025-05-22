@@ -66,17 +66,27 @@ class StatsSection(GridLayout):
         self._bg_rect.pos = self.pos
         self._bg_rect.size = self.size
 
-    def update_stats(self, stats):
+    def update_stats(self, stats, transaction_type="expense"):
         """
         Refresh displayed statistics. Accepts either string or dict with value+color.
+        Adds + or - sign depending on transaction type for numeric fields.
         """
         self.stats_data = stats
+        prefix = "-" if transaction_type == "expense" else "+"
+
+        numeric_fields = {"avg", "min", "max", "total"}
         for key, lbl in self._value_labels.items():
             value = stats.get(key, "0")
             if isinstance(value, dict):
-                lbl.text = str(value.get("value", "0"))
+                raw_value = value.get("value", "0")
+                lbl.text = (
+                    f"{prefix}{raw_value}" if key in numeric_fields else str(raw_value)
+                )
                 lbl.color = value.get("color", STAT_COLORS.get(key, get_text_primary_color()))
             else:
-                lbl.text = str(value)
+                lbl.text = (
+                    f"{prefix}{value}" if key in numeric_fields else str(value)
+                )
                 lbl.color = STAT_COLORS.get(key, get_text_primary_color())
+
 

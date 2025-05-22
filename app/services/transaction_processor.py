@@ -4,7 +4,7 @@ class TransactionProcessor:
     @staticmethod
     def filter(transactions, min_amount=0, max_amount=float('inf'),
             start_date=None, end_date=None, type=None,
-            payment_method=None, category=None):
+            payment_method=None, category=None, account_id=None):
         def predicate(tx):
             return all([
                 min_amount <= abs(tx.amount) <= max_amount,
@@ -12,7 +12,8 @@ class TransactionProcessor:
                 (end_date is None or tx.date <= end_date),
                 (type is None or tx.type == type),
                 (payment_method is None or tx.payment_method == payment_method),
-                (category is None or tx.category == category)
+                (category is None or tx.category == category),
+                (account_id is None or tx.account_id == account_id)
             ])
 
         return [tx for tx in transactions if predicate(tx)]

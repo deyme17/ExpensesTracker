@@ -33,6 +33,20 @@ class TransactionsScreen(BaseScreen):
         self.filter_end_date = datetime.now()
         self._first_enter = True
 
+        self._last_filter = {
+            "min_amount": "0",
+            "max_amount": "1000000",
+            "start_date": self.filter_start_date,
+            "end_date": self.filter_end_date,
+            "type_selected": "all",
+            "category_selected": "all",
+            "payment_selected": "all"
+        }
+        self._last_sort = {
+            "selected_field": "date",
+            "ascending": True
+        }
+
     def on_enter(self):
         if self._first_enter:
             self._first_enter = False
@@ -46,7 +60,6 @@ class TransactionsScreen(BaseScreen):
             self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
             self.update_balance_label()
             self.refresh_transactions()
-
 
     def update_balance_label(self):
         acc = next((a for a in self.accounts if a.account_id == self.selected_account_id), None)
@@ -102,8 +115,8 @@ class TransactionsScreen(BaseScreen):
             account_id=self.selected_account_id
         )
         if success:
+            Clock.schedule_once(self.refresh_transactions, 0.2)
             self.show_success_message(msg)
-            self.refresh_transactions
         else:
             self.show_error_message(msg)
 
@@ -133,8 +146,8 @@ class TransactionsScreen(BaseScreen):
             commission=commission
         )
         if success:
+            Clock.schedule_once(self.refresh_transactions, 0.2)
             self.show_success_message(msg)
-            self.refresh_transactions
         else:
             self.show_error_message(msg)
 
@@ -147,18 +160,28 @@ class TransactionsScreen(BaseScreen):
         if isinstance(result, tuple):
             deleted, msg = result
             if deleted:
+                Clock.schedule_once(self.refresh_transactions, 0.2)
                 self.show_success_message(msg)
-                self.refresh_transactions
             else:
                 self.show_error_message(msg)
         else:
             self.show_error_message(message=LM.message("unable_delete_transaction"))
 
     def show_filter(self):
-        popup = FilterPopup(on_apply=self._apply_filter)
+        popup = FilterPopup(on_apply=self._apply_filter, on_reset=self._reset_filter, **self._last_filter)
         popup.open()
 
     def _apply_filter(self, min_amount, max_amount, start_date, end_date, type, payment_method, category):
+        self._last_filter.update({
+            "min_amount": str(min_amount),
+            "max_amount": str(max_amount),
+            "start_date": start_date,
+            "end_date": end_date,
+            "type_selected": type or "all",
+            "payment_selected": payment_method or "all",
+            "category_selected": category or "all"
+        })
+
         filtered = self.controller.filter_transactions(
             min_amount=min_amount,
             max_amount=max_amount,
@@ -174,11 +197,27 @@ class TransactionsScreen(BaseScreen):
 
         self.show_success_message(LM.message("filter_applied"))
 
+    def _reset_filter(self):
+        self._last_filter.update({
+            "min_amount": "0",
+            "max_amount": "1000000",
+            "start_date": datetime.now() - timedelta(days=365),
+            "end_date": datetime.now(),
+            "type_selected": "all",
+            "payment_selected": "all",
+            "category_selected": "all"
+        })
+
     def show_sort(self):
-        popup = SortPopup(on_sort=self._apply_sort)
+        popup = SortPopup(on_sort=self._apply_sort, **self._last_sort)
         popup.open()
 
     def _apply_sort(self, field_text, ascending):
+        self._last_sort.update({
+            "selected_field": field_text,
+            "ascending": ascending
+        })
+
         tx_list = list(self.transactions_data.values())
         sorted_list = self.controller.sort_transactions(tx_list, field=field_text, ascending=ascending)
         self._clear_list()
@@ -205,14 +244,10 @@ class TransactionsScreen(BaseScreen):
             on_account_selected=self._on_account_selected
         )
         popup.open()
+
     def _on_account_selected(self, selected_account_id):
         self.selected_account_id = selected_account_id
         self.storage_service.set_active_account(selected_account_id)
         self.update_balance_label()
         self.refresh_transactions()
         self.show_success_message(LM.message("account_changed"))
-
-    def go_analytics(self):
-        if self.manager:
-            self.manager.transition.direction = "left"
-            self.manager.current = "analytics_screen"

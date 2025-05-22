@@ -23,10 +23,19 @@ class FilterPopup(ModalView):
     on_apply = ObjectProperty(None)
     on_reset = ObjectProperty(None)
 
-    def __init__(self, start_date=None, end_date=None, on_apply=None, on_reset=None, **kwargs):
-        super(FilterPopup, self).__init__(**kwargs)
+    def __init__(self, *, start_date=None, end_date=None, on_apply=None, on_reset=None,
+                 min_amount="0", max_amount="1000000", type_selected="all",
+                 category_selected="all", payment_selected="all", **kwargs):
+        super().__init__(**kwargs)
         self.on_apply = on_apply
         self.on_reset = on_reset
+        self.start_date_val = start_date
+        self.end_date_val = end_date
+        self.min_amount_val = min_amount
+        self.max_amount_val = max_amount
+        self.type_selected = type_selected
+        self.category_selected = category_selected
+        self.payment_selected = payment_selected
 
         self.size_hint = (0.85, 0.9)
         self.auto_dismiss = False
@@ -59,7 +68,6 @@ class FilterPopup(ModalView):
             pos=lambda inst, val: setattr(self.bg_rect, "pos", inst.pos)
         )
 
-        # Title
         title = Label(
             text=LM.message("filter_title"),
             font_size=sp(22),
@@ -72,19 +80,19 @@ class FilterPopup(ModalView):
         title.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, None)))
         content.add_widget(title)
 
-        # Amount
         self.min_amount = LabeledInput(
             label_text=LM.field_name("amount") + " " + LM.message("from") + ":",
-            hint_text="0", text="0"
+            hint_text="0",
+            text=self.min_amount_val
         )
         self.max_amount = LabeledInput(
             label_text=LM.field_name("amount") + " " + LM.message("to") + ":",
-            hint_text="1000000", text="1000000"
+            hint_text="1000000",
+            text=self.max_amount_val
         )
         content.add_widget(self.min_amount)
         content.add_widget(self.max_amount)
 
-        # Dates
         self.start_date = LabeledDateInput(label_text=LM.message("start_date_label"))
         self.start_date.date_text = self._initial_start.strftime('%d.%m.%Y')
         self.end_date = LabeledDateInput(label_text=LM.message("end_date_label"))
@@ -92,37 +100,32 @@ class FilterPopup(ModalView):
         content.add_widget(self.start_date)
         content.add_widget(self.end_date)
 
-        # Transaction Type Spinner
         self.type_spinner = LabeledSpinner(
             label_text=LM.message("transaction_type_label"),
             values=TRANSACTION_TYPES,
-            selected="all",
+            selected=self.type_selected,
             displayed_value=lambda val: LM.transaction_type(val)
         )
         content.add_widget(self.type_spinner)
 
-        # Category Spinner
         self.category_spinner = LabeledSpinner(
             label_text=LM.message("category_label"),
             values=CATEGORIES,
-            selected="all",
+            selected=self.category_selected,
             displayed_value=lambda val: LM.category(val)
         )
         content.add_widget(self.category_spinner)
 
-        # Payment Method Spinner
         self.payment_spinner = LabeledSpinner(
             label_text=LM.message("payment_method_label"),
             values=PAYMENT_METHODS,
-            selected="all",
+            selected=self.payment_selected,
             displayed_value=lambda val: LM.payment_method(val)
         )
         content.add_widget(self.payment_spinner)
 
-        # Empty space
         content.add_widget(BoxLayout(size_hint_y=1))
 
-        # Buttons
         btn_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
         reset_btn = RoundedButton(text=LM.message("reset_button"), bg_color='#445555', font_size=sp(14))
         close_btn = RoundedButton(text=LM.message("close_button"), bg_color='#666666', font_size=sp(14))
@@ -139,7 +142,6 @@ class FilterPopup(ModalView):
 
         scroll.add_widget(content)
         self.add_widget(scroll)
-        self.open()
         Animation(opacity=1, d=0.3).start(content)
 
     def _reset_fields(self, *args):

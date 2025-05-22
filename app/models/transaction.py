@@ -130,7 +130,7 @@ class Transaction:
             amount=data.get("amount", 0) / 100.0,
             date=datetime.fromtimestamp(data.get("time", datetime.now().timestamp())),
             account_id=account_id,
-            category=MCC_MAPPING.get(data.get("mcc", 0), "Інше"),
+            category=MCC_MAPPING.get(data.get("mcc", 0), "other"),
             type="income" if amount > 0 else "expense",
             description=data.get("description", ""),
             payment_method="card",

@@ -103,7 +103,7 @@ class TransactionsScreen(BaseScreen):
         )
         if success:
             self.show_success_message(msg)
-            Clock.schedule_once(self.refresh_transactions, 0.2)
+            self.refresh_transactions
         else:
             self.show_error_message(msg)
 
@@ -134,7 +134,7 @@ class TransactionsScreen(BaseScreen):
         )
         if success:
             self.show_success_message(msg)
-            Clock.schedule_once(self.refresh_transactions, 0.2)
+            self.refresh_transactions
         else:
             self.show_error_message(msg)
 
@@ -148,7 +148,7 @@ class TransactionsScreen(BaseScreen):
             deleted, msg = result
             if deleted:
                 self.show_success_message(msg)
-                Clock.schedule_once(self.refresh_transactions, 0.2)
+                self.refresh_transactions
             else:
                 self.show_error_message(msg)
         else:

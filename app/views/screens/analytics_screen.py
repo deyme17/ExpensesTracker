@@ -55,7 +55,7 @@ class AnalyticsScreen(BaseScreen):
             return
 
         currency = getattr(transactions[0], "currency", "UAH")
-        stats = self.transaction_controller.get_statistics(transactions)
+        stats = self.analytics_controller.get_statistics(transactions)
 
         self.data = AnalyticsData(
             stats=format_stats(stats, currency),

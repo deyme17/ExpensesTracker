@@ -3,24 +3,19 @@ from datetime import datetime
 class TransactionProcessor:
     @staticmethod
     def filter(transactions, min_amount=0, max_amount=float('inf'),
-               start_date=None, end_date=None, type=None,
-               payment_method=None, category=None):
-        result = []
-        for tx in transactions:
-            if tx.amount < min_amount or tx.amount > max_amount:
-                continue
-            if start_date and tx.date < start_date:
-                continue
-            if end_date and tx.date > end_date:
-                continue
-            if type and tx.type != type:
-                continue
-            if payment_method and tx.payment_method != payment_method:
-                continue
-            if category and tx.category != category:
-                continue
-            result.append(tx)
-        return result
+            start_date=None, end_date=None, type=None,
+            payment_method=None, category=None):
+        def predicate(tx):
+            return all([
+                min_amount <= abs(tx.amount) <= max_amount,
+                (start_date is None or tx.date >= start_date),
+                (end_date is None or tx.date <= end_date),
+                (type is None or tx.type == type),
+                (payment_method is None or tx.payment_method == payment_method),
+                (category is None or tx.category == category)
+            ])
+
+        return [tx for tx in transactions if predicate(tx)]
 
     @staticmethod
     def sort(transactions, field="date", ascending=True):

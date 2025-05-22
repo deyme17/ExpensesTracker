@@ -19,8 +19,10 @@ class SortPopup(ModalView):
     selected_field = ObjectProperty("date")
     ascending = BooleanProperty(True)
 
-    def __init__(self, **kwargs):
-        super(SortPopup, self).__init__(**kwargs)
+    def __init__(self, on_sort=None, **kwargs):
+        super().__init__(**kwargs)
+        self.on_sort = on_sort
+
         self.size_hint = (0.85, 0.6)
         self.auto_dismiss = False
         self.background = ''

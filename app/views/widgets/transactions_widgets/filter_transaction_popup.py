@@ -23,8 +23,11 @@ class FilterPopup(ModalView):
     on_apply = ObjectProperty(None)
     on_reset = ObjectProperty(None)
 
-    def __init__(self, start_date=None, end_date=None, **kwargs):
+    def __init__(self, start_date=None, end_date=None, on_apply=None, on_reset=None, **kwargs):
         super(FilterPopup, self).__init__(**kwargs)
+        self.on_apply = on_apply
+        self.on_reset = on_reset
+
         self.size_hint = (0.85, 0.9)
         self.auto_dismiss = False
         self.background = ''

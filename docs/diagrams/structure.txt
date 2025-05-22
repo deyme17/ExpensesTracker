@@ -134,7 +134,7 @@ ExpensesTracker/
 │   │       ├── transaction_repository.py
 │   │       └── category_repository.py
 │   │
-│   ├── text/eng                            # локалізатори тексту з англійської на українську
+│   ├── text/ua_localization                # локалізатори тексту з англійської на українську
 │   │    ├── messages/
 │   │    ├── categories.py                  
 │   │    ├── months.py 

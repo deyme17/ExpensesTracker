@@ -16,8 +16,7 @@ from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
 from app.utils.validators import validate_date
 from app.utils.language_mapper import LanguageMapper as LM
-
-from app.text.uk.categories import CATEGORIES_MAP
+from app.utils.constants import TRANSACTION_TYPES, CATEGORIES, PAYMENT_METHODS
 
 
 class FilterPopup(ModalView):
@@ -57,7 +56,7 @@ class FilterPopup(ModalView):
             pos=lambda inst, val: setattr(self.bg_rect, "pos", inst.pos)
         )
 
-        # title
+        # Title
         title = Label(
             text=LM.message("filter_title"),
             font_size=sp(22),
@@ -70,13 +69,19 @@ class FilterPopup(ModalView):
         title.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, None)))
         content.add_widget(title)
 
-        # sum
-        self.min_amount = LabeledInput(label_text=LM.field_name("amount") + " " + LM.message("from") + ":", hint_text="0", text="0")
-        self.max_amount = LabeledInput(label_text=LM.field_name("amount") + " " + LM.message("to") + ":", hint_text="1000000", text="1000000")
+        # Amount
+        self.min_amount = LabeledInput(
+            label_text=LM.field_name("amount") + " " + LM.message("from") + ":",
+            hint_text="0", text="0"
+        )
+        self.max_amount = LabeledInput(
+            label_text=LM.field_name("amount") + " " + LM.message("to") + ":",
+            hint_text="1000000", text="1000000"
+        )
         content.add_widget(self.min_amount)
         content.add_widget(self.max_amount)
 
-        # date
+        # Dates
         self.start_date = LabeledDateInput(label_text=LM.message("start_date_label"))
         self.start_date.date_text = self._initial_start.strftime('%d.%m.%Y')
         self.end_date = LabeledDateInput(label_text=LM.message("end_date_label"))
@@ -84,34 +89,37 @@ class FilterPopup(ModalView):
         content.add_widget(self.start_date)
         content.add_widget(self.end_date)
 
-        # type
+        # Transaction Type Spinner
         self.type_spinner = LabeledSpinner(
             label_text=LM.message("transaction_type_label"),
-            values=[LM.transaction_type("all"), LM.transaction_type("income"), LM.transaction_type("expense")],
-            selected=LM.transaction_type("all")
+            values=TRANSACTION_TYPES,
+            selected="all",
+            displayed_value=lambda val: LM.transaction_type(val)
         )
         content.add_widget(self.type_spinner)
 
-        # category
+        # Category Spinner
         self.category_spinner = LabeledSpinner(
             label_text=LM.message("category_label"),
-            values=[LM.transaction_type("all")] + self._get_all_categories(),
-            selected=LM.transaction_type("all")
+            values=CATEGORIES,
+            selected="all",
+            displayed_value=lambda val: LM.category(val)
         )
         content.add_widget(self.category_spinner)
 
-        # method
+        # Payment Method Spinner
         self.payment_spinner = LabeledSpinner(
             label_text=LM.message("payment_method_label"),
-            values=[LM.payment_method("all"), LM.payment_method("card"), LM.payment_method("cash")],
-            selected=LM.payment_method("all")
+            values=PAYMENT_METHODS,
+            selected="all",
+            displayed_value=lambda val: LM.payment_method(val)
         )
         content.add_widget(self.payment_spinner)
 
-        # space
+        # Empty space
         content.add_widget(BoxLayout(size_hint_y=1))
 
-        # buttons
+        # Buttons
         btn_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
         reset_btn = RoundedButton(text=LM.message("reset_button"), bg_color='#445555', font_size=sp(14))
         close_btn = RoundedButton(text=LM.message("close_button"), bg_color='#666666', font_size=sp(14))
@@ -138,9 +146,9 @@ class FilterPopup(ModalView):
         year_ago = now - timedelta(days=365)
         self.start_date.date_text = year_ago.strftime('%d.%m.%Y')
         self.end_date.date_text = now.strftime('%d.%m.%Y')
-        self.type_spinner.selected = LM.message("transaction_type_all")
-        self.payment_spinner.selected = LM.message("payment_method_all")
-        self.category_spinner.selected = LM.message("all_categories")
+        self.type_spinner.selected = "all"
+        self.payment_spinner.selected = "all"
+        self.category_spinner.selected = "all"
         if self.on_reset:
             self.on_reset()
 
@@ -157,8 +165,9 @@ class FilterPopup(ModalView):
             if not end_ok:
                 end_dt = datetime.now()
 
-            pay = None if self.payment_spinner.selected == LM.message("payment_method_all") else self.payment_spinner.selected
-            category = None if self.category_spinner.selected == LM.message("all_categories") else self.category_spinner.selected
+            pay = None if self.payment_spinner.selected == "all" else self.payment_spinner.selected
+            category = None if self.category_spinner.selected == "all" else self.category_spinner.selected
+            ttype = None if self.type_spinner.selected == "all" else self.type_spinner.selected
 
             if self.on_apply:
                 self.on_apply(
@@ -166,13 +175,10 @@ class FilterPopup(ModalView):
                     max_amount=max_val,
                     start_date=start_dt,
                     end_date=end_dt,
-                    type=self.type_spinner.selected,
+                    type=ttype,
                     payment_method=pay,
                     category=category
                 )
             self.dismiss()
         except Exception as e:
             print(f"Filter error: {e}")
-
-    def _get_all_categories(self):
-        return [LM.category(cat_key) for cat_key in CATEGORIES_MAP]

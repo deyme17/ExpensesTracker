@@ -1,8 +1,8 @@
-from app.text.uk.transaction_vars import TRANSACTION_TYPES, PAYMENT_METHODS, FIELDS
-from app.text.uk.messages.analytics import CHART_TYPES, STATS_FIELDS
-from app.text.uk.categories import CATEGORIES_MAP
-from app.text.uk.messages import MESSAGES
-from app.text.uk.months import LONG_MONTHS_MAP, SHORT_MONTHS_MAP
+from app.text.ua_localization.transaction_vars import TRANSACTION_TYPES, PAYMENT_METHODS, FIELDS
+from app.text.ua_localization.messages.analytics import CHART_TYPES, STATS_FIELDS
+from app.text.ua_localization.categories import CATEGORIES_MAP
+from app.text.ua_localization.messages import MESSAGES
+from app.text.ua_localization.months import LONG_MONTHS_MAP, SHORT_MONTHS_MAP
 
 class LanguageMapper:
 

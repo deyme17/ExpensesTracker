@@ -1,6 +1,6 @@
 # Application information
 APP_NAME = "ExpensesTracker"
-APP_TITLE = "Control your expenses with " + APP_NAME
+APP_TITLE = APP_NAME
 APP_VERSION = "1.0.0"
 
 # months
@@ -11,6 +11,9 @@ LONG_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "
 CURRENCY_UAH = "UAH"
 CURRENCY_USD = "USD"
 CURRENCY_EUR = "EUR"
+
+TRANSACTION_TYPES = ["all", "income", "expense"]
+PAYMENT_METHODS = ["all", "card", "cash"]
 
 # charts
 CHART_TYPE_PIE = "pie"

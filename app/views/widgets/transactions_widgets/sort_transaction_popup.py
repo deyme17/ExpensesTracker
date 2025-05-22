@@ -2,7 +2,7 @@ from kivy.uix.modalview import ModalView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
-from kivy.properties import ObjectProperty, ListProperty, StringProperty, BooleanProperty
+from kivy.properties import ObjectProperty, BooleanProperty
 from kivy.metrics import dp, sp
 from kivy.graphics import Color, RoundedRectangle
 from kivy.animation import Animation
@@ -16,8 +16,7 @@ from app.utils.constants import SORT_FIELDS
 class SortPopup(ModalView):
     on_sort = ObjectProperty(None)  # callable(field: str, ascending: bool)
 
-    sort_fields = [LM.field_name(key) for key in SORT_FIELDS]
-    selected_field = StringProperty(LM.field_name("date"))
+    selected_field = ObjectProperty("date")
     ascending = BooleanProperty(True)
 
     def __init__(self, **kwargs):
@@ -64,9 +63,10 @@ class SortPopup(ModalView):
             height=dp(30)
         )
 
+        localized_sort_fields = [LM.field_name(field) for field in SORT_FIELDS]
         self.field_spinner = CustomSpinner(
-            text=self.selected_field,
-            values=self.sort_fields,
+            text=LM.field_name(self.selected_field),
+            values=localized_sort_fields,
             size_hint_y=None,
             height=dp(45)
         )
@@ -80,9 +80,10 @@ class SortPopup(ModalView):
             height=dp(30)
         )
 
+        direction_values = [LM.message("ascending"), LM.message("descending")]
         self.direction_spinner = CustomSpinner(
             text=LM.message("ascending") if self.ascending else LM.message("descending"),
-            values=[LM.message("ascending"), LM.message("descending")],
+            values=direction_values,
             size_hint_y=None,
             height=dp(45)
         )
@@ -123,8 +124,14 @@ class SortPopup(ModalView):
 
     def _apply_sort(self, *args):
         if self.on_sort:
+            try:
+                index = [LM.field_name(field) for field in SORT_FIELDS].index(self.field_spinner.text)
+                real_field = SORT_FIELDS[index]
+            except ValueError:
+                real_field = "date"
+
             ascending = self.direction_spinner.text == LM.message("ascending")
-            self.on_sort(self.field_spinner.text, ascending)
+            self.on_sort(real_field, ascending)
         self.dismiss()
 
     def _update_rect(self, instance, value):

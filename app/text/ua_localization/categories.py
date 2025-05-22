@@ -6,5 +6,6 @@ CATEGORIES_MAP = {
     "clothing": "Одяг",
     "cafe": "Кафе",
     "connection": "Зв'язок",
-    "other": "Інше"
+    "other": "Інше",
+    "all": "Усі категорії"
 }

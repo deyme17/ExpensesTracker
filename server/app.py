@@ -4,7 +4,7 @@ from server.api.endpoints import api
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)  # дозволити запити з клієнта (Kivy, Postman тощо)
+    CORS(app)
     app.register_blueprint(api)
     return app
 

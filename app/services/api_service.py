@@ -1,4 +1,3 @@
-# app/services/api_service.py
 import requests
 
 API_BASE = "http://localhost:5000/api"

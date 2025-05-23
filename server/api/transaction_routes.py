@@ -1,4 +1,3 @@
-# server/api/transaction_routes.py
 from flask import Blueprint, request, jsonify
 from server.services.transaction_service import TransactionService
 

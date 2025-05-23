@@ -1,15 +1,11 @@
 from server.database.db import SessionLocal
-from server.models.category import Category
-<<<<<<< HEAD
+from server.models.categories import Category
 from sqlalchemy.exc import SQLAlchemyError
-=======
->>>>>>> 9765729 (completed api)
 
 class CategoryRepository:
     def __init__(self):
         self.db = SessionLocal()
 
-<<<<<<< HEAD
     def get_all_categories(self):
         return self.db.query(Category).all()
 
@@ -38,7 +34,3 @@ class CategoryRepository:
                 self.db.rollback()
                 raise e
         return False
-=======
-    def get_all(self):
-        return self.db.query(Category).all()
->>>>>>> 9765729 (completed api)

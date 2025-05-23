@@ -1,4 +1,3 @@
-# server/api/auth_routes.py
 from flask import Blueprint, request, jsonify
 from server.services.auth_service import AuthService
 

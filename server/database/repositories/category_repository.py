@@ -1,5 +1,5 @@
 from server.database.db import SessionLocal
-from server.models.category import Category
+from server.models.categories import Category
 from sqlalchemy.exc import SQLAlchemyError
 
 class CategoryRepository:

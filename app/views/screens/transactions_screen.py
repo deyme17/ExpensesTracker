@@ -14,7 +14,7 @@ from app.views.widgets.transactions_widgets.transaction_details_popup import Tra
 from app.views.widgets.transactions_widgets.confirm_delete_popup import ConfirmDeletePopup
 from app.views.widgets.transactions_widgets.account_select_popup import AccountSelectPopup
 from app.services.local_storage import LocalStorageService
-from app.utils.language_mapper import LanguageMapper as LM
+from utils.language_mapper import LanguageMapper as LM
 
 Builder.load_file("kv/transactions_screen.kv")
 
@@ -51,9 +51,11 @@ class TransactionsScreen(BaseScreen):
         if self._first_enter:
             self._first_enter = False
 
-            self.storage_service = LocalStorageService()
-            self.accounts = self.storage_service.get_accounts()
-            acc_id = self.storage_service.get_active_account_id()
+            from kivy.app import App
+            app = App.get_running_app()
+
+            self.accounts = app.account_service.get_accounts()
+            acc_id = app.account_service.storage_service.get_active_account_id()
             if acc_id:
                 self.selected_account_id = acc_id
 

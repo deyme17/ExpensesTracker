@@ -7,9 +7,9 @@ from kivy.utils import get_color_from_hex
 from kivy.lang import Builder
 
 from app.views.screens.base_screen import BaseScreen
-from app.utils.validators import validate_registration_inputs
+from utils.validators import validate_registration_inputs
 from app.views.widgets.popups.info_popup import MonobankTokenInfoPopup
-from app.utils.language_mapper import LanguageMapper as LM
+from utils.language_mapper import LanguageMapper as LM
 
 Builder.load_file("kv/register_screen.kv")
 

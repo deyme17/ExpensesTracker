@@ -1,5 +1,5 @@
 import hashlib
-from app.services.encryption_service import EncryptionService
+from app.utils.encryption_service import EncryptionService
 
 class User:
     def __init__(self, user_id, name, email, token, password_hash):

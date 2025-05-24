@@ -13,4 +13,8 @@ TRANSACTION = {
     "amount_hint": "Введіть суму",
     "category_label": "Категорія",
     "payment_method_label": "Спосіб оплати",
+    "add_success": "Транзакцію успішно додано",
+    "update_success": "Транзакцію успішно оновлено",
+    "delete_success": "Транзакцію успішно видалено",
+    "server_error": "Сталася помилка сервера"
 }

@@ -1,5 +1,5 @@
 from app.models.graphs.base_graph import BaseGraphWidget
-from app.utils.language_mapper import LanguageMapper as LM
+from utils.language_mapper import LanguageMapper as LM
 
 
 class ShareGraph(BaseGraphWidget):

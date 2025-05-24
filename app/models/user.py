@@ -39,3 +39,14 @@ class User:
             token=token,
             password_hash=data.get("password_hash")
         )
+
+    @classmethod
+    def from_api_dict(cls, data):
+        token = data.get("token") or data.get("encrypted_token") or ""
+        return cls(
+            user_id=data.get("user_id"),
+            name=data.get("name"),
+            email=data.get("email"),
+            token=token,
+            password_hash=data.get("password_hash", "")
+        )

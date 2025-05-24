@@ -1,4 +1,4 @@
-from app.utils.language_mapper import LanguageMapper as LM
+from utils.language_mapper import LanguageMapper as LM
 from app.utils.constants import (
     CHART_TYPE_HISTOGRAM, CHART_TYPE_PIE, CHART_TYPE_LINE
 )

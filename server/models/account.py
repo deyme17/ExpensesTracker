@@ -9,4 +9,4 @@ class Account(Base):
     currency_code = Column(BigInteger, ForeignKey("currencies.currency_code"), nullable=False)
     balance = Column(DECIMAL(19, 4), nullable=False)
     type = Column(VARCHAR(255), nullable=False)
-    masked_pan = Column(BigInteger, nullable=False)
+    masked_pan = Column(String, nullable=True)

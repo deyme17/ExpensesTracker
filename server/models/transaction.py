@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-from sqlalchemy import Column, String, Date, DECIMAL, ForeignKey, BigInteger
-from server.database.db import Base
-from server.models.category import Category
-=======
 from sqlalchemy import Column, BigInteger, String, DECIMAL, Date, ForeignKey, Enum, Computed
 from server.database.db import Base
 import enum
@@ -10,7 +5,6 @@ import enum
 class PaymentMethod(enum.Enum):
     card = "card"
     cash = "cash"
->>>>>>> api_branch3
 
 class Transaction(Base):
     __tablename__ = "transactions"

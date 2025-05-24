@@ -8,7 +8,7 @@ from kivy.graphics import Color, RoundedRectangle
 from kivy.properties import ObjectProperty
 from datetime import datetime, timedelta
 
-from app.utils.language_mapper import LanguageMapper as LM
+from utils.language_mapper import LanguageMapper as LM
 from app.views.widgets.inputs.date_input import LabeledDateInput
 from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton

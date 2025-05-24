@@ -6,7 +6,7 @@ from kivy.metrics import dp, sp
 from kivy.properties import ListProperty, ObjectProperty
 from kivy.graphics import Color, RoundedRectangle
 
-from app.utils.language_mapper import LanguageMapper as LM
+from utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_primary_color, get_text_primary_color
 from app.views.widgets.buttons.styled_button import RoundedButton
 

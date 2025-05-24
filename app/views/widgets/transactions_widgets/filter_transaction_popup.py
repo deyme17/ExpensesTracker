@@ -14,9 +14,10 @@ from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 
 from app.utils.theme import get_primary_color, get_text_primary_color
-from app.utils.validators import validate_date
-from app.utils.language_mapper import LanguageMapper as LM
-from app.utils.constants import TRANSACTION_TYPES, CATEGORIES, PAYMENT_METHODS
+from utils.validators import validate_date
+from utils.language_mapper import LanguageMapper as LM
+from app.utils.constants import TRANSACTION_TYPES
+from kivy.app import App
 
 
 class FilterPopup(ModalView):
@@ -108,20 +109,26 @@ class FilterPopup(ModalView):
         )
         content.add_widget(self.type_spinner)
 
+        # categories/payment method
+        app = App.get_running_app()
+        static = app.static_data_service
+        categories = ["all"] + [c.name for c in static.get_categories()]
+        payment_methods = ["all", "card", "cash"]
+
         self.category_spinner = LabeledSpinner(
             label_text=LM.message("category_label"),
-            values=CATEGORIES,
+            values=categories,
             selected=self.category_selected,
             displayed_value=lambda val: LM.category(val)
         )
-        content.add_widget(self.category_spinner)
 
         self.payment_spinner = LabeledSpinner(
             label_text=LM.message("payment_method_label"),
-            values=PAYMENT_METHODS,
+            values=payment_methods,
             selected=self.payment_selected,
             displayed_value=lambda val: LM.payment_method(val)
         )
+
         content.add_widget(self.payment_spinner)
 
         content.add_widget(BoxLayout(size_hint_y=1))

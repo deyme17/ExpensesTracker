@@ -6,7 +6,7 @@ from kivy.metrics import dp, sp
 from kivy.clock import Clock
 from app.utils.theme import get_income_color, get_expense_color, get_text_primary_color
 from app.utils.formatters import format_amount
-from app.utils.language_mapper import LanguageMapper as LM
+from utils.language_mapper import LanguageMapper as LM
 
 class TransactionRow(BoxLayout):
     """

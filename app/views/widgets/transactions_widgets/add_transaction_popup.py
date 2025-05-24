@@ -1,23 +1,22 @@
 from kivy.uix.modalview import ModalView
 from kivy.uix.boxlayout import BoxLayout
-from kivy.properties import ObjectProperty
-from app.views.widgets.inputs.date_input import LabeledDateInput
-from app.views.widgets.inputs.styled_text_input import LabeledInput
-from app.views.widgets.inputs.custom_spinner import LabeledSpinner
-from app.views.widgets.buttons.styled_button import RoundedButton
-from datetime import datetime
-
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.label import Label
 from kivy.metrics import dp, sp
 from kivy.animation import Animation
 from kivy.graphics import Color, RoundedRectangle
+from kivy.app import App
 
-from app.utils.constants import (
-    CATEGORIES, CURRENCY_UAH, CURRENCY_EUR, CURRENCY_USD
-)
+from kivy.properties import ObjectProperty
+
+from app.views.widgets.inputs.date_input import LabeledDateInput
+from app.views.widgets.inputs.styled_text_input import LabeledInput
+from app.views.widgets.inputs.custom_spinner import LabeledSpinner
+from app.views.widgets.buttons.styled_button import RoundedButton
+
+from utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_color_from_hex, get_text_primary_color
-from app.utils.language_mapper import LanguageMapper as LM
+from datetime import datetime
 
 
 class AddTransactionPopup(ModalView):
@@ -37,12 +36,10 @@ class AddTransactionPopup(ModalView):
             self._fill_fields_with_existing_transaction()
 
     def build_ui(self):
-        self.content = BoxLayout(
-            orientation="vertical",
-            spacing=dp(15),
-            padding=[dp(20), dp(20), dp(20), dp(20)],
-            opacity=0
-        )
+        app = App.get_running_app()
+        static = app.static_data_service
+
+        self.content = BoxLayout(orientation="vertical", spacing=dp(15), padding=dp(20), opacity=0)
 
         with self.content.canvas.before:
             Color(rgba=get_color_from_hex('#0A4035'))
@@ -51,53 +48,62 @@ class AddTransactionPopup(ModalView):
         self.content.bind(size=self._update_bg, pos=self._update_bg)
 
         title_text = LM.message("add_income") if self.type == 'income' else LM.message("add_expense")
-        title = Label(
-            text=title_text,
-            font_size=sp(20),
-            bold=True,
-            color=get_text_primary_color(),
-            halign="center",
-            size_hint_y=None,
-            height=dp(40)
-        )
+        title = Label(text=title_text, font_size=sp(20), bold=True, color=get_text_primary_color(),
+                      halign="center", size_hint_y=None, height=dp(40))
 
         scroll = ScrollView()
         fields_container = BoxLayout(orientation="vertical", spacing=dp(10), size_hint_y=None)
         fields_container.bind(minimum_height=fields_container.setter("height"))
 
-        categories_localized = [LM.category(cat_key) for cat_key in CATEGORIES]
-        payment_methods_localized = [LM.payment_method("card"), LM.payment_method("cash")]
+        # load data
+        categories = static.get_categories()
+        currencies = static.get_currencies()
+        payment_methods = ["card", "cash"]
+
+        category_keys = [c.name for c in categories]
+        currency_codes = [c.currency_code for c in currencies]
+        default_currency = next((c.currency_code for c in currencies if c.name == "UAH"), currency_codes[0])
 
         self.category_input = LabeledSpinner(
             label_text=LM.field_name("category") + ":",
-            values=categories_localized,
-            selected=categories_localized[0]
+            values=category_keys,
+            selected=category_keys[0],
+            displayed_value=LM.category
         )
+
         self.payment_input = LabeledSpinner(
             label_text=LM.field_name("payment_method") + ":",
-            values=payment_methods_localized,
-            selected=payment_methods_localized[0]
+            values=payment_methods,
+            selected=payment_methods[0],
+            displayed_value=LM.payment_method
         )
+
         self.amount_input = LabeledInput(
             label_text=LM.field_name("amount") + ":",
             hint_text=LM.message("amount_hint")
         )
+
         self.currency_input = LabeledSpinner(
             label_text=LM.field_name("currency") + ":",
-            values=[CURRENCY_UAH, CURRENCY_EUR, CURRENCY_USD],
-            selected=CURRENCY_UAH
+            values=currency_codes,
+            selected=default_currency,
+            displayed_value=static.get_currency_name_by_code
         )
+
         self.date_input = LabeledDateInput(label_text=LM.field_name("date") + ":")
+
         self.cashback_input = LabeledInput(
             label_text=LM.field_name("cashback") + ":",
             hint_text=LM.message("cashback_hint"),
             text="0"
         )
+
         self.commission_input = LabeledInput(
             label_text=LM.field_name("commission") + ":",
             hint_text=LM.message("commission_hint"),
             text="0"
         )
+
         self.description_input = LabeledInput(
             label_text=LM.field_name("description") + ":",
             hint_text=LM.message("description_hint")
@@ -141,11 +147,11 @@ class AddTransactionPopup(ModalView):
         if self.on_save:
             self.on_save(
                 self.type,
-                self._get_key_from_localized_category(self.category_input.selected),
+                self.category_input.selected,
                 self.amount_input.text,
                 self.date_input.date_text,
                 self.description_input.text,
-                self._get_key_from_localized_payment_method(self.payment_input.selected),
+                self.payment_input.selected,
                 self.currency_input.selected,
                 self.cashback_input.text,
                 self.commission_input.text,
@@ -154,23 +160,11 @@ class AddTransactionPopup(ModalView):
 
     def _fill_fields_with_existing_transaction(self):
         t = self.existing_transaction
-        self.category_input.selected = LM.category(t.category)
-        self.payment_input.selected = LM.payment_method(t.payment_method)
+        self.category_input.selected = t.category
+        self.payment_input.selected = t.payment_method
         self.amount_input.text = str(abs(t.amount))
         self.currency_input.selected = t.currency
         self.date_input.date_text = t.get_formatted_date()
         self.cashback_input.text = str(t.cashback)
         self.commission_input.text = str(t.commission)
         self.description_input.text = t.description
-
-    def _get_key_from_localized_category(self, localized_value):
-        for key in CATEGORIES:
-            if LM.category(key) == localized_value:
-                return key
-        return localized_value
-
-    def _get_key_from_localized_payment_method(self, localized_value):
-        for key in ["card", "cash"]:
-            if LM.payment_method(key) == localized_value:
-                return key
-        return localized_value

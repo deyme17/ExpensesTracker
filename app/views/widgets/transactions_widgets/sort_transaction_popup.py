@@ -2,7 +2,7 @@ from kivy.uix.modalview import ModalView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
-from kivy.properties import ObjectProperty, BooleanProperty
+from kivy.properties import ObjectProperty
 from kivy.metrics import dp, sp
 from kivy.graphics import Color, RoundedRectangle
 from kivy.animation import Animation
@@ -10,12 +10,8 @@ from kivy.animation import Animation
 from app.views.widgets.inputs.custom_spinner import CustomSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
-from app.utils.language_mapper import LanguageMapper as LM
-from app.utils.constants import SORT_FIELDS, TRANSACTION_TYPES, CATEGORIES, PAYMENT_METHODS
-from app.views.widgets.inputs.date_input import LabeledDateInput
-from app.views.widgets.inputs.styled_text_input import LabeledInput
-from app.views.widgets.inputs.custom_spinner import LabeledSpinner
-from datetime import datetime, timedelta
+from utils.language_mapper import LanguageMapper as LM
+from app.utils.constants import SORT_FIELDS
 
 class SortPopup(ModalView):
     on_sort = ObjectProperty(None)
@@ -65,10 +61,11 @@ class SortPopup(ModalView):
             height=dp(30)
         )
 
-        localized_sort_fields = [LM.field_name(field) for field in SORT_FIELDS]
         self.field_spinner = CustomSpinner(
             text=LM.field_name(self.selected_field),
-            values=localized_sort_fields,
+            values=SORT_FIELDS,
+            displayed_value=LM.field_name,
+            selected=self.selected_field,
             size_hint_y=None,
             height=dp(45)
         )
@@ -81,10 +78,11 @@ class SortPopup(ModalView):
             height=dp(30)
         )
 
-        direction_values = [LM.message("ascending"), LM.message("descending")]
+        direction_values = ["asc", "desc"]
         self.direction_spinner = CustomSpinner(
-            text=LM.message("ascending") if self.ascending else LM.message("descending"),
+            text="asc" if self.ascending else "desc",
             values=direction_values,
+            displayed_value=lambda val: LM.message("ascending") if val == "asc" else LM.message("descending"),
             size_hint_y=None,
             height=dp(45)
         )
@@ -124,14 +122,7 @@ class SortPopup(ModalView):
 
     def _apply_sort(self, *args):
         if self.on_sort:
-            try:
-                index = [LM.field_name(field) for field in SORT_FIELDS].index(self.field_spinner.text)
-                real_field = SORT_FIELDS[index]
-            except ValueError:
-                real_field = "date"
-
-            ascending = self.direction_spinner.text == LM.message("ascending")
-            self.on_sort(real_field, ascending)
+            self.on_sort(self.field_spinner.selected, self.direction_spinner.selected == "asc")
         self.dismiss()
 
     def _update_rect(self, instance, value):

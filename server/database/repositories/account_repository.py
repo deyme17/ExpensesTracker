@@ -2,12 +2,14 @@ from server.database.db import SessionLocal
 from server.models.account import Account
 
 class AccountRepository:
-    def __init__(self):
-        self.db = SessionLocal()
-
     def create(self, data: dict):
-        account = Account(**data)
-        self.db.add(account)
-        self.db.commit()
-        self.db.refresh(account)
-        return account
+        with SessionLocal() as db:
+            account = Account(**data)
+            db.add(account)
+            db.commit()
+            db.refresh(account)
+            return account
+
+    def get_by_user_id(self, user_id):
+        with SessionLocal() as db:
+            return db.query(Account).filter(Account.user_id == user_id).all()

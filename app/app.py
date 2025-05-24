@@ -13,6 +13,7 @@ class ExpensesTrackerApp(App):
                  auth_controller, 
                  transaction_controller, 
                  analytics_controller, 
+                 account_service,
                  splash_screen_cls, 
                  first_screen_cls, 
                  login_screen_cls, 
@@ -26,8 +27,8 @@ class ExpensesTrackerApp(App):
         self.auth_controller = auth_controller
         self.transaction_controller = transaction_controller
         self.analytics_controller = analytics_controller
+        self.account_service = account_service
 
-        # screen classes
         self.splash_screen_cls = splash_screen_cls
         self.first_screen_cls = first_screen_cls
         self.login_screen_cls = login_screen_cls

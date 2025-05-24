@@ -9,25 +9,32 @@ from app.controllers.auth_controller import AuthController
 from app.controllers.transaction_controller import TransactionController
 from app.controllers.analytics_controller import AnalyticsController
 
-from app.services.bank_services.monobank_service import MonobankService
 from app.services.local_storage import LocalStorageService
+from app.services.account_service import AccountService
+from app.services.transactions.local_transaction_service import LocalTransactionService
+from app.services.transactions.remote_transaction_service import RemoteTransactionService
 
 from app.app import ExpensesTrackerApp
-from app.services.transactions.remote_transaction_service import RemoteTransactionService
+
 
 def create_app():
     storage_service = LocalStorageService()
     current_user = storage_service.get_user()
 
+    # acc
+    account_service = AccountService(
+        storage_service=storage_service,
+        user_id=current_user.user_id if current_user else None
+    )
+
+    # choose tr service
     if current_user:
         transaction_service = RemoteTransactionService(current_user.user_id)
     else:
-        from app.services.transactions.local_transaction_service import LocalTransactionService
         transaction_service = LocalTransactionService(storage_service)
 
-    transaction_controller = TransactionController(transaction_service)
-
     auth_controller = AuthController(storage_service)
+    transaction_controller = TransactionController(transaction_service)
     analytics_controller = AnalyticsController()
 
     return ExpensesTrackerApp(
@@ -35,6 +42,7 @@ def create_app():
         auth_controller=auth_controller,
         transaction_controller=transaction_controller,
         analytics_controller=analytics_controller,
+        account_service=account_service,
         splash_screen_cls=SplashScreen,
         first_screen_cls=FirstScreen,
         login_screen_cls=LoginScreen,

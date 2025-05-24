@@ -18,4 +18,12 @@ AUTH = {
     "register_button_action": "Зареєструватись",
     "cancel_button": "Скасувати",
     "registration_error_generic": "Внутрішня помилка реєстрації",
+    "password_required": "Пароль обов’язковий",
+    "password_too_short": "Пароль має містити щонайменше 6 символів",
+    "password_needs_digit": "Пароль повинен містити щонайменше одну цифру",
+    "password_needs_letter": "Пароль повинен містити щонайменше одну літеру",
+    "email_required": "Email обов’язковий",
+    "email_invalid": "Некоректний email",
+    "field_missing": "Відсутні обов’язкові поля: {fields}",
+    "registration_not_supported_local": "Реєстрація недоступна в локальному режимі"
 }

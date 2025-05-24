@@ -16,5 +16,7 @@ TRANSACTION = {
     "add_success": "Транзакцію успішно додано",
     "update_success": "Транзакцію успішно оновлено",
     "delete_success": "Транзакцію успішно видалено",
-    "server_error": "Сталася помилка сервера"
+    "server_error": "Сталася помилка сервера",
+    "transaction_fields_missing": "Відсутні поля транзакції: {fields}",
+    "field_missing": "Відсутні обов’язкові поля: {fields}",
 }

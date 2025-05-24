@@ -6,6 +6,16 @@ CATEGORIES_MAP = {
     "clothing": "Одяг",
     "cafe": "Кафе",
     "connection": "Зв'язок",
+    "shopping": "Покупки",
+    "home": "Дім і сад",
+    "financial": "Фінанси",
+    "education": "Освіта",
+    "professional": "Професійні послуги",
+    "beauty": "Краса",
+    "government": "Державні послуги",
+    "utilities": "Комунальні послуги",
+    "hotel": "Готелі",
+    "digital": "Цифрові товари",
     "other": "Інше",
     "all": "Усі категорії"
 }

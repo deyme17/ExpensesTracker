@@ -13,13 +13,21 @@ from app.services.bank_services.monobank_service import MonobankService
 from app.services.local_storage import LocalStorageService
 
 from app.app import ExpensesTrackerApp
-
+from app.services.transactions.remote_transaction_service import RemoteTransactionService
 
 def create_app():
     storage_service = LocalStorageService()
+    current_user = storage_service.get_user()
+
+    if current_user:
+        transaction_service = RemoteTransactionService(current_user.user_id)
+    else:
+        from app.services.transactions.local_transaction_service import LocalTransactionService
+        transaction_service = LocalTransactionService(storage_service)
+
+    transaction_controller = TransactionController(transaction_service)
 
     auth_controller = AuthController(storage_service)
-    transaction_controller = TransactionController(storage_service)
     analytics_controller = AnalyticsController()
 
     return ExpensesTrackerApp(

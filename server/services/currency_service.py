@@ -1,6 +1,10 @@
 from server.database.repositories.currency_repository import CurrencyRepository
 
-repo = CurrencyRepository()
+class CurrencyService:
+    def __init__(self):
+        self.repo = CurrencyRepository()
 
-def get_all():
-    return [c.__dict__ for c in repo.get_all()]
+    def get_all(self):
+        return [c.__dict__ for c in self.repo.get_all()]
+
+currency_service = CurrencyService()

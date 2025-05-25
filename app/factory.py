@@ -13,6 +13,7 @@ from app.services.local_storage import LocalStorageService
 from app.services.auth_service import AuthService
 from app.services.crud_services.transaction import TransactionService
 from app.services.crud_services.account import AccountService
+from app.services.crud_services.static_data import StaticDataService
 
 from app.app import ExpensesTrackerApp
 
@@ -26,6 +27,7 @@ def create_app():
         storage_service=storage_service,
         user_id=current_user.user_id if current_user else None
     )
+    static_data_service = StaticDataService(storage_service=storage_service)
 
     transaction_service = TransactionService(
         user_id=current_user.user_id if current_user else None,
@@ -43,6 +45,7 @@ def create_app():
         transaction_controller=transaction_controller,
         analytics_controller=analytics_controller,
         account_service=account_service,
+        static_data_service=static_data_service,
         splash_screen_cls=SplashScreen,
         first_screen_cls=FirstScreen,
         login_screen_cls=LoginScreen,

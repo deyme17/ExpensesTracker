@@ -13,6 +13,8 @@ class User:
         return EncryptionService.decrypt(self._encrypted_token)
 
     def to_dict(self):
+        if not all([self.user_id, self.name, self.email, self._encrypted_token]):
+            raise ValueError("User object has missing or None fields")
         return {
             "user_id": self.user_id,
             "name": self.name,

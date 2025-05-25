@@ -1,6 +1,6 @@
 from datetime import datetime
 from app.utils.constants import SHORT_MONTHS, LONG_MONTHS
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 
 def format_amount(amount, currency, show_sign=True):
     """

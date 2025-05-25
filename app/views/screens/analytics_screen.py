@@ -9,7 +9,7 @@ from app.views.widgets.analytics_widgets.analytics_filter_popup import Analytics
 from app.views.widgets.analytics_widgets.graph_section import GraphSection
 from app.views.widgets.analytics_widgets.stats_section import StatsSection
 from app.utils.constants import CHART_TYPE_HISTOGRAM
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 from app.services.local_storage import LocalStorageService
 
 Builder.load_file("kv/analytics_screen.kv")

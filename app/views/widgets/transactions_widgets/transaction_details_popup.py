@@ -7,7 +7,7 @@ from kivy.graphics import Color, RoundedRectangle
 from kivy.utils import get_color_from_hex
 from kivy.uix.scrollview import ScrollView
 
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 from app.views.widgets.buttons.styled_button import RoundedButton
 
 class TransactionDetailsPopup(ModalView):

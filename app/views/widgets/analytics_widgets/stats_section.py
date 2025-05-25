@@ -6,7 +6,7 @@ from kivy.properties import DictProperty
 from kivy.graphics import Color, RoundedRectangle
 from kivy.utils import get_color_from_hex
 from app.utils.theme import get_text_secondary_color, get_text_primary_color, STAT_COLORS
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 
 card_color = get_color_from_hex("#0A4035")
 

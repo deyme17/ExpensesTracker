@@ -14,7 +14,7 @@ from app.views.widgets.inputs.styled_text_input import LabeledInput
 from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_color_from_hex, get_text_primary_color
 from datetime import datetime
 

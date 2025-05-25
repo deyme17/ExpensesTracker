@@ -1,7 +1,7 @@
 from kivy.properties import StringProperty, NumericProperty, ObjectProperty
 from kivy.animation import Animation
 from kivy.clock import Clock
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 from kivy.lang import Builder
 
 from app.views.screens.base_screen import BaseScreen

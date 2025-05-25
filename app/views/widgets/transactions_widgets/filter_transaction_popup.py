@@ -14,8 +14,8 @@ from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 
 from app.utils.theme import get_primary_color, get_text_primary_color
-from utils.validators import validate_date
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.validators import validate_date
+from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.constants import TRANSACTION_TYPES
 from kivy.app import App
 

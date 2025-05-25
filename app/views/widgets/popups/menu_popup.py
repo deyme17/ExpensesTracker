@@ -4,7 +4,7 @@ from kivy.uix.label import Label
 from kivy.metrics import dp, sp
 from kivy.graphics import Color, RoundedRectangle
 from app.views.widgets.buttons.styled_button import RoundedButton
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_primary_color, get_text_primary_color
 
 

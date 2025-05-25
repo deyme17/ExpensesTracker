@@ -14,7 +14,7 @@ from app.views.widgets.transactions_widgets.transaction_details_popup import Tra
 from app.views.widgets.transactions_widgets.confirm_delete_popup import ConfirmDeletePopup
 from app.views.widgets.transactions_widgets.account_select_popup import AccountSelectPopup
 from app.services.local_storage import LocalStorageService
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 
 Builder.load_file("kv/transactions_screen.kv")
 

@@ -10,7 +10,7 @@ from kivy.animation import Animation
 from app.views.widgets.inputs.custom_spinner import CustomSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.constants import SORT_FIELDS
 
 class SortPopup(ModalView):

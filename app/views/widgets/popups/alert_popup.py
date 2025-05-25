@@ -1,5 +1,5 @@
 from app.views.widgets.popups.base_popup import BasePopup
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 
 from app.utils.theme import (
     get_error_color, get_success_color, 

@@ -10,7 +10,7 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.metrics import dp
 from app.views.widgets.buttons.styled_button import StyledButton
 from app.utils.theme import get_background_color
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 
 
 class InfoPopup(Popup):

@@ -30,5 +30,25 @@ class TransactionService:
 
     def update(self, transaction_id, data):
         return self.repo.update(transaction_id, data)
+    
+    def map_transactions(self, tx_data, user_id, account_id):
+        from server.models.transaction import Transaction
+        return [
+            Transaction(
+                transaction_id=t["id"],
+                user_id=user_id,
+                amount=t["amount"] / 100.0,
+                date=datetime.fromtimestamp(t["time"]),
+                account_id=account_id,
+                mcc_code=t.get("mcc", 0),
+                currency_code=t.get("currencyCode", 980),
+                payment_method="card",
+                description=t.get("description", ""),
+                cashback=t.get("cashbackAmount", 0) / 100.0,
+                commission=t.get("commissionRate", 0) / 100.0
+            )
+            for t in tx_data
+        ]
+
 
 transaction_service = TransactionService()

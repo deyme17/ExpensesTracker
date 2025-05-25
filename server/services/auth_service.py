@@ -1,93 +1,69 @@
-from datetime import datetime, timedelta
-from server.database.repositories.user_repository import UserRepository
-from server.utils.security import hash_password, verify_password, create_access_token
+from datetime import timedelta, datetime
 from server.database.db import SessionLocal
-from server.models.user import User
-from server.models.account import Account
-from server.models.transaction import Transaction
-from server.models.category import Category
 from server.services.bank_services.monobank_service import MonobankService
-from sqlalchemy.exc import SQLAlchemyError
+from server.services.user_service import UserService
+from server.services.account_service import AccountService
+from server.services.transaction_service import TransactionService
+from server.models.user import User
+from server.models.category import Category
+from server.utils.security import hash_password, verify_password, create_access_token
+
 
 class AuthService:
     def __init__(self):
-        self.repo = UserRepository()
+        self.user_service = UserService()
+        self.account_service = AccountService()
+        self.transaction_service = TransactionService()
 
     def register_user(self, data: dict):
+        token = data.get("encrypted_token", "").strip()
+        if not token:
+            raise Exception("token_missing")
+
+        mono = MonobankService(token)
+        client_info = mono.get_client_info()
+        user_id = client_info["user_id"]
+
         with SessionLocal() as db:
             try:
-                if self.repo.get_user_by_email(data["email"]):
+                # email
+                if self.user_service.repo.get_user_by_email(data["email"]):
                     raise Exception("user_exists")
-
-                token = data.get("encrypted_token", "").strip()
-                if not token:
-                    raise Exception("token_missing")
-
-                mono = MonobankService(token)
-                client_info = mono.get_client_info()
 
                 # user
                 user_data = {
-                    "user_id": client_info.get("user_id"),
+                    "user_id": user_id,
                     "name": client_info.get("name"),
                     "email": data.get("email"),
                     "hashed_password": hash_password(data["password"]),
                     "encrypted_token": token
                 }
-
-                user = User(**user_data)
-                db.add(user)
-                db.flush()
+                user = self.user_service.repo.create_user(user_data, db)
 
                 # accounts
                 accounts_data = client_info.get("accounts", [])
                 if not accounts_data:
                     raise Exception("no_accounts_found")
 
-                accounts = [
-                    Account(
-                        account_id=a.get("id"),
-                        user_id=user.user_id,
-                        currency_code=a.get("currencyCode"),
-                        balance=a.get("balance") / 100.0,
-                        type=a.get("type", "default"),
-                        masked_pan=a.get("maskedPan", [0])[0]
-                    )
-                    for a in accounts_data
-                ]
-                for acc in accounts:
-                    db.add(acc)
+                accounts = self.account_service.repo.bulk_create(accounts_data, user_id, db)
 
                 # transactions
-                transactions = []
+                all_transactions = []
                 for acc in accounts:
-                    tx_data = mono.get_transactions(account_id=acc.account_id, days=31)
-                    transactions += [
-                        Transaction(
-                            transaction_id=t.get("id"),
-                            user_id=user.user_id,
-                            amount=t.get("amount") / 100.0,
-                            date=datetime.fromtimestamp(t.get("time")),
-                            account_id=acc.account_id,
-                            mcc_code=t.get("mcc", 0),
-                            currency_code=t.get("currencyCode", 980),
-                            payment_method="card",
-                            description=t.get("description", ""),
-                            cashback=t.get("cashbackAmount", 0) / 100.0,
-                            commission=t.get("commissionRate", 0) / 100.0
-                        ) for t in tx_data
-                    ]
+                    txs = mono.get_transactions(acc.account_id, days=31)
+                    all_transactions.extend(self.transaction_service.map_transactions(txs, user_id, acc.account_id))
 
-                # add mcc
-                existing_codes = {c.mcc_code for c in db.query(Category).all()}
-                missing_codes = {t.mcc_code for t in transactions if t.mcc_code not in existing_codes}
-                for code in missing_codes:
+                # add categories
+                existing_mcc = {c.mcc_code for c in db.query(Category).all()}
+                missing_mcc = {t.mcc_code for t in all_transactions if t.mcc_code not in existing_mcc}
+                for code in missing_mcc:
                     db.add(Category(mcc_code=code, name="other"))
 
-                for tx in transactions:
+                for tx in all_transactions:
                     db.add(tx)
 
                 db.commit()
+
                 return {
                     "user_id": user.user_id,
                     "name": user.name,
@@ -99,7 +75,7 @@ class AuthService:
                 raise e
 
     def login_user(self, email: str, password: str):
-        user = self.repo.get_user_by_email(email)
+        user = self.user_service.repo.get_user_by_email(email)
         if not user or not verify_password(password, user.hashed_password):
             raise Exception("invalid_credentials")
 
@@ -113,7 +89,7 @@ class AuthService:
         }
 
     def get_user_by_id(self, user_id: str):
-        user = self.repo.get_user_by_id(user_id)
+        user = self.user_service.repo.get_user_by_id(user_id)
         if not user:
             raise Exception("user_not_found")
         return user

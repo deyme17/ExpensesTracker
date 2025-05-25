@@ -1,5 +1,5 @@
 from kivy.clock import Clock
-from app.services.auth.auth_interface import AuthService
+from app.services.auth_service import AuthService
 
 class AuthController:
     def __init__(self, storage_service):

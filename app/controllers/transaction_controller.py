@@ -1,8 +1,8 @@
-from app.services.transactions.transaction_processor import TransactionProcessor
-from app.services.transactions.transaction_service import BaseTransactionService
+from app.services.data_services.transaction import TransactionService
+from app.services.transaction_processor import TransactionProcessor
 
 class TransactionController:
-    def __init__(self, transaction_service: BaseTransactionService):
+    def __init__(self, transaction_service):
         self.transaction_service = transaction_service
 
     def add_transaction(self, **kwargs):

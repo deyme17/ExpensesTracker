@@ -10,3 +10,13 @@ class Account(Base):
     balance = Column(DECIMAL(19, 4), nullable=False)
     type = Column(VARCHAR(255), nullable=False)
     masked_pan = Column(String, nullable=True)
+
+    def to_dict(self):
+        return {
+            "account_id": self.account_id,
+            "user_id": self.user_id,
+            "currency_code": self.currency_code,
+            "balance": float(self.balance),
+            "type": self.type,
+            "masked_pan": self.masked_pan
+        }

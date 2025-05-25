@@ -80,7 +80,6 @@ class LabeledSpinner(BoxLayout):
 
         self._display_to_key = {}
 
-        # label
         self.label = Label(
             text=self.label_text,
             size_hint_y=None,
@@ -91,7 +90,6 @@ class LabeledSpinner(BoxLayout):
             text_size=(None, dp(25))
         )
 
-        # spinner
         self.spinner = CustomSpinner(
             text="",
             values=[],
@@ -108,6 +106,8 @@ class LabeledSpinner(BoxLayout):
         self.bind(values=self._update_values)
         self.bind(selected=self._update_selected)
         self.bind(displayed_value=self._update_displayed_values)
+
+        Clock.schedule_once(lambda dt: self._update_displayed_values(), 0)
 
     def _update_label_text(self, instance, value):
         self.label.text = value
@@ -131,7 +131,6 @@ class LabeledSpinner(BoxLayout):
             self.selected = self._display_to_key[value]
         else:
             self.selected = value
-
 
 class SpinnerOption(Button):
     """

@@ -7,8 +7,9 @@ APP_VERSION = "1.0.0"
 SHORT_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 LONG_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
-TRANSACTION_TYPES = ["all", "income", "expense"]
-PAYMENT_METHODS = ["all", "card", "cash"]
+TRANSACTION_TYPES = ["income", "expense"]
+PAYMENT_METHODS = ["card", "cash"]
+ALL = 'all'
 
 # charts
 CHART_TYPE_PIE = "pie"

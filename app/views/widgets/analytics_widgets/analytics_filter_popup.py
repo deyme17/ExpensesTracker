@@ -13,6 +13,7 @@ from app.views.widgets.inputs.date_input import LabeledDateInput
 from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
+from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS, ALL
 
 
 class AnalyticsFilterPopup(ModalView):
@@ -69,7 +70,7 @@ class AnalyticsFilterPopup(ModalView):
 
         self.type_spinner = LabeledSpinner(
             label_text=LM.message("transaction_type_label"),
-            values=["expense", "income"],
+            values=TRANSACTION_TYPES,
             selected=self._initial_type,
             displayed_value=lambda val: LM.transaction_type(val)
         )

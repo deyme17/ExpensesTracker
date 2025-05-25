@@ -16,7 +16,7 @@ from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
 from app.utils.validators import validate_date
 from app.utils.language_mapper import LanguageMapper as LM
-from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS
+from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS, ALL
 from kivy.app import App
 
 
@@ -103,7 +103,7 @@ class FilterPopup(ModalView):
 
         self.type_spinner = LabeledSpinner(
             label_text=LM.message("transaction_type_label"),
-            values=TRANSACTION_TYPES,
+            values=TRANSACTION_TYPES + [ALL],
             selected=self.type_selected,
             displayed_value=LM.transaction_type
         )
@@ -124,7 +124,7 @@ class FilterPopup(ModalView):
 
         self.payment_spinner = LabeledSpinner(
             label_text=LM.message("payment_method_label"),
-            values=PAYMENT_METHODS,
+            values=PAYMENT_METHODS + [ALL],
             selected=self.payment_selected,
             displayed_value=LM.payment_method
         )

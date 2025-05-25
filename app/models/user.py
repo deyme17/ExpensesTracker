@@ -36,10 +36,13 @@ class User:
 
     @classmethod
     def from_api_dict(cls, data):
-        token = data.get("token") or data.get("encrypted_token") or ""
+        required_fields = ["user_id", "name", "email", "token"]
+        for field in required_fields:
+            if field not in data or data[field] is None:
+                raise ValueError(f"Missing or None field: {field} in API response: {data}")
         return cls(
-            user_id=data.get("user_id"),
-            name=data.get("name"),
-            email=data.get("email"),
-            token=token
+            user_id=data["user_id"],
+            name=data["name"],
+            email=data["email"],
+            token=data["token"]
         )

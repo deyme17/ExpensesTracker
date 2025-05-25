@@ -19,4 +19,7 @@ TRANSACTION = {
     "server_error": "Сталася помилка сервера",
     "transaction_fields_missing": "Відсутні поля транзакції: {fields}",
     "field_missing": "Відсутні обов’язкові поля: {fields}",
+    "transaction_added_offline": "Транзакцію успішно додано (офлайн)",
+    "transaction_deleted_offline": "Транзакцію успішно видалено (офлайн)",
+    "unable_delete_transaction": "Не вдалося видалити транзакцію"
 }

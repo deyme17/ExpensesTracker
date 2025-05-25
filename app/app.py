@@ -55,10 +55,9 @@ class ExpensesTrackerApp(App):
             name='login_screen',
             controller=self.auth_controller
         )
-        register_screen = self.register_screen_cls(
-            name='reg_screen',
-            controller=self.auth_controller
-        )
+        register_screen = self.register_screen_cls(name='reg_screen')
+        register_screen.controller = self.auth_controller
+
         transactions_screen = self.transactions_screen_cls(
             name='transactions_screen',
             controller=self.transaction_controller

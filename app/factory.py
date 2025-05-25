@@ -11,8 +11,8 @@ from app.controllers.analytics_controller import AnalyticsController
 
 from app.services.local_storage import LocalStorageService
 from app.services.auth_service import AuthService
-from app.services.data_services.transaction import TransactionService
-from app.services.data_services.account import AccountService
+from app.services.crud_services.transaction import TransactionService
+from app.services.crud_services.account import AccountService
 
 from app.app import ExpensesTrackerApp
 

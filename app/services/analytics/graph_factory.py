@@ -1,7 +1,7 @@
 from app.utils.constants import (
     CHART_TYPE_HISTOGRAM, CHART_TYPE_PIE, CHART_TYPE_LINE
 )
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 from app.models.graphs.distribution_graph import DistributionGraph
 from app.models.graphs.share_graph import ShareGraph
 from app.models.graphs.dynamics_graph import DynamicsGraph

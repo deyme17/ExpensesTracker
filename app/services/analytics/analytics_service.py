@@ -1,5 +1,5 @@
 from collections import defaultdict
-from utils.language_mapper import LanguageMapper as LM
+from app.utils.language_mapper import LanguageMapper as LM
 import hashlib
 
 class AnalyticsService:
@@ -40,7 +40,7 @@ class AnalyticsService:
                 "top_category": top_category
             }
 
-        # оновлюємо кеш
+        # update hash
         self._last_hash = current_hash
         self._last_result = result
         return result

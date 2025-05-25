@@ -1,4 +1,4 @@
-from app.services.data_services.transaction import TransactionService
+from app.services.crud_services.transaction import TransactionService
 from app.services.transaction_processor import TransactionProcessor
 
 class TransactionController:

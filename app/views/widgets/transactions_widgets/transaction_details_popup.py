@@ -8,6 +8,7 @@ from kivy.utils import get_color_from_hex
 from kivy.uix.scrollview import ScrollView
 
 from app.utils.language_mapper import LanguageMapper as LM
+from app.utils.formatters import format_date
 from app.views.widgets.buttons.styled_button import RoundedButton
 
 class TransactionDetailsPopup(ModalView):
@@ -89,7 +90,7 @@ class TransactionDetailsPopup(ModalView):
         except Exception:
             amt_text = f"{t.amount} ({t.currency})"
         details_layout.add_widget(add_detail("amount", amt_text))
-        details_layout.add_widget(add_detail("date", t.get_formatted_date()))
+        details_layout.add_widget(add_detail("date", format_date(t.date)))
         details_layout.add_widget(add_detail("payment_method", LM.payment_method(t.payment_method)))
 
         try:

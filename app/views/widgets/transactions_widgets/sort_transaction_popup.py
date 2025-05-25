@@ -63,12 +63,10 @@ class SortPopup(ModalView):
 
         self.field_spinner = CustomSpinner(
             text=LM.field_name(self.selected_field),
-            values=SORT_FIELDS,
-            displayed_value=LM.field_name,
-            selected=self.selected_field,
-            size_hint_y=None,
-            height=dp(45)
+            values=[LM.field_name(f) for f in SORT_FIELDS],
+            selected=LM.field_name(self.selected_field)
         )
+        self._field_map = {LM.field_name(f): f for f in SORT_FIELDS}
 
         direction_label = Label(
             text=LM.message("direction"),
@@ -78,14 +76,15 @@ class SortPopup(ModalView):
             height=dp(30)
         )
 
-        direction_values = ["asc", "desc"]
+        direction_values = ["ascending", "descending"]
         self.direction_spinner = CustomSpinner(
-            text="asc" if self.ascending else "desc",
-            values=direction_values,
-            displayed_value=lambda val: LM.message("ascending") if val == "asc" else LM.message("descending"),
-            size_hint_y=None,
-            height=dp(45)
+            text=LM.message("ascending") if self.ascending else LM.message("descending"),
+            values=[LM.message("ascending"), LM.message("descending")]
         )
+        self._direction_map = {
+            LM.message("ascending"): True,
+            LM.message("descending"): False
+        }
 
         buttons_box = BoxLayout(
             size_hint_y=None,
@@ -121,8 +120,10 @@ class SortPopup(ModalView):
         Animation(opacity=1, d=0.3).start(content)
 
     def _apply_sort(self, *args):
+        selected_field = self._field_map.get(self.field_spinner.text, "date")
+        ascending = self._direction_map.get(self.direction_spinner.text, True)
         if self.on_sort:
-            self.on_sort(self.field_spinner.selected, self.direction_spinner.selected == "asc")
+            self.on_sort(selected_field, ascending)
         self.dismiss()
 
     def _update_rect(self, instance, value):

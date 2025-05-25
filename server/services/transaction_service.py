@@ -1,15 +1,34 @@
 from server.database.repositories.transaction_repository import TransactionRepository
+import enum
+from datetime import date, datetime
+from decimal import Decimal
+import json
 
-repo = TransactionRepository()
+def serialize(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    if isinstance(obj, enum.Enum):
+        return obj.value
+    return str(obj)
 
-def get_all_by_user(user_id):
-    return [t.__dict__ for t in repo.get_all_by_user(user_id)]
+class TransactionService:
+    def __init__(self):
+        self.repo = TransactionRepository()
 
-def create(data):
-    return repo.create(data)
+    def get_all_by_user(self, user_id):
+        transactions = self.repo.get_all_by_user(user_id)
+        return [json.loads(json.dumps(t.__dict__, default=serialize)) for t in transactions]
 
-def delete(transaction_id):
-    return repo.delete(transaction_id)
 
-def update(transaction_id, data):
-    return repo.update(transaction_id, data)
+    def create(self, data):
+        return self.repo.create_transaction(data)
+
+    def delete(self, transaction_id):
+        return self.repo.delete(transaction_id)
+
+    def update(self, transaction_id, data):
+        return self.repo.update(transaction_id, data)
+
+transaction_service = TransactionService()

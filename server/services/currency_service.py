@@ -5,6 +5,6 @@ class CurrencyService:
         self.repo = CurrencyRepository()
 
     def get_all(self):
-        return [c.__dict__ for c in self.repo.get_all()]
+        return [c.to_dict() for c in self.repo.get_all()]
 
 currency_service = CurrencyService()

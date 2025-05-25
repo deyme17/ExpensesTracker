@@ -1,16 +1,14 @@
 class Category:
-    def __init__(self, name, mcc_code=None, color=None):
+    def __init__(self, name, mcc_code=None):
         """
         Initialize a Category instance.
         
         Args:
             name (str): Category name
             mcc_code (int, optional): Merchant Category Code for mapping with bank data
-            color (str, optional): Color hex code for the category
         """
         self.name = name
         self.mcc_code = mcc_code
-        self.color = color 
     
     def to_dict(self):
         """
@@ -22,7 +20,6 @@ class Category:
         return {
             "name": self.name,
             "mcc_code": self.mcc_code,
-            "color": self.color
         }
     
     @classmethod
@@ -41,8 +38,7 @@ class Category:
         
         return cls(
             name=data.get("name", ""),
-            mcc_code=data.get("mcc_code"),
-            color=data.get("color")
+            mcc_code=data.get("mcc_code")
         )
     
     def __str__(self):

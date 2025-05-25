@@ -7,7 +7,6 @@ from server.models.account import Account
 from server.models.transaction import Transaction
 from server.models.category import Category
 from server.services.bank_services.monobank_service import MonobankService
-from utils.language_mapper import LanguageMapper as LM
 from sqlalchemy.exc import SQLAlchemyError
 
 class AuthService:
@@ -18,11 +17,11 @@ class AuthService:
         with SessionLocal() as db:
             try:
                 if self.repo.get_user_by_email(data["email"]):
-                    raise Exception(LM.message("user_exists"))
+                    raise Exception("user_exists")
 
                 token = data.get("encrypted_token", "").strip()
                 if not token:
-                    raise Exception(LM.message("token_missing"))
+                    raise Exception("token_missing")
 
                 mono = MonobankService(token)
                 client_info = mono.get_client_info()
@@ -43,7 +42,7 @@ class AuthService:
                 # accounts
                 accounts_data = client_info.get("accounts", [])
                 if not accounts_data:
-                    raise Exception(LM.message("no_accounts_found"))
+                    raise Exception("no_accounts_found")
 
                 accounts = [
                     Account(
@@ -102,7 +101,7 @@ class AuthService:
     def login_user(self, email: str, password: str):
         user = self.repo.get_user_by_email(email)
         if not user or not verify_password(password, user.hashed_password):
-            raise Exception(LM.message("invalid_credentials"))
+            raise Exception("invalid_credentials")
 
         token = create_access_token({"user_id": user.user_id}, expires_delta=timedelta(days=1))
 
@@ -116,7 +115,7 @@ class AuthService:
     def get_user_by_id(self, user_id: str):
         user = self.repo.get_user_by_id(user_id)
         if not user:
-            raise Exception(LM.message("user_not_found"))
+            raise Exception("user_not_found")
         return user
 
     def create_token(self, user: User) -> str:

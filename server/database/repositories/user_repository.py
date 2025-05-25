@@ -12,7 +12,7 @@ class UserRepository:
             return db.query(User).filter(User.user_id == user_id).first()
 
     def create_user(self, data: dict, db=None):
-        use_db = db or self.db
+        use_db = db or SessionLocal()
         try:
             user = User(**data)
             use_db.add(user)

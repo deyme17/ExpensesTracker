@@ -105,28 +105,30 @@ class FilterPopup(ModalView):
             label_text=LM.message("transaction_type_label"),
             values=TRANSACTION_TYPES,
             selected=self.type_selected,
-            displayed_value=lambda val: LM.transaction_type(val)
+            displayed_value=LM.transaction_type
         )
         content.add_widget(self.type_spinner)
 
         # categories/payment method
-        app = App.get_running_app()
-        static = app.static_data_service
-        categories = ["all"] + [c.name for c in static.get_categories()]
-        payment_methods = ["all", "card", "cash"]
+        from app.utils.helpers import get_static_data_service
+        static = get_static_data_service()
+
+        categories = static.get_categories()
+        category_codes = ["all"] + [c.mcc_code for c in categories]
 
         self.category_spinner = LabeledSpinner(
             label_text=LM.message("category_label"),
-            values=categories,
+            values=category_codes,
             selected=self.category_selected,
-            displayed_value=lambda val: LM.category(val)
+            displayed_value=lambda code: LM.category(static.get_category_name_by_mcc(code)) if code != "all" else "Усі"
         )
 
+        payment_methods = ["all", "card", "cash"]
         self.payment_spinner = LabeledSpinner(
             label_text=LM.message("payment_method_label"),
             values=payment_methods,
             selected=self.payment_selected,
-            displayed_value=lambda val: LM.payment_method(val)
+            displayed_value=LM.payment_method
         )
 
         content.add_widget(self.payment_spinner)
@@ -177,9 +179,19 @@ class FilterPopup(ModalView):
             if not end_ok:
                 end_dt = datetime.now()
 
-            pay = None if self.payment_spinner.selected == "all" else self.payment_spinner.selected
-            category = None if self.category_spinner.selected == "all" else self.category_spinner.selected
             ttype = None if self.type_spinner.selected == "all" else self.type_spinner.selected
+            pay = None if self.payment_spinner.selected == "all" else self.payment_spinner.selected
+
+            # category
+            category = None
+            if self.category_spinner.selected != "all":
+                from app.utils.helpers import get_static_data_service
+                static = get_static_data_service()
+                selected_name = self.category_spinner.selected
+                for c in static.get_categories():
+                    if c.name == selected_name:
+                        category = c.mcc_code
+                        break
 
             if self.on_apply:
                 self.on_apply(

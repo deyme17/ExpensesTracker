@@ -19,8 +19,23 @@ class TransactionService:
 
     def get_all_by_user(self, user_id):
         transactions = self.repo.get_all_by_user(user_id)
-        return [json.loads(json.dumps(t.__dict__, default=serialize)) for t in transactions]
-
+        return [
+            {
+                "transaction_id": t.transaction_id,
+                "user_id": t.user_id,
+                "amount": float(t.amount),
+                "date": t.date.isoformat(),
+                "account_id": t.account_id,
+                "mcc_code": t.mcc_code,
+                "currency_code": t.currency_code,
+                "payment_method": t.payment_method.value if t.payment_method else "card",
+                "type": t.type,
+                "description": t.description,
+                "cashback": float(t.cashback),
+                "commission": float(t.commission)
+            }
+            for t in transactions
+        ]
 
     def create(self, data):
         return self.repo.create_transaction(data)

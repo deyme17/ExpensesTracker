@@ -25,5 +25,6 @@ AUTH = {
     "email_required": "Email обов’язковий",
     "email_invalid": "Некоректний email",
     "field_missing": "Відсутні обов’язкові поля: {fields}",
-    "registration_not_supported_local": "Реєстрація недоступна в локальному режимі"
+    "registration_not_supported_local": "Реєстрація недоступна в локальному режимі",
+    "initialization_error": "Помилка ініціалізації"
 }

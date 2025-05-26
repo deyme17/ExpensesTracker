@@ -62,7 +62,7 @@ class TransactionsScreen(BaseScreen):
 
             self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
             self.update_balance_label()
-            self.refresh_transactions()
+            self.refresh_transactions(force=False)  # <- вже без повторного завантаження
 
     def update_balance_label(self):
         acc = next((a for a in self.accounts if a.account_id == self.selected_account_id), None)
@@ -71,8 +71,8 @@ class TransactionsScreen(BaseScreen):
         else:
             self.balance_text = f"{LM.field_name('balance')}: 0"
 
-    def refresh_transactions(self):
-        all_tx = self.controller.get_transactions(force_refresh=True)
+    def refresh_transactions(self, force=False):
+        all_tx = self.controller.get_transactions(force_refresh=force)
         filtered = [tx for tx in all_tx if tx.account_id == self.selected_account_id]
         filtered = sorted(filtered, key=lambda t: t.date, reverse=True)
 
@@ -102,7 +102,6 @@ class TransactionsScreen(BaseScreen):
         )
         self.transactions_container.add_widget(row)
         self.transactions_data[tx.transaction_id] = tx
-
 
     def add_transaction(self, type):
         popup = AddTransactionPopup(type=type, on_save=self._on_save)

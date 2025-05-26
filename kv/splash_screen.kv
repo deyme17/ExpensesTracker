@@ -64,7 +64,7 @@
                 Animation(opacity=1, d=0.8).start(self)
 
         Label:
-            text: 'Track your finances'
+            text: 'Відстежуй свої витрати!'
             font_size: '16sp'
             pos_hint: {'center_x': 0.5}
             color: text_light
@@ -96,11 +96,11 @@
                         size: self.size
                         radius: [dp(2)]
                 on_kv_post:
-                    anim = Animation(size=(dp(230), dp(4)), duration=1.5, t='out_quad')
+                    anim = Animation(size=(dp(230), dp(4)), duration=6, t='out_quad')
                     anim.start(self)
 
             Label:
-                text: 'Loading...'
+                text: 'Завантаження...'
                 font_size: '14sp'
                 color: accent_color
                 opacity: 0

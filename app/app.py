@@ -79,10 +79,6 @@ class ExpensesTrackerApp(App):
 
         self.screen_manager.current = 'splash_screen'
     
-    def on_start(self):
-        from kivy.clock import Clock
-        Clock.schedule_once(lambda dt: self._check_auth_status(), 2)
-    
     def _check_auth_status(self):
         if self.auth_controller.is_authenticated():
             self.screen_manager.current = 'transactions_screen'

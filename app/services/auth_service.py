@@ -68,6 +68,7 @@ class AuthService:
                     "password": password,
                     "encrypted_token": token
                 }
+                print("REGISTRATION PAYLOAD:", payload)
                 response = api_register(payload)
                 if response.get("success"):
                     user = User.from_api_dict(response)
@@ -94,12 +95,19 @@ class AuthService:
             app.transaction_controller.transaction_service.user_id = user.user_id
             app.account_service.user_id = user.user_id
 
+            # get and save data
             app.account_service.get_accounts()
             TransactionService(user_id=user.user_id, storage_service=self.storage).get_transactions(force_refresh=True)
             StaticDataService(self.storage).get_categories()
             StaticDataService(self.storage).get_currencies()
 
+            # active account
+            accounts, _ = app.account_service.get_accounts()
+            if accounts:
+                self.storage.set_active_account(accounts[0].account_id)
+
             print("[AuthService] Start loading transactions for", user.user_id)
+
         except Exception as e:
             print(f"[AuthService] load data error: {e}")
         finally:

@@ -24,6 +24,9 @@ class TransactionDetailsPopup(ModalView):
         self.build_ui()
 
     def build_ui(self):
+        from kivy.app import App
+        static = App.get_running_app().static_data_service
+
         content = BoxLayout(
             orientation="vertical",
             spacing=dp(12),
@@ -82,13 +85,19 @@ class TransactionDetailsPopup(ModalView):
             return row
 
         t = self.transaction
-        details_layout.add_widget(add_detail("category", LM.category(t.category)))
+
+        category_name = static.get_category_name_by_mcc(t.mcc_code)
+        currency_name = static.get_currency_name_by_code(t.currency_code)
+
+        details_layout.add_widget(add_detail("category", LM.category(category_name)))
+
         try:
             amt = abs(float(t.amount))
             sign = "+" if t.type == "income" else "-"
-            amt_text = f"{sign}{amt:,.2f} ({t.currency})"
+            amt_text = f"{sign}{amt:,.2f} ({currency_name})"
         except Exception:
-            amt_text = f"{t.amount} ({t.currency})"
+            amt_text = f"{t.amount} ({currency_name})"
+
         details_layout.add_widget(add_detail("amount", amt_text))
         details_layout.add_widget(add_detail("date", format_date(t.date)))
         details_layout.add_widget(add_detail("payment_method", LM.payment_method(t.payment_method)))

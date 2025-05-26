@@ -21,5 +21,6 @@ TRANSACTION = {
     "field_missing": "Відсутні обов’язкові поля: {fields}",
     "transaction_added_offline": "Транзакцію успішно додано (офлайн)",
     "transaction_deleted_offline": "Транзакцію успішно видалено (офлайн)",
-    "unable_delete_transaction": "Не вдалося видалити транзакцію"
+    "unable_delete_transaction": "Не вдалося видалити транзакцію",
+    "edit_transaction": "Редагувати транзакцію",
 }

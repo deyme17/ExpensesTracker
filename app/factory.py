@@ -31,8 +31,7 @@ def create_app():
 
     transaction_service = TransactionService(
         user_id=current_user.user_id if current_user else None,
-        storage_service=storage_service,
-        offline_mode=current_user is None
+        storage_service=storage_service
     )
 
     auth_controller = AuthController(storage_service)

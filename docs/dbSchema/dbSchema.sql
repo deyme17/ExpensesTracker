@@ -1,6 +1,6 @@
 -- USERS
 CREATE TABLE "users" (
-    "user_id" VARCHAR(255) NOT NULL,
+    "user_id" VARCHAR(255) NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR(255) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
     "hashed_password" VARCHAR(255) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE "accounts" (
     "balance" DECIMAL(19, 4) NOT NULL,
     "currency_code" BIGINT NOT NULL,
     "type" VARCHAR(255) NOT NULL,
-    "masked_pan" BIGINT NOT NULL,
+    "masked_pan" VARCHAR NOT NULL,
     PRIMARY KEY ("account_id"),
     FOREIGN KEY ("user_id") 
         REFERENCES "users"("user_id") ON DELETE CASCADE,

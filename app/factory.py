@@ -8,7 +8,7 @@ from app.views.screens.analytics_screen import AnalyticsScreen
 from app.controllers.auth_controller import AuthController
 from app.controllers.transaction_controller import TransactionController
 from app.controllers.analytics_controller import AnalyticsController
-
+    
 from app.services.local_storage import LocalStorageService
 from app.services.auth_service import AuthService
 from app.services.crud_services.transaction import TransactionService

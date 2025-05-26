@@ -34,7 +34,7 @@ D:/ExpensesTracker/
 │   │       ├── share_graph.py
 │
 │   ├── services/
-│   │   ├── api_service.py                  # Відправка запитів до Flask API
+│   │   ├── api.py                          # Відправка запитів до Flask API
 │   │   ├── auth_service.py                 # Реєстрація, логін, токен-контроль
 │   │   ├── local_storage.py                # Робота з user.json, accounts.json тощо
 │   │   ├── transaction_processor.py        # Сортування та фільрація транзакцій
@@ -48,8 +48,10 @@ D:/ExpensesTracker/
 │
 │   ├── utils/
 │   │   ├── constants.py                    # Назви екранів, UI параметри
+│   │   ├── connection_manager.py.py        # Перевірка з'єднання з сервером
 │   │   ├── encryption.py                   # Шифрування токена
 │   │   ├── formatters.py                   # Форматування чисел, дат тощо
+│   │   ├── error_codes.py                  # Зберігання кодів помилок
 │   │   ├── language_mapper.py              # Переклад ключів у повідомлення
 │   │   ├── theme.py                        # Кольори, стилі
 │   │   ├── validators.py                   # Клієнтські валідації (із LM)

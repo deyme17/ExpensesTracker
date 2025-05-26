@@ -35,7 +35,7 @@ def create_app():
     )
 
     auth_controller = AuthController(storage_service)
-    transaction_controller = TransactionController(transaction_service)
+    transaction_controller = TransactionController(transaction_service, static_data_service)
     analytics_controller = AnalyticsController()
 
     return ExpensesTrackerApp(

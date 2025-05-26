@@ -126,6 +126,7 @@ class LabeledDateInput(BoxLayout):
         self.bind(date_text=self._update_date_text)
         
         self.date_input.bind(date_text=self._on_date_changed)
+        self.date_text = self.date_input.date_text
     
     def _update_label_text(self, instance, value):
         """Update the label text when the property changes."""

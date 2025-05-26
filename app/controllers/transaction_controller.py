@@ -2,14 +2,47 @@ from app.services.crud_services.transaction import TransactionService
 from app.services.transaction_processor import TransactionProcessor
 
 class TransactionController:
-    def __init__(self, transaction_service):
+    def __init__(self, transaction_service, static_service):
         self.transaction_service = transaction_service
+        self.static_service = static_service
 
     def add_transaction(self, **kwargs):
         return self.transaction_service.add_transaction(**kwargs)
 
-    def update_transaction(self, transaction_id, **kwargs):
-        return self.transaction_service.update_transaction(transaction_id, **kwargs)
+    def update_transaction(self, transaction_id, type, category, amount, date,
+                           description, payment_method, currency, cashback,
+                           commission, account_id):
+        try:
+            mcc_code = int(self.static_service.get_mcc_by_name(category))
+            currency_code = int(self.static_service.get_currency_code_by_name(currency))
+
+            data = {
+                "type": type,
+                "mcc_code": mcc_code,
+                "amount": float(amount),
+                "date": date,
+                "description": description,
+                "payment_method": payment_method,
+                "currency_code": currency_code,
+                "cashback": float(cashback or 0),
+                "commission": float(commission or 0),
+                "account_id": account_id,
+            }
+
+            if transaction_id:
+                result = self.transaction_service.patch_transaction(transaction_id, data)
+            else:
+                result = self.transaction_service.post_transaction(data)
+
+            if result.get("success"):
+                return True, ""
+            else:
+                return False, result.get("error", "Unknown error")
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return False, str(e)
 
     def delete_transaction(self, transaction_id):
         return self.transaction_service.delete_transaction(transaction_id)
@@ -20,7 +53,7 @@ class TransactionController:
     def get_transactions(self, force_refresh=False):
         return self.transaction_service.get_transactions(force_refresh=force_refresh)
 
-    def filter_transactions(self, *, type=None, start_date=None, end_date=None, 
+    def filter_transactions(self, *, type=None, start_date=None, end_date=None,
                             min_amount=0, max_amount=1e9, payment_method=None,
                             category=None, account_id=None):
         transactions = self.get_transactions()

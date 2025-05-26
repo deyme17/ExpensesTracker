@@ -7,8 +7,16 @@ APP_VERSION = "1.0.0"
 SHORT_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 LONG_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
-TRANSACTION_TYPES = ["income", "expense"]
-PAYMENT_METHODS = ["card", "cash"]
+# transaction types
+INCOME = "income"
+EXPENSE = "expense"
+TRANSACTION_TYPES = [INCOME, EXPENSE]
+
+# payment methods
+CARD = "card"
+CASH = "cash"
+PAYMENT_METHODS = [CARD, CASH]
+
 ALL = 'all'
 
 # charts
@@ -22,4 +30,10 @@ SORT_FIELDS = ['date', 'amount', 'cashback', 'commission']
 # Default currency
 DEFAULT_CURRENCY = "UAH"
 DEFAULT_CURRENCY_CODE = "980"
+
+# Default category
+DEFAULT_CATEGORY = "other"
 DEFAULT_MCC = "0"
+
+# some fields
+DATE_FIELD = "date"

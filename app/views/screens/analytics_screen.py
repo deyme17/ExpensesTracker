@@ -8,7 +8,7 @@ from app.models.analytics import AnalyticsData
 from app.views.widgets.analytics_widgets.analytics_filter_popup import AnalyticsFilterPopup
 from app.views.widgets.analytics_widgets.graph_section import GraphSection
 from app.views.widgets.analytics_widgets.stats_section import StatsSection
-from app.utils.constants import CHART_TYPE_HISTOGRAM
+from app.utils.constants import CHART_TYPE_HISTOGRAM, EXPENSE
 from app.utils.language_mapper import LanguageMapper as LM
 from app.services.local_storage import LocalStorageService
 
@@ -16,7 +16,7 @@ Builder.load_file("kv/analytics_screen.kv")
 
 class AnalyticsScreen(BaseScreen):
     current_chart_type = StringProperty(CHART_TYPE_HISTOGRAM)
-    current_type = StringProperty("expense")
+    current_type = StringProperty(EXPENSE)
     translated_type = StringProperty("")
     start_date = ObjectProperty(None)
     end_date = ObjectProperty(None)

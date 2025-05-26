@@ -5,7 +5,7 @@ from kivy.lang import Builder
 from kivy.app import App
 
 from datetime import datetime, timedelta
-from app.utils.constants import ALL
+from app.utils.constants import ALL, DATE_FIELD
 
 from app.views.screens.base_screen import BaseScreen
 from app.views.widgets.transactions_widgets.transaction_row import TransactionRow
@@ -46,7 +46,7 @@ class TransactionsScreen(BaseScreen):
             "payment_selected": ALL
         }
         self._last_sort = {
-            "selected_field": "date",
+            "selected_field": DATE_FIELD,
             "ascending": True
         }
 
@@ -62,7 +62,7 @@ class TransactionsScreen(BaseScreen):
 
             self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
             self.update_balance_label()
-            self.refresh_transactions(force=False)  # <- вже без повторного завантаження
+            self.refresh_transactions(force=False)
 
     def update_balance_label(self):
         acc = next((a for a in self.accounts if a.account_id == self.selected_account_id), None)

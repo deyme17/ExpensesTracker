@@ -25,8 +25,8 @@ class FilterPopup(ModalView):
     on_reset = ObjectProperty(None)
 
     def __init__(self, *, start_date=None, end_date=None, on_apply=None, on_reset=None,
-                 min_amount="0", max_amount="1000000", type_selected="all",
-                 category_selected="all", payment_selected="all", **kwargs):
+                 min_amount="0", max_amount="1000000", type_selected=ALL,
+                 category_selected=ALL, payment_selected=ALL, **kwargs):
         super().__init__(**kwargs)
         self.on_apply = on_apply
         self.on_reset = on_reset
@@ -159,9 +159,9 @@ class FilterPopup(ModalView):
         year_ago = now - timedelta(days=365)
         self.start_date.date_text = year_ago.strftime('%d.%m.%Y')
         self.end_date.date_text = now.strftime('%d.%m.%Y')
-        self.type_spinner.selected = "all"
-        self.payment_spinner.selected = "all"
-        self.category_spinner.selected = "all"
+        self.type_spinner.selected = ALL
+        self.payment_spinner.selected = ALL
+        self.category_spinner.selected = ALL
         if self.on_reset:
             self.on_reset()
 
@@ -178,12 +178,12 @@ class FilterPopup(ModalView):
             if not end_ok:
                 end_dt = datetime.now()
 
-            ttype = None if self.type_spinner.selected == "all" else self.type_spinner.selected
-            pay = None if self.payment_spinner.selected == "all" else self.payment_spinner.selected
+            ttype = None if self.type_spinner.selected == ALL else self.type_spinner.selected
+            pay = None if self.payment_spinner.selected == ALL else self.payment_spinner.selected
 
             # category
             category = None
-            if self.category_spinner.selected != "all":
+            if self.category_spinner.selected != ALL:
                 category = self.category_spinner.selected
 
             if self.on_apply:

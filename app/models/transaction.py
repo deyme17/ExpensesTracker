@@ -1,11 +1,12 @@
 from datetime import datetime
 from kivy.app import App
 from app.utils.formatters import format_amount, format_date
+from app.utils.constants import CARD, EXPENSE, DEFAULT_CURRENCY_CODE
 
 
 class Transaction:
     def __init__(self, transaction_id, user_id, amount, date, account_id,
-                 mcc_code, currency_code, description="", payment_method="card", type="expense",
+                 mcc_code, currency_code, description="", payment_method=CARD, type=EXPENSE,
                  cashback=0.0, commission=0.0, is_synced=True):
 
         self.transaction_id = transaction_id
@@ -60,11 +61,11 @@ class Transaction:
             amount=data.get("amount", 0.0),
             date=data.get("date"),
             account_id=data.get("account_id"),
-            type=data.get("type", "expense"),
+            type=data.get("type", EXPENSE),
             mcc_code=data.get("mcc_code", 0),
-            currency_code=data.get("currency_code", "980"),
+            currency_code=data.get("currency_code", DEFAULT_CURRENCY_CODE),
             description=data.get("description", ""),
-            payment_method=data.get("payment_method", "card"),
+            payment_method=data.get("payment_method", CARD),
             cashback=data.get("cashback", 0.0),
             commission=data.get("commission", 0.0),
             is_synced=data.get("is_synced", True)

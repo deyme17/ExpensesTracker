@@ -11,12 +11,12 @@ from app.views.widgets.inputs.custom_spinner import CustomSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
 from app.utils.language_mapper import LanguageMapper as LM
-from app.utils.constants import SORT_FIELDS
+from app.utils.constants import SORT_FIELDS, DATE_FIELD
 
 class SortPopup(ModalView):
     on_sort = ObjectProperty(None)
 
-    def __init__(self, *, on_sort=None, selected_field="date", ascending=True, **kwargs):
+    def __init__(self, *, on_sort=None, selected_field=DATE_FIELD, ascending=True, **kwargs):
         super().__init__(**kwargs)
         self.on_sort = on_sort
         self.selected_field = selected_field
@@ -75,8 +75,6 @@ class SortPopup(ModalView):
             size_hint_y=None,
             height=dp(30)
         )
-
-        direction_values = ["ascending", "descending"]
         self.direction_spinner = CustomSpinner(
             text=LM.message("ascending") if self.ascending else LM.message("descending"),
             values=[LM.message("ascending"), LM.message("descending")]
@@ -120,7 +118,7 @@ class SortPopup(ModalView):
         Animation(opacity=1, d=0.3).start(content)
 
     def _apply_sort(self, *args):
-        selected_field = self._field_map.get(self.field_spinner.text, "date")
+        selected_field = self._field_map.get(self.field_spinner.text, DATE_FIELD)
         ascending = self._direction_map.get(self.direction_spinner.text, True)
         if self.on_sort:
             self.on_sort(selected_field, ascending)

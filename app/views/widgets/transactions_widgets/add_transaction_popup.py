@@ -18,7 +18,7 @@ from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_color_from_hex, get_text_primary_color
 from app.utils.formatters import format_date
-from app.utils.constants import PAYMENT_METHODS
+from app.utils.constants import PAYMENT_METHODS, INCOME, DEFAULT_CURRENCY
 
 class AddTransactionPopup(ModalView):
     type = ObjectProperty(None)
@@ -50,7 +50,7 @@ class AddTransactionPopup(ModalView):
 
         title_text = (
             LM.message("edit_transaction") if self.existing_transaction
-            else (LM.message("add_income") if self.type == "income" else LM.message("add_expense"))
+            else (LM.message("add_income") if self.type == INCOME else LM.message("add_expense"))
         )
                       
         title = Label(text=title_text, font_size=sp(20), bold=True, color=get_text_primary_color(),
@@ -168,7 +168,7 @@ class AddTransactionPopup(ModalView):
                     return
                 data = {
                     "category": self.category_input.selected,
-                    "amount": float(self.amount_input.text) if self.type == 'income' else -float(self.amount_input.text),
+                    "amount": float(self.amount_input.text) if self.type == INCOME else -float(self.amount_input.text),
                     "date": self.date_input.date_text,
                     "description": self.description_input.text,
                     "payment_method": self.payment_input.selected,
@@ -190,7 +190,7 @@ class AddTransactionPopup(ModalView):
         t = self.existing_transaction
 
         actual_category_name = next((name for name, mcc in self.name_to_mcc.items() if mcc == str(t.mcc_code)), LM.category("other"))
-        actual_currency_name = next((name for name, code in self.name_to_currency.items() if code == str(t.currency_code)), "UAH")
+        actual_currency_name = next((name for name, code in self.name_to_currency.items() if code == str(t.currency_code)), DEFAULT_CURRENCY)
 
         self.category_input.selected = str(actual_category_name)
         self.payment_input.selected = t.payment_method

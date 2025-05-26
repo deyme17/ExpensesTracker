@@ -13,7 +13,7 @@ from app.views.widgets.inputs.date_input import LabeledDateInput
 from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
-from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS, ALL
+from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS, ALL, EXPENSE, INCOME
 
 
 class AnalyticsFilterPopup(ModalView):
@@ -22,7 +22,7 @@ class AnalyticsFilterPopup(ModalView):
     """
     on_apply = ObjectProperty(None)
 
-    def __init__(self, current_type='expense', start_date=None, end_date=None, **kwargs):
+    def __init__(self, current_type=EXPENSE, start_date=None, end_date=None, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (0.85, 0.65)
         self.auto_dismiss = False

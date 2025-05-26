@@ -9,6 +9,7 @@ from kivy.uix.scrollview import ScrollView
 
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.formatters import format_date
+from app.utils.constants import INCOME
 from app.views.widgets.buttons.styled_button import RoundedButton
 
 class TransactionDetailsPopup(ModalView):
@@ -93,7 +94,7 @@ class TransactionDetailsPopup(ModalView):
 
         try:
             amt = abs(float(t.amount))
-            sign = "+" if t.type == "income" else "-"
+            sign = "+" if t.type == INCOME else "-"
             amt_text = f"{sign}{amt:,.2f} ({currency_name})"
         except Exception:
             amt_text = f"{t.amount} ({currency_name})"

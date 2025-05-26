@@ -2,7 +2,7 @@ import requests
 from app.models.category import Category
 from app.models.currency import Currency
 from app.services.api_service import api_get_categories, api_get_currencies, get_auth_headers
-from app.utils.constants import DEFAULT_MCC, DEFAULT_CURRENCY_CODE
+from app.utils.constants import DEFAULT_MCC, DEFAULT_CURRENCY_CODE, DEFAULT_CATEGORY
 
 
 class StaticDataService:
@@ -69,7 +69,7 @@ class StaticDataService:
         if not self._mcc_to_name:
             categories = self.get_categories()
             self._update_category_cache(categories)
-        return self._mcc_to_name.get(int(mcc_code), "other")
+        return self._mcc_to_name.get(int(mcc_code), DEFAULT_CATEGORY)
 
     def get_currency_name_by_code(self, currency_code):
         if not self._code_to_currency:

@@ -1,6 +1,6 @@
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.constants import (
-    CHART_TYPE_HISTOGRAM, CHART_TYPE_PIE, CHART_TYPE_LINE
+    CHART_TYPE_HISTOGRAM, CHART_TYPE_PIE, CHART_TYPE_LINE, ALL
 )
 from app.models.graphs.distribution_graph import DistributionGraph
 from app.models.graphs.share_graph import ShareGraph
@@ -50,7 +50,7 @@ class AnalyticsData:
         return AnalyticsData(
             stats={"avg": 0, "min": 0, "max": 0, "total": 0, "count": 0, "top_category": LM.message("no_data")},
             raw_transactions=[],
-            transaction_type=LM.category("all"),
+            transaction_type=LM.category(ALL),
             start_date=None,
             end_date=None
         )

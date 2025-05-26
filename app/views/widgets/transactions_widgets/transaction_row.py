@@ -8,6 +8,7 @@ from app.utils.theme import (
     get_income_color, get_expense_color, get_text_primary_color
 )
 from app.utils.formatters import format_amount
+from app.utils.constants import INCOME, CARD
 from app.utils.language_mapper import LanguageMapper as LM
 
 
@@ -18,7 +19,7 @@ class TransactionRow(BoxLayout):
     amount = StringProperty('')
     date = StringProperty('')
     type = StringProperty('')
-    payment_method = StringProperty("card")
+    payment_method = StringProperty(CARD)
     description = StringProperty('')
     cashback = StringProperty('0')
     commission = StringProperty('0')
@@ -38,7 +39,7 @@ class TransactionRow(BoxLayout):
         self.clear_widgets()
 
         with self.canvas.before:
-            color = get_income_color(0.85) if self.type == "income" else get_expense_color(0.85)
+            color = get_income_color(0.85) if self.type == INCOME else get_expense_color(0.85)
             self.background_color = Color(*color)
             self.background_rect = RoundedRectangle(
                 pos=self.pos,
@@ -87,7 +88,7 @@ class TransactionRow(BoxLayout):
         try:
             amount_value = float(self.amount.replace(',', '.').replace('+', '').replace('-', ''))
             formatted_amount = format_amount(
-                amount_value if self.type == "income" else -amount_value,
+                amount_value if self.type == INCOME else -amount_value,
                 self.currency,
                 show_sign=True
             )

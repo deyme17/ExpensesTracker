@@ -55,7 +55,11 @@ class TransactionsScreen(BaseScreen):
             self._first_enter = False
             app = App.get_running_app()
 
-            self.accounts = app.account_service.get_accounts()
+            accounts, error = app.account_service.get_accounts()
+            self.accounts = accounts or []
+            if error:
+                self.show_error_message(LM.server_error(error))
+
             acc_id = app.account_service.storage_service.get_active_account_id()
             if acc_id:
                 self.selected_account_id = acc_id

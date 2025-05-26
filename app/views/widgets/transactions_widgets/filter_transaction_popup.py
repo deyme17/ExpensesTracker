@@ -111,7 +111,7 @@ class FilterPopup(ModalView):
         content.add_widget(self.type_spinner)
 
         # categories/payment method
-        categories = self.static.get_categories()
+        categories, _ = self.static.get_categories()
         category_names = sorted(set([c.name for c in categories]))
         category_names.insert(0, ALL)
 
@@ -181,7 +181,6 @@ class FilterPopup(ModalView):
             ttype = None if self.type_spinner.selected == ALL else self.type_spinner.selected
             pay = None if self.payment_spinner.selected == ALL else self.payment_spinner.selected
 
-            # category
             category = None
             if self.category_spinner.selected != ALL:
                 category = self.category_spinner.selected
@@ -198,4 +197,6 @@ class FilterPopup(ModalView):
                 )
             self.dismiss()
         except Exception as e:
-            print(f"Filter error: {e}")
+            import traceback
+            traceback.print_exc()
+            self._show_temp_error(LM.server_error("unknown_error"))

@@ -19,6 +19,7 @@ from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_color_from_hex, get_text_primary_color
 from app.utils.formatters import format_date
 from app.utils.constants import PAYMENT_METHODS, INCOME, DEFAULT_CURRENCY
+import traceback
 
 class AddTransactionPopup(ModalView):
     type = ObjectProperty(None)
@@ -52,7 +53,7 @@ class AddTransactionPopup(ModalView):
             LM.message("edit_transaction") if self.existing_transaction
             else (LM.message("add_income") if self.type == INCOME else LM.message("add_expense"))
         )
-                      
+
         title = Label(text=title_text, font_size=sp(20), bold=True, color=get_text_primary_color(),
                       halign="center", size_hint_y=None, height=dp(40))
 
@@ -61,11 +62,11 @@ class AddTransactionPopup(ModalView):
         fields_container.bind(minimum_height=fields_container.setter("height"))
 
         # Load static data
-        categories = static.get_categories()
+        categories, _ = static.get_categories()
         name_to_mcc = {c.name: str(c.mcc_code) for c in categories}
         self.name_to_mcc = name_to_mcc
 
-        currencies = static.get_currencies()
+        currencies, _ = static.get_currencies()
         name_to_currency = {c.name: str(c.currency_code) for c in currencies}
         self.name_to_currency = name_to_currency
 
@@ -181,8 +182,8 @@ class AddTransactionPopup(ModalView):
                 self.on_save(**data)
                 self.dismiss()
             except Exception as e:
-                import traceback
                 traceback.print_exc()
+                self._show_temp_error(LM.server_error("unknown_error"))
         else:
             print("self.on_save is None")
 

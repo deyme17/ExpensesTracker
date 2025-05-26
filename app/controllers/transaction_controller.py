@@ -1,5 +1,7 @@
 from app.services.crud_services.transaction import TransactionService
 from app.services.transaction_processor import TransactionProcessor
+from app.utils.language_mapper import LanguageMapper as LM
+from app.utils.error_codes import ErrorCodes
 
 class TransactionController:
     def __init__(self, transaction_service, static_service):
@@ -36,18 +38,17 @@ class TransactionController:
             if result.get("success"):
                 return True, ""
             else:
-                return False, result.get("error", "Unknown error")
+                code = result.get("error", ErrorCodes.UNKNOWN_ERROR)
+                return False, LM.server_error(code)
 
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            return False, str(e)
+        except Exception:
+            return False, LM.server_error(ErrorCodes.UNKNOWN_ERROR)
 
     def delete_transaction(self, transaction_id):
         result = self.transaction_service.delete_transaction(transaction_id)
         if result.get("success"):
             return True, "transaction_deleted"
-        return False, result.get("error", "unable_delete_transaction")
+        return False, LM.server_error(result.get("error", ErrorCodes.UNKNOWN_ERROR))
 
     def get_transaction_by_id(self, transaction_id):
         return self.transaction_service.get_transaction_by_id(transaction_id)

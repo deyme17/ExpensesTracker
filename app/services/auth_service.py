@@ -1,9 +1,10 @@
 from app.models.user import User
-from app.services.api_service import api_register, api_login
+from app.services.api import api_register, api_login
 from app.services.crud_services.account import AccountService
 from app.services.crud_services.transaction import TransactionService
 from app.services.crud_services.static_data import StaticDataService
 from app.utils.language_mapper import LanguageMapper as LM
+from app.utils.error_codes import ErrorCodes
 from kivy.clock import Clock
 
 class AuthService:
@@ -45,8 +46,9 @@ class AuthService:
                         self.current_user = local_user
                         self._load_data(local_user, callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None)
                     else:
+                        error_code = response.get("error", ErrorCodes.UNKNOWN_ERROR)
                         if callback:
-                            callback(False, response.get("error", LM.message("login_error_generic")))
+                            callback(False, LM.server_error(error_code))
             except Exception as e:
                 local_user = self.storage.get_user()
                 if local_user and local_user.email == email:
@@ -54,7 +56,7 @@ class AuthService:
                     self._load_data(local_user, callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None)
                 else:
                     if callback:
-                        callback(False, str(e))
+                        callback(False, LM.server_error(ErrorCodes.UNKNOWN_ERROR))
 
         Clock.schedule_once(try_login, 0.5)
 
@@ -76,12 +78,12 @@ class AuthService:
                             callback(True, LM.message("registration_success"))
                     self._load_data(user, callback=after_load)
                 else:
-                    error = response.get("error", LM.message("registration_error_generic"))
+                    error_code = response.get("error", ErrorCodes.UNKNOWN_ERROR)
                     if callback:
-                        callback(False, error)
-            except Exception as e:
+                        callback(False, LM.server_error(error_code))
+            except Exception:
                 if callback:
-                    callback(False, str(e))
+                    callback(False, LM.server_error(ErrorCodes.UNKNOWN_ERROR))
         Clock.schedule_once(try_register, 1)
 
     def _load_data(self, user, callback=None):

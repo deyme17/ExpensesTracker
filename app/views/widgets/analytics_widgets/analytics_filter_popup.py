@@ -14,7 +14,7 @@ from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
 from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS, ALL, EXPENSE, INCOME
-
+import traceback
 
 class AnalyticsFilterPopup(ModalView):
     """
@@ -104,7 +104,14 @@ class AnalyticsFilterPopup(ModalView):
             self.dismiss()
 
         except Exception as e:
-            print(f"[AnalyticsFilterPopup] Filter error: {e}")
+            traceback.print_exc()
+            self._show_temp_error(LM.server_error("unknown_error"))
+
+    def _show_temp_error(self, text):
+        from kivy.uix.label import Label
+        label = Label(text=text, color=(1, 0.3, 0.3, 1), font_size=sp(14), size_hint_y=None, height=dp(20))
+        self.content.add_widget(label, index=0)
+        Clock.schedule_once(lambda dt: self.content.remove_widget(label), 2)
 
     def _update_rect(self, instance, value):
         if hasattr(self, "bg_rect"):

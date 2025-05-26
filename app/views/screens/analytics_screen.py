@@ -60,7 +60,10 @@ class AnalyticsScreen(BaseScreen):
             self._update_sections()
             return
 
-        stats = self.analytics_controller.get_statistics(transactions)
+        stats, error = self.analytics_controller.get_statistics(transactions)
+        if error:
+            self.show_error_message(error)
+            return
 
         self.data = AnalyticsData(
             stats=stats,

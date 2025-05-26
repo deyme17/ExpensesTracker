@@ -44,7 +44,10 @@ class TransactionController:
             return False, str(e)
 
     def delete_transaction(self, transaction_id):
-        return self.transaction_service.delete_transaction(transaction_id)
+        result = self.transaction_service.delete_transaction(transaction_id)
+        if result.get("success"):
+            return True, "transaction_deleted"
+        return False, result.get("error", "unable_delete_transaction")
 
     def get_transaction_by_id(self, transaction_id):
         return self.transaction_service.get_transaction_by_id(transaction_id)

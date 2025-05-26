@@ -6,8 +6,9 @@ from kivy.metrics import dp, sp
 from kivy.animation import Animation
 from kivy.graphics import Color, RoundedRectangle
 from kivy.app import App
-
 from kivy.properties import ObjectProperty
+from datetime import datetime
+from kivy.clock import Clock
 
 from app.views.widgets.inputs.date_input import LabeledDateInput
 from app.views.widgets.inputs.styled_text_input import LabeledInput
@@ -16,8 +17,8 @@ from app.views.widgets.buttons.styled_button import RoundedButton
 
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_color_from_hex, get_text_primary_color
-from datetime import datetime
-
+from app.utils.formatters import format_date
+from app.utils.constants import PAYMENT_METHODS
 
 class AddTransactionPopup(ModalView):
     type = ObjectProperty(None)
@@ -30,14 +31,14 @@ class AddTransactionPopup(ModalView):
         self.background = ''
         self.background_color = (0, 0, 0, 0)
         self.overlay_color = (0, 0, 0, 0.7)
+        self.on_save = kwargs.get("on_save")
         self.build_ui()
 
         if self.existing_transaction:
             self._fill_fields_with_existing_transaction()
 
     def build_ui(self):
-        app = App.get_running_app()
-        static = app.static_data_service
+        static = App.get_running_app().static_data_service
 
         self.content = BoxLayout(orientation="vertical", spacing=dp(15), padding=dp(20), opacity=0)
 
@@ -47,7 +48,11 @@ class AddTransactionPopup(ModalView):
 
         self.content.bind(size=self._update_bg, pos=self._update_bg)
 
-        title_text = LM.message("add_income") if self.type == 'income' else LM.message("add_expense")
+        title_text = (
+            LM.message("edit_transaction") if self.existing_transaction
+            else (LM.message("add_income") if self.type == "income" else LM.message("add_expense"))
+        )
+                      
         title = Label(text=title_text, font_size=sp(20), bold=True, color=get_text_primary_color(),
                       halign="center", size_hint_y=None, height=dp(40))
 
@@ -55,26 +60,38 @@ class AddTransactionPopup(ModalView):
         fields_container = BoxLayout(orientation="vertical", spacing=dp(10), size_hint_y=None)
         fields_container.bind(minimum_height=fields_container.setter("height"))
 
-        # load data
+        # Load static data
         categories = static.get_categories()
-        currencies = static.get_currencies()
-        payment_methods = ["card", "cash"]
+        name_to_mcc = {c.name: str(c.mcc_code) for c in categories}
+        self.name_to_mcc = name_to_mcc
 
-        category_keys = [c.name for c in categories]
-        currency_codes = [c.currency_code for c in currencies]
-        default_currency = next((c.currency_code for c in currencies if c.name == "UAH"), currency_codes[0])
+        currencies = static.get_currencies()
+        name_to_currency = {c.name: str(c.currency_code) for c in currencies}
+        self.name_to_currency = name_to_currency
+
+        selected_category = (
+            next((name for name, mcc in name_to_mcc.items() if str(mcc) == str(self.existing_transaction.mcc_code)),
+                 list(name_to_mcc.keys())[0])
+            if self.existing_transaction else list(name_to_mcc.keys())[0]
+        )
+
+        selected_currency = (
+            next((name for name, code in name_to_currency.items() if str(code) == str(self.existing_transaction.currency_code)),
+                 list(name_to_currency.keys())[0])
+            if self.existing_transaction else list(name_to_currency.keys())[0]
+        )
 
         self.category_input = LabeledSpinner(
             label_text=LM.field_name("category") + ":",
-            values=category_keys,
-            selected=category_keys[0],
+            values=list(name_to_mcc.keys()),
+            selected=selected_category,
             displayed_value=LM.category
         )
 
         self.payment_input = LabeledSpinner(
             label_text=LM.field_name("payment_method") + ":",
-            values=payment_methods,
-            selected=payment_methods[0],
+            values=PAYMENT_METHODS,
+            selected=self.existing_transaction.payment_method if self.existing_transaction else PAYMENT_METHODS[0],
             displayed_value=LM.payment_method
         )
 
@@ -85,9 +102,9 @@ class AddTransactionPopup(ModalView):
 
         self.currency_input = LabeledSpinner(
             label_text=LM.field_name("currency") + ":",
-            values=currency_codes,
-            selected=default_currency,
-            displayed_value=static.get_currency_name_by_code
+            values=list(name_to_currency.keys()),
+            selected=selected_currency,
+            displayed_value=lambda name: name
         )
 
         self.date_input = LabeledDateInput(label_text=LM.field_name("date") + ":")
@@ -145,26 +162,47 @@ class AddTransactionPopup(ModalView):
 
     def _save_transaction(self, *args):
         if self.on_save:
-            self.on_save(
-                self.type,
-                self.category_input.selected,
-                self.amount_input.text,
-                self.date_input.date_text,
-                self.description_input.text,
-                self.payment_input.selected,
-                self.currency_input.selected,
-                self.cashback_input.text,
-                self.commission_input.text,
-                self.existing_transaction.transaction_id if self.existing_transaction else None
-            )
+            try:
+                if not self.amount_input.text.strip():
+                    self._show_temp_error(LM.message("amount_required"))
+                    return
+                data = {
+                    "category": self.category_input.selected,
+                    "amount": float(self.amount_input.text) if self.type == 'income' else -float(self.amount_input.text),
+                    "date": self.date_input.date_text,
+                    "description": self.description_input.text,
+                    "payment_method": self.payment_input.selected,
+                    "currency": self.currency_input.selected,
+                    "cashback": self.cashback_input.text,
+                    "commission": self.commission_input.text,
+                    "transaction_id": self.existing_transaction.transaction_id if self.existing_transaction else None,
+                    "popup": self
+                }
+                self.on_save(**data)
+                self.dismiss()
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+        else:
+            print("self.on_save is None")
 
     def _fill_fields_with_existing_transaction(self):
         t = self.existing_transaction
-        self.category_input.selected = t.category
+
+        actual_category_name = next((name for name, mcc in self.name_to_mcc.items() if mcc == str(t.mcc_code)), LM.category("other"))
+        actual_currency_name = next((name for name, code in self.name_to_currency.items() if code == str(t.currency_code)), "UAH")
+
+        self.category_input.selected = str(actual_category_name)
         self.payment_input.selected = t.payment_method
         self.amount_input.text = str(abs(t.amount))
-        self.currency_input.selected = t.currency
-        self.date_input.date_text = t.get_formatted_date()
+        self.currency_input.selected = str(actual_currency_name)
+        self.date_input.date_text = format_date(t.date)
         self.cashback_input.text = str(t.cashback)
         self.commission_input.text = str(t.commission)
         self.description_input.text = t.description
+
+    def _show_temp_error(self, text):
+        from kivy.uix.label import Label
+        label = Label(text=text, color=(1, 0.3, 0.3, 1), font_size=sp(14), size_hint_y=None, height=dp(20))
+        self.content.add_widget(label, index=0)
+        Clock.schedule_once(lambda dt: self.content.remove_widget(label), 2)

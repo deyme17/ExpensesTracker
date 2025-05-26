@@ -47,6 +47,7 @@ class FilterPopup(ModalView):
         now = datetime.now()
         self._initial_start = start_date or (now - timedelta(days=365))
         self._initial_end = end_date or now
+        self.static = App.get_running_app().static_data_service
 
         self.build_ui()
 
@@ -110,16 +111,17 @@ class FilterPopup(ModalView):
         content.add_widget(self.type_spinner)
 
         # categories/payment method
-        static = App.get_running_app().static_data_service
+        categories = self.static.get_categories()
+        category_names = sorted(set([c.name for c in categories]))
+        category_names.insert(0, ALL)
 
-        categories = static.get_categories()
-        category_codes = ["all"] + [c.mcc_code for c in categories]
         self.category_spinner = LabeledSpinner(
             label_text=LM.message("category_label"),
-            values=category_codes,
-            selected=self.category_selected,
-            displayed_value=lambda code: LM.category(static.get_category_name_by_mcc(code)) if code != "all" else "Усі"
+            values=category_names,
+            selected=self.category_selected if self.category_selected in category_names else ALL,
+            displayed_value=LM.category
         )
+        content.add_widget(self.category_spinner)
 
         self.payment_spinner = LabeledSpinner(
             label_text=LM.message("payment_method_label"),
@@ -182,12 +184,7 @@ class FilterPopup(ModalView):
             # category
             category = None
             if self.category_spinner.selected != "all":
-                static = App.get_running_app().static_data_service
-                selected_name = self.category_spinner.selected
-                for c in static.get_categories():
-                    if c.name == selected_name:
-                        category = c.mcc_code
-                        break
+                category = self.category_spinner.selected
 
             if self.on_apply:
                 self.on_apply(

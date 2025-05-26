@@ -16,68 +16,6 @@
 #:set error_color get_color_from_hex('#F44336')
 #:set success_color get_color_from_hex('#66BB6A')
 
-<FancyTextInput@TextInput>:
-    background_color: 0, 0, 0, 0
-    foreground_color: text_light
-    hint_text_color: hint_color
-    cursor_color: primary_color
-    multiline: False
-    padding: [dp(15), dp(12), dp(15), dp(10)]
-    font_size: '16sp'
-    required: False
-    
-    canvas.before:
-        Color:
-            rgba: card_color[0]+0.05, card_color[1]+0.05, card_color[2]+0.05, 1
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [dp(8)]
-        
-        Color:
-            rgba: primary_color if self.focus else (hint_color[0], hint_color[1], hint_color[2], 0.5)
-        Rectangle:
-            pos: self.x + dp(10), self.y + dp(5)
-            size: self.width - dp(20), dp(2) if self.focus else dp(1)
-
-<GlowButton@Button>:
-    background_color: 0, 0, 0, 0
-    color: text_light
-    font_size: '18sp'
-    bold: True
-    
-    canvas.before:
-        Color:
-            rgba: primary_color
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [dp(10)]
-            
-        Color:
-            rgba: accent_color[0], accent_color[1], accent_color[2], 0.2
-        RoundedRectangle:
-            pos: self.x - dp(2), self.y - dp(2)
-            size: self.width + dp(4), self.height + dp(4)
-            radius: [dp(12)]
-    
-    on_press: 
-        self.background_color = 0, 0, 0, 0.1
-        Animation(background_color=(0, 0, 0, 0), d=0.3).start(self)
-    
-<AnimatedBackground@Widget>:
-    canvas.before:
-        Color:
-            rgba: bg_color
-        Rectangle:
-            pos: self.pos
-            size: self.size
-        
-        Color:
-            rgba: secondary_color[0], secondary_color[1], secondary_color[2], 0.15
-        Ellipse:
-            pos: self.center_x - self.width*0.75, self.center_y - self.height*0.75
-            size: self.width*1.5, self.height*1.5
     
 <RegistrationScreen>:
     email_input: email_input
@@ -238,15 +176,6 @@
                 height: dp(55)
                 password: True
                 required: False
-                
-            Label:
-                text: "Токен використовується для автоматичного імпорту транзакцій"
-                size_hint_y: None
-                height: dp(30)
-                color: hint_color
-                font_size: '14sp'
-                halign: 'left'
-                text_size: self.width, None
             
             Label:
                 id: error_label
@@ -278,7 +207,7 @@
                     halign: 'right'
                     valign: 'middle'
                     text_size: self.size
-                    padding_x: dp(5)
+                    padding: [dp(5), 0]
                 
                 Label:
                     text: 'Увійти'
@@ -289,6 +218,6 @@
                     halign: 'left'
                     valign: 'middle'
                     text_size: self.size
-                    padding_x: dp(5)
+                    padding: [dp(5), 0]
                     on_touch_down: 
                         if self.collide_point(*args[1].pos): root.go_to_login()

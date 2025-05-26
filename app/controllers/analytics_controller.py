@@ -1,39 +1,18 @@
-from app.services.graph_factory import GraphFactory
+from app.services.analytics.analytics_service import AnalyticsService
+from app.utils.language_mapper import LanguageMapper as LM
+from app.utils.error_codes import ErrorCodes
 
 class AnalyticsController:
     def __init__(self):
-        self.graph_factory = GraphFactory()
+        self.analytics_service = AnalyticsService()
 
     def get_statistics(self, transactions):
-        if not transactions:
-            return {
-                'avg_value': 0,
-                'min_value': 0,
-                'max_value': 0,
-                'total': 0,
-                'count': 0,
-                'top_category': 'Немає даних'
-            }
-
-        amounts = [abs(t.amount) for t in transactions]
-        total = sum(amounts)
-        category_totals = {}
-        for t in transactions:
-            category_totals[t.category] = category_totals.get(t.category, 0) + abs(t.amount)
-
-        return {
-            'avg_value': total / len(transactions),
-            'min_value': min(amounts),
-            'max_value': max(amounts),
-            'total': total,
-            'count': len(transactions),
-            'top_category': max(category_totals.items(), key=lambda x: x[1])[0]
-        }
-
-    def get_chart(self, chart_type, transactions, **kwargs):
-        graph = self.graph_factory.create_graph(
-            chart_type=chart_type,
-            transactions=transactions,
-            **kwargs
-        )
-        return graph.prepare_chart_data()
+        try:
+            result, error = self.analytics_service.get_statistics(transactions)
+            if error:
+                return None, LM.server_error(error)
+            return result, None
+        except Exception:
+            import traceback
+            traceback.print_exc()
+            return None, LM.server_error(ErrorCodes.UNKNOWN_ERROR)

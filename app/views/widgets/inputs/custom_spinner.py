@@ -4,7 +4,7 @@ from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
 from kivy.uix.button import Button
 from kivy.graphics import Color, RoundedRectangle, Triangle, Line
-from kivy.properties import StringProperty, BooleanProperty, NumericProperty, ListProperty
+from kivy.properties import StringProperty, ObjectProperty, NumericProperty, ListProperty
 from kivy.metrics import dp, sp
 from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
@@ -21,13 +21,15 @@ class CustomSpinner(Spinner):
     """
     selected_value = StringProperty("")
     padding_x = NumericProperty(dp(15))
+    label_text = StringProperty("")
+    selected = StringProperty("")  
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('background_color', (0, 0, 0, 0))
-        kwargs.setdefault('color', get_text_dark_color())
-        kwargs.setdefault('bold', True)
-        kwargs.setdefault('font_size', sp(FONT_SIZE_MEDIUM))
-        kwargs.setdefault('option_cls', SpinnerOption)
+        kwargs.setdefault("background_color", (0, 0, 0, 0))
+        kwargs.setdefault("color", get_text_dark_color())
+        kwargs.setdefault("bold", True)
+        kwargs.setdefault("font_size", sp(FONT_SIZE_MEDIUM))
+        kwargs.setdefault("option_cls", SpinnerOption)
         
         super(CustomSpinner, self).__init__(**kwargs)
         
@@ -62,68 +64,74 @@ class CustomSpinner(Spinner):
 
 class LabeledSpinner(BoxLayout):
     """
-    A spinner with a label above it.
+    A spinner with a label above it that supports localization via displayed_value.
     """
     label_text = StringProperty("")
     values = ListProperty([])
     selected = StringProperty("")
-    
+    displayed_value = ObjectProperty(lambda x: x)
+
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('size_hint_y', None)
-        kwargs.setdefault('height', dp(75))
-        kwargs.setdefault('spacing', dp(5))
-        
+        kwargs.setdefault("orientation", "vertical")
+        kwargs.setdefault("size_hint_y", None)
+        kwargs.setdefault("height", dp(75))
+        kwargs.setdefault("spacing", dp(5))
+
         super(LabeledSpinner, self).__init__(**kwargs)
-        
+
         # label
         self.label = Label(
             text=self.label_text,
             size_hint_y=None,
             height=dp(25),
             font_size=sp(FONT_SIZE_MEDIUM),
-            halign='left',
-            valign='bottom',
+            halign="left",
+            valign="bottom",
             text_size=(None, dp(25))
         )
-        
+
         # spinner
         self.spinner = CustomSpinner(
-            text=self.selected if self.selected else (self.values[0] if self.values else ""),
-            values=self.values,
+            text=self.displayed_value(self.selected) if self.selected else (
+                self.displayed_value(self.values[0]) if self.values else ""
+            ),
+            values=[self.displayed_value(v) for v in self.values],
             size_hint_y=None,
             height=dp(45)
         )
-        
+
         self.add_widget(self.label)
         self.add_widget(self.spinner)
-        
+
         self.bind(label_text=self._update_label_text)
         self.bind(values=self._update_values)
         self.bind(selected=self._update_selected)
-       
+        self.bind(displayed_value=self._update_displayed_values)
+
         self.spinner.bind(text=self._on_spinner_changed)
-    
+
     def _update_label_text(self, instance, value):
-        """Update the label text when the property changes."""
         self.label.text = value
-    
+
     def _update_values(self, instance, value):
-        """Update the spinner values when the property changes."""
-        self.spinner.values = value
-        
-        if self.selected and self.selected not in value:
-            if value:
-                self.selected = value[0]
-            else:
-                self.selected = ""
-    
+        self.spinner.values = [self.displayed_value(v) for v in value]
+        if self.selected not in value and value:
+            self.selected = value[0]
+        else:
+            self._update_selected(self, self.selected)
+
+    def _update_displayed_values(self, *args):
+        self.spinner.values = [self.displayed_value(v) for v in self.values]
+        self._update_selected(self, self.selected)
+
     def _update_selected(self, instance, value):
-        """Update the spinner text when the selected property changes."""
-        self.spinner.text = value
-    
+        self.spinner.text = self.displayed_value(value)
+
     def _on_spinner_changed(self, instance, value):
-        """Update the selected property when the spinner changes."""
+        for real_value in self.values:
+            if self.displayed_value(real_value) == value:
+                self.selected = real_value
+                return
         self.selected = value
 
 
@@ -138,4 +146,4 @@ class SpinnerOption(Button):
         self.background_color = get_secondary_color()
         self.color = get_text_dark_color()
         self.font_size = sp(FONT_SIZE_MEDIUM)
-        self.halign = 'center'
+        self.halign = "center"

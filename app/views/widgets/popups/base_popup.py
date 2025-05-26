@@ -17,7 +17,7 @@ class BasePopup(Popup):
     """Base class for custom popups."""
     message = StringProperty("")
     
-    def __init__(self, message, **kwargs):
+    def __init__(self, message="", **kwargs):
         super(BasePopup, self).__init__(**kwargs)
         self.message = message
         self.title = ""
@@ -33,16 +33,16 @@ class BasePopup(Popup):
     
     def _create_content(self):
         """Create the content of the popup. Override in subclasses."""
-        content = BoxLayout(orientation='vertical', padding=dp(10))
+        content = BoxLayout(orientation="vertical", padding=dp(10))
         
         label = Label(
             text=self.message,
             color=get_text_primary_color(),
             font_size=sp(FONT_SIZE_MEDIUM),
-            halign='center',
-            valign='middle'
+            halign="center",
+            valign="middle"
         )
-        label.bind(size=label.setter('text_size'))
+        label.bind(size=label.setter("text_size"))
         
         content.add_widget(label)
         return content

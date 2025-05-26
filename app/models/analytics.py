@@ -1,5 +1,6 @@
+from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.constants import (
-    CHART_TYPE_HISTOGRAM, CHART_TYPE_PIE, CHART_TYPE_LINE
+    CHART_TYPE_HISTOGRAM, CHART_TYPE_PIE, CHART_TYPE_LINE, ALL
 )
 from app.models.graphs.distribution_graph import DistributionGraph
 from app.models.graphs.share_graph import ShareGraph
@@ -21,25 +22,35 @@ class AnalyticsData:
         }
 
     def get_avg_value(self):
-        return self.stats['avg']
+        return self.stats["avg"]
 
     def get_min_value(self):
-        return self.stats['min']
+        return self.stats["min"]
 
     def get_max_value(self):
-        return self.stats['max']
+        return self.stats["max"]
 
     def get_total(self):
-        return self.stats['total']
+        return self.stats["total"]
 
     def get_count(self):
-        return self.stats['count']
+        return self.stats["count"]
 
     def get_top_category(self):
-        return self.stats['top_category']
+        return self.stats["top_category"]
 
     def get_chart_data(self, chart_type):
         chart = self._chart.get(chart_type)
         if not chart:
             return []
         return chart.fit(self.raw_transactions)
+
+    @staticmethod
+    def empty():
+        return AnalyticsData(
+            stats={"avg": 0, "min": 0, "max": 0, "total": 0, "count": 0, "top_category": LM.message("no_data")},
+            raw_transactions=[],
+            transaction_type=LM.category(ALL),
+            start_date=None,
+            end_date=None
+        )

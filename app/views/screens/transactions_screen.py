@@ -1,55 +1,104 @@
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, StringProperty, ListProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.lang import Builder
-from app.app import App
+from kivy.app import App
 
-from kivy.uix.boxlayout import BoxLayout
+from datetime import datetime, timedelta
+from app.utils.constants import ALL, DATE_FIELD
 
 from app.views.screens.base_screen import BaseScreen
 from app.views.widgets.transactions_widgets.transaction_row import TransactionRow
-from app.views.widgets.buttons.floating_button import FloatingActionButton
 from app.views.widgets.transactions_widgets.add_transaction_popup import AddTransactionPopup
 from app.views.widgets.transactions_widgets.filter_transaction_popup import FilterPopup
 from app.views.widgets.transactions_widgets.sort_transaction_popup import SortPopup
 from app.views.widgets.transactions_widgets.transaction_details_popup import TransactionDetailsPopup
 from app.views.widgets.transactions_widgets.confirm_delete_popup import ConfirmDeletePopup
-from app.views.widgets.popups.alert_popup import ErrorPopup, SuccessPopup
-from app.views.widgets.popups.menu_popup import MenuPopup
-from app.utils.theme import get_accent_color
-from kivy.properties import StringProperty
+from app.views.widgets.transactions_widgets.account_select_popup import AccountSelectPopup
 
-Builder.load_file('kv/transactions_screen.kv')
+from app.utils.language_mapper import LanguageMapper as LM
+from app.utils.formatters import format_date
+
+Builder.load_file("kv/transactions_screen.kv")
 
 class TransactionsScreen(BaseScreen):
     controller = ObjectProperty(None)
-    balance_text = StringProperty("Баланс: 0")
+    balance_text = StringProperty("")
+    account_options = ListProperty([])
+    selected_account_id = StringProperty(allownone=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.accounts = []
         self.transactions_data = {}
         self._initialized = False
+        self.filter_start_date = datetime.now() - timedelta(days=365)
+        self.filter_end_date = datetime.now()
+        self._first_enter = True
+
+        self._last_filter = {
+            "min_amount": "0",
+            "max_amount": "1000000",
+            "start_date": self.filter_start_date,
+            "end_date": self.filter_end_date,
+            "type_selected": ALL,
+            "category_selected": ALL,
+            "payment_selected": ALL
+        }
+        self._last_sort = {
+            "selected_field": DATE_FIELD,
+            "ascending": True
+        }
 
     def on_enter(self):
-        super().on_enter()
-        if not self._initialized:
-            self.refresh_transactions()
-            self._initialized = True
+        if self._first_enter:
+            self._first_enter = False
+            app = App.get_running_app()
+
+            accounts, error = app.account_service.get_accounts()
+            self.accounts = accounts or []
+            if error:
+                self.show_error_message(LM.server_error(error))
+
+            acc_id = app.account_service.storage_service.get_active_account_id()
+            if acc_id:
+                self.selected_account_id = acc_id
+
+            self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
+            self.update_balance_label()
+            self.refresh_transactions(force=False)
+
+    def update_balance_label(self):
+        acc = next((a for a in self.accounts if a.account_id == self.selected_account_id), None)
+        if acc:
+            self.balance_text = f"{LM.field_name('balance')}: {acc.balance:.2f}"
+        else:
+            self.balance_text = f"{LM.field_name('balance')}: 0"
+
+    def refresh_transactions(self, force=False):
+        all_tx = self.controller.get_transactions(force_refresh=force)
+        filtered = [tx for tx in all_tx if tx.account_id == self.selected_account_id]
+        filtered = sorted(filtered, key=lambda t: t.date, reverse=True)
+
+        self._clear_list()
+        for tx in filtered:
+            self._add_row(tx)
 
     def _clear_list(self):
         self.transactions_container.clear_widgets()
         self.transactions_data = {}
 
     def _add_row(self, tx):
+        static = App.get_running_app().static_data_service
         row = TransactionRow(
             transaction_id=tx.transaction_id,
-            category=tx.category,
+            category=static.get_category_name_by_mcc(tx.mcc_code),
             amount=str(abs(tx.amount)),
-            date=tx.get_formatted_date(),
-            is_income=tx.is_income,
+            date=format_date(tx.date),
             payment_method=tx.payment_method,
+            type=tx.type,
             description=tx.description,
-            currency=tx.currency,
+            currency=static.get_currency_name_by_code(tx.currency_code),
             cashback=str(tx.cashback),
             commission=str(tx.commission),
             controller=self.controller,
@@ -58,58 +107,51 @@ class TransactionsScreen(BaseScreen):
         self.transactions_container.add_widget(row)
         self.transactions_data[tx.transaction_id] = tx
 
-    def refresh_transactions(self, *args):
-        if not self.controller:
-            return
-        transactions = self.controller.get_transactions(force_refresh=True)
-        self._clear_list()
-        for tx in transactions:
-            self._add_row(tx)
-
-    def update_balance_label(self):
-        user = App.get_running_app().user
-        self.balance_text = f"Баланс: {int(user.balance)}"
-
-    def add_transaction(self, is_income=True):
-        popup = AddTransactionPopup(is_income=is_income, on_save=self._on_save)
+    def add_transaction(self, type):
+        popup = AddTransactionPopup(type=type, on_save=self._on_save)
         popup.open()
+
+    def _on_save(self, **data):
+        transaction_id = data.get("transaction_id")
+        if transaction_id in ("None", None, ""):
+            transaction_id = None
+
+        success, msg = self.controller.update_transaction(
+            transaction_id=transaction_id,
+            category=data.get("category"),
+            amount=data.get("amount"),
+            date=data.get("date"),
+            description=data.get("description"),
+            payment_method=data.get("payment_method"),
+            currency=data.get("currency"),
+            cashback=data.get("cashback"),
+            commission=data.get("commission"),
+            account_id=self.selected_account_id
+        )
+
+        if success:
+            self.refresh_transactions()
+            self.show_success_message(LM.message("transaction_saved"))
+        else:
+            self.show_error_message(msg)
 
     def edit_transaction(self, transaction_id):
         tx = self.transactions_data.get(transaction_id)
         if not tx:
             return
         popup = AddTransactionPopup(
-            is_income=tx.is_income,
+            type=tx.type,
             existing_transaction=tx,
             on_save=self._on_update
         )
         popup.open()
 
-    def _on_save(self, is_income, category, amount, date, description, payment_method, currency, cashback, commission):
-        success, msg = self.controller.add_transaction(
-            is_income=is_income,
-            category=category,
-            amount=amount,
-            date=date,
-            description=description,
-            payment_method=payment_method,
-            currency=currency,
-            cashback=cashback,
-            commission=commission
-        )
-        if success:
-            SuccessPopup(message=msg).open()
-            Clock.schedule_once(self.refresh_transactions, 0.2)
-        else:
-            ErrorPopup(message=msg).open()
-
-    def _on_update(self, is_income, category, amount, date, description, payment_method, currency, cashback, commission, popup):
-        tx_id = popup.transaction.transaction_id
+    def _on_update(self, category, amount, date, description, payment_method, currency, cashback, commission, transaction_id=None, popup=None):
         success, msg = self.controller.update_transaction(
-            transaction_id=tx_id,
-            is_income=is_income,
+            transaction_id=transaction_id,
             category=category,
             amount=amount,
+            account_id=self.selected_account_id,
             date=date,
             description=description,
             payment_method=payment_method,
@@ -118,58 +160,94 @@ class TransactionsScreen(BaseScreen):
             commission=commission
         )
         if success:
-            SuccessPopup(message=msg).open()
-            Clock.schedule_once(self.refresh_transactions, 0.2)
+            Clock.schedule_once(lambda dt: self.refresh_transactions(), 0.2)
+            self.show_success_message(LM.message("transaction_updated"))
+            if popup:
+                popup.dismiss()
         else:
-            ErrorPopup(message=msg).open()
+            self.show_error_message(msg)
 
     def confirm_delete_transaction(self, transaction_id):
         popup = ConfirmDeletePopup(on_confirm=lambda: self._delete(transaction_id))
         popup.open()
+
     def _delete(self, transaction_id):
         result = self.controller.delete_transaction(transaction_id)
         if isinstance(result, tuple):
             deleted, msg = result
             if deleted:
-                SuccessPopup(message=msg).open()
-                Clock.schedule_once(self.refresh_transactions, 0.2)
+                Clock.schedule_once(lambda dt: self.refresh_transactions(), 0)
+                Clock.schedule_once(lambda dt: self.show_success_message(LM.message("transaction_deleted")), 3)
             else:
-                ErrorPopup(message=msg).open()
+                print("[DEBUG] Delete failed:", msg)
+                self.show_error_message(LM.message("unable_delete_transaction"))
         else:
-            ErrorPopup(message="Unable to delete transaction").open()
+            self.show_error_message(LM.message("unable_delete_transaction"))
 
     def show_filter(self):
-        popup = FilterPopup(on_apply=self._apply_filter)
+        popup = FilterPopup(on_apply=self._apply_filter, on_reset=self._reset_filter, **self._last_filter)
         popup.open()
-    def _apply_filter(self, min_amount, max_amount, start_date, end_date, is_income, payment_method):
+
+    def _apply_filter(self, min_amount, max_amount, start_date, end_date, type, payment_method, category):
+        self._last_filter.update({
+            "min_amount": str(min_amount),
+            "max_amount": str(max_amount),
+            "start_date": start_date,
+            "end_date": end_date,
+            "type_selected": type or ALL,
+            "payment_selected": payment_method or ALL,
+            "category_selected": category or ALL
+        })
+
         filtered = self.controller.filter_transactions(
             min_amount=min_amount,
             max_amount=max_amount,
             start_date=start_date,
             end_date=end_date,
-            is_income=is_income,
-            payment_method=payment_method
+            type=type,
+            payment_method=payment_method,
+            category=category,
+            account_id=self.selected_account_id
         )
         self._clear_list()
         for tx in filtered:
             self._add_row(tx)
 
+        self.show_success_message(LM.message("filter_applied"))
+
+    def _reset_filter(self):
+        self._last_filter.update({
+            "min_amount": "0",
+            "max_amount": "1000000",
+            "start_date": datetime.now() - timedelta(days=365),
+            "end_date": datetime.now(),
+            "type_selected": ALL,
+            "payment_selected": ALL,
+            "category_selected": ALL
+        })
+
     def show_sort(self):
-        popup = SortPopup(on_sort=self._apply_sort)
+        popup = SortPopup(on_sort=self._apply_sort, **self._last_sort)
         popup.open()
+
     def _apply_sort(self, field_text, ascending):
-        field_map = {'Дата': 'date', 'Сума': 'amount', 'Кешбек': 'cashback', 'Комісія': 'commission'}
-        key = field_map.get(field_text, 'date')
+        self._last_sort.update({
+            "selected_field": field_text,
+            "ascending": ascending
+        })
+
         tx_list = list(self.transactions_data.values())
-        sorted_list = self.controller.sort_transactions(tx_list, field=key, ascending=ascending)
+        sorted_list = self.controller.sort_transactions(tx_list, field=field_text, ascending=ascending)
         self._clear_list()
         for tx in sorted_list:
             self._add_row(tx)
 
+        self.show_success_message(LM.message("sort_applied"))
+
     def show_transaction_details(self, transaction_id):
         tx = self.transactions_data.get(transaction_id)
         if not tx:
-            ErrorPopup(message="Transaction not found").open()
+            self.show_error_message(LM.message("transaction_not_found"))
             return
         popup = TransactionDetailsPopup(
             transaction=tx,
@@ -177,6 +255,21 @@ class TransactionsScreen(BaseScreen):
             on_delete=lambda: self.confirm_delete_transaction(transaction_id)
         )
         popup.open()
+
+    def open_account_selector(self):
+        popup = AccountSelectPopup(
+            self.accounts,
+            on_account_selected=self._on_account_selected
+        )
+        popup.open()
+
+    def _on_account_selected(self, selected_account_id):
+        self.selected_account_id = selected_account_id
+        print("[DEBUG] Account selected:", selected_account_id)
+        App.get_running_app().account_service.storage_service.set_active_account(selected_account_id)
+        self.update_balance_label()
+        self.refresh_transactions()
+        self.show_success_message(LM.message("account_changed"))
 
     def go_analytics(self):
         if self.manager:

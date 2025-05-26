@@ -5,15 +5,16 @@ from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.metrics import dp, sp
 from kivy.graphics import Color, RoundedRectangle
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty
 from datetime import datetime, timedelta
 
+from app.utils.language_mapper import LanguageMapper as LM
 from app.views.widgets.inputs.date_input import LabeledDateInput
 from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
-from app.utils.constants import TRANSACTION_TYPE_INCOME, TRANSACTION_TYPE_EXPENSE
 from app.utils.theme import get_primary_color, get_text_primary_color
-
+from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS, ALL, EXPENSE, INCOME
+import traceback
 
 class AnalyticsFilterPopup(ModalView):
     """
@@ -21,11 +22,11 @@ class AnalyticsFilterPopup(ModalView):
     """
     on_apply = ObjectProperty(None)
 
-    def __init__(self, current_type=TRANSACTION_TYPE_EXPENSE, start_date=None, end_date=None, **kwargs):
+    def __init__(self, current_type=EXPENSE, start_date=None, end_date=None, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (0.85, 0.65)
         self.auto_dismiss = False
-        self.background = ''
+        self.background = ""
         self.background_color = (0, 0, 0, 0)
         self.overlay_color = (0, 0, 0, 0.7)
 
@@ -37,7 +38,7 @@ class AnalyticsFilterPopup(ModalView):
 
     def _build_ui(self):
         self.content = BoxLayout(
-            orientation='vertical',
+            orientation="vertical",
             spacing=dp(12),
             padding=dp(20),
             opacity=0
@@ -48,42 +49,38 @@ class AnalyticsFilterPopup(ModalView):
             self.bg_rect = RoundedRectangle(size=self.content.size, pos=self.content.pos, radius=[dp(20)])
         self.content.bind(size=self._update_rect, pos=self._update_rect)
 
-        # title
         title = Label(
-            text='Фільтр транзакцій',
+            text=LM.message("filter_title"),
             font_size=sp(22),
             bold=True,
             color=get_text_primary_color(),
             size_hint_y=None,
             height=dp(50),
-            halign='center'
+            halign="center"
         )
-        title.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, None)))
+        title.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, None)))
         self.content.add_widget(title)
 
-        # date
-        self.start_date_input = LabeledDateInput(label_text='Початкова дата:')
-        self.start_date_input.date_text = self._initial_start.strftime('%d.%m.%Y')
-        self.end_date_input = LabeledDateInput(label_text='Кінцева дата:')
-        self.end_date_input.date_text = self._initial_end.strftime('%d.%m.%Y')
+        self.start_date_input = LabeledDateInput(label_text=LM.message("start_date_label"))
+        self.start_date_input.date_text = self._initial_start.strftime("%d.%m.%Y")
+        self.end_date_input = LabeledDateInput(label_text=LM.message("end_date_label"))
+        self.end_date_input.date_text = self._initial_end.strftime("%d.%m.%Y")
         self.content.add_widget(self.start_date_input)
         self.content.add_widget(self.end_date_input)
 
-        # type
         self.type_spinner = LabeledSpinner(
-            label_text='Тип транзакції:',
-            values=[TRANSACTION_TYPE_EXPENSE, TRANSACTION_TYPE_INCOME],
-            selected=self._initial_type
+            label_text=LM.message("transaction_type_label"),
+            values=TRANSACTION_TYPES,
+            selected=self._initial_type,
+            displayed_value=lambda val: LM.transaction_type(val)
         )
         self.content.add_widget(self.type_spinner)
 
-        # space
         self.content.add_widget(BoxLayout(size_hint_y=1))
 
-        # buttons
         btn_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
-        close_btn = RoundedButton(text='Закрити', bg_color='#666666', font_size=sp(14))
-        apply_btn = RoundedButton(text='Застосувати', bg_color='#0F7055', font_size=sp(14))
+        close_btn = RoundedButton(text=LM.message("close_button"), bg_color="#666666", font_size=sp(14))
+        apply_btn = RoundedButton(text=LM.message("apply_button"), bg_color="#0F7055", font_size=sp(14))
         close_btn.bind(on_press=lambda *a: self.dismiss())
         apply_btn.bind(on_press=self._apply_fields)
         btn_box.add_widget(close_btn)
@@ -95,8 +92,8 @@ class AnalyticsFilterPopup(ModalView):
 
     def _apply_fields(self, *args):
         try:
-            sd, sm, sy = self.start_date_input.date_text.split('.')
-            ed, em, ey = self.end_date_input.date_text.split('.')
+            sd, sm, sy = self.start_date_input.date_text.split(".")
+            ed, em, ey = self.end_date_input.date_text.split(".")
             start_date = datetime(int(sy), int(sm), int(sd))
             end_date = datetime(int(ey), int(em), int(ed))
             transaction_type = self.type_spinner.selected
@@ -107,9 +104,16 @@ class AnalyticsFilterPopup(ModalView):
             self.dismiss()
 
         except Exception as e:
-            print(f"[AnalyticsFilterPopup] Filter error: {e}")
+            traceback.print_exc()
+            self._show_temp_error(LM.server_error("unknown_error"))
+
+    def _show_temp_error(self, text):
+        from kivy.uix.label import Label
+        label = Label(text=text, color=(1, 0.3, 0.3, 1), font_size=sp(14), size_hint_y=None, height=dp(20))
+        self.content.add_widget(label, index=0)
+        Clock.schedule_once(lambda dt: self.content.remove_widget(label), 2)
 
     def _update_rect(self, instance, value):
-        if hasattr(self, 'bg_rect'):
+        if hasattr(self, "bg_rect"):
             self.bg_rect.pos = instance.pos
             self.bg_rect.size = instance.size

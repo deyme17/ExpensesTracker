@@ -1,23 +1,13 @@
 from kivy.properties import StringProperty, NumericProperty, ObjectProperty
 from kivy.animation import Animation
 from kivy.clock import Clock
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.metrics import dp, sp
-from kivy.utils import get_color_from_hex
+from app.utils.language_mapper import LanguageMapper as LM
 from kivy.lang import Builder
 
 from app.views.screens.base_screen import BaseScreen
-from app.views.widgets.inputs.styled_text_input import StyledTextInput
-from app.views.widgets.buttons.styled_button import RoundedButton
-from app.utils.theme import (
-    get_text_primary_color, get_primary_color, get_accent_color,
-    FONT_SIZE_MEDIUM, FONT_SIZE_LARGE
-)
 
 # Load kv file
-Builder.load_file('kv/login_screen.kv')
+Builder.load_file("kv/login_screen.kv")
 
 
 class LoginScreen(BaseScreen):
@@ -37,7 +27,7 @@ class LoginScreen(BaseScreen):
     def on_enter(self):
         """Reset login button and input fields when screen is entered."""
         super(LoginScreen, self).on_enter()
-        self.login_button.text = "Увійти"
+        self.login_button.text = LM.message("login_button")
         self.login_button.disabled = False
         self.email_input.text = ""
         self.password_input.text = ""
@@ -46,11 +36,11 @@ class LoginScreen(BaseScreen):
     
     def go_back(self):
         """Navigate back to the first screen."""
-        self.switch_screen('first_screen', 'right')
+        self.switch_screen("first_screen", "right")
     
     def go_to_registration(self):
         """Navigate to the registration screen."""
-        self.switch_screen('reg_screen', 'left')
+        self.switch_screen("reg_screen", "left")
     
     def login(self):
         """
@@ -62,25 +52,25 @@ class LoginScreen(BaseScreen):
         password = self.password_input.text
         
         if not email:
-            self.error_message = "Будь ласка, введіть email"
+            self.error_message = LM.message("enter_email")
             self._show_error()
             return
         
         if not password:
-            self.error_message = "Будь ласка, введіть пароль"
+            self.error_message = LM.message("enter_password")
             self._show_error()
             return
         
-        self.login_button.text = "Авторизація..."
+        self.login_button.text = LM.message("auth_title") + "..."
         self.login_button.disabled = True
         
         def auth_callback(success, message):
             if success:
-                self.switch_screen('transactions_screen', 'left')
+                self.switch_screen("transactions_screen", "left")
             else:
                 self.error_message = message
                 self._show_error()
-                self.login_button.text = "Увійти"
+                self.login_button.text = LM.message("login_button")
                 self.login_button.disabled = False
         
         self.controller.login(email, password, auth_callback)

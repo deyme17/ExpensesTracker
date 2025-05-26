@@ -13,26 +13,25 @@ class DateInput(BoxLayout):
     """
     A compound widget for date input with day/month/year spinners.
     """
+    hint_text = StringProperty("")
     day = StringProperty("01")
     month = StringProperty("01")
     year = StringProperty("")
     date_text = StringProperty("")
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'horizontal')
-        kwargs.setdefault('size_hint_y', None)
-        kwargs.setdefault('height', dp(45))
-        kwargs.setdefault('spacing', dp(5))
+        kwargs.setdefault("orientation", "horizontal")
+        kwargs.setdefault("size_hint_y", None)
+        kwargs.setdefault("height", dp(45))
+        kwargs.setdefault("spacing", dp(5))
 
         super(DateInput, self).__init__(**kwargs)
 
         now = datetime.now()
-        # current date
         self.day = now.strftime("%d")
         self.month = now.strftime("%m")
         self.year = now.strftime("%Y")
 
-        # day spinner
         days = [str(i).zfill(2) for i in range(1, 32)]
         self.day_spinner = CustomSpinner(
             text=self.day,
@@ -41,7 +40,6 @@ class DateInput(BoxLayout):
             padding_x=dp(2)
         )
 
-        # month spinner
         months = [str(i).zfill(2) for i in range(1, 13)]
         self.month_spinner = CustomSpinner(
             text=self.month,
@@ -50,7 +48,6 @@ class DateInput(BoxLayout):
             padding_x=dp(2)
         )
 
-        # year spinner
         current_year = now.year
         years = [str(year) for year in range(current_year - 5, current_year + 1)]
         self.year_spinner = CustomSpinner(
@@ -71,23 +68,20 @@ class DateInput(BoxLayout):
         self._update_date_text()
     
     def _on_day_changed(self, instance, value):
-        """Update the day property when the spinner changes."""
         self.day = value
         self._update_date_text()
     
     def _on_month_changed(self, instance, value):
-        """Update the month property when the spinner changes."""
         self.month = value
         self._update_date_text()
     
     def _on_year_changed(self, instance, value):
-        """Update the year property when the spinner changes."""
         self.year = value
         self._update_date_text()
     
     def _update_date_text(self):
-        """Update the date_text property with the current date components."""
         self.date_text = f"{self.day}.{self.month}.{self.year}"
+
 
 class LabeledDateInput(BoxLayout):
     """
@@ -97,10 +91,10 @@ class LabeledDateInput(BoxLayout):
     date_text = StringProperty("")
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('size_hint_y', None)
-        kwargs.setdefault('height', dp(75))
-        kwargs.setdefault('spacing', dp(5))
+        kwargs.setdefault("orientation", "vertical")
+        kwargs.setdefault("size_hint_y", None)
+        kwargs.setdefault("height", dp(75))
+        kwargs.setdefault("spacing", dp(5))
         
         super(LabeledDateInput, self).__init__(**kwargs)
         
@@ -110,8 +104,8 @@ class LabeledDateInput(BoxLayout):
             size_hint_y=None,
             height=dp(25),
             font_size=sp(FONT_SIZE_MEDIUM),
-            halign='left',
-            valign='bottom',
+            halign="left",
+            valign="bottom",
             text_size=(None, dp(25))
         )
         
@@ -132,6 +126,7 @@ class LabeledDateInput(BoxLayout):
         self.bind(date_text=self._update_date_text)
         
         self.date_input.bind(date_text=self._on_date_changed)
+        self.date_text = self.date_input.date_text
     
     def _update_label_text(self, instance, value):
         """Update the label text when the property changes."""
@@ -141,10 +136,10 @@ class LabeledDateInput(BoxLayout):
         """Update the date input when the date_text property changes."""
         if value:
             try:
-                day, month, year = value.split('.')
-                self.date_input.day = day
-                self.date_input.month = month
-                self.date_input.year = year
+                day, month, year = value.split(".")
+                self.date_input.day_spinner.text = day
+                self.date_input.month_spinner.text = month
+                self.date_input.year_spinner.text = year
             except ValueError:
                 pass
     

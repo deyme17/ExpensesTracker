@@ -12,102 +12,132 @@ from app.views.widgets.inputs.date_input import LabeledDateInput
 from app.views.widgets.inputs.styled_text_input import LabeledInput
 from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
-from app.utils.constants import (
-    TRANSACTION_TYPE_ALL, TRANSACTION_TYPE_INCOME, TRANSACTION_TYPE_EXPENSE,
-    PAYMENT_METHOD_ALL, PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH
-)
+
 from app.utils.theme import get_primary_color, get_text_primary_color
 from app.utils.validators import validate_date
+from app.utils.language_mapper import LanguageMapper as LM
+from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS, ALL
+from kivy.app import App
 
 
 class FilterPopup(ModalView):
-    """
-    Modal window for filtration of transactions.
-    Repeats logic and ui from the initial implementation of Show_filter.
-    """
     on_apply = ObjectProperty(None)
     on_reset = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
-        super(FilterPopup, self).__init__(**kwargs)
+    def __init__(self, *, start_date=None, end_date=None, on_apply=None, on_reset=None,
+                 min_amount="0", max_amount="1000000", type_selected=ALL,
+                 category_selected=ALL, payment_selected=ALL, **kwargs):
+        super().__init__(**kwargs)
+        self.on_apply = on_apply
+        self.on_reset = on_reset
+        self.start_date_val = start_date
+        self.end_date_val = end_date
+        self.min_amount_val = min_amount
+        self.max_amount_val = max_amount
+        self.type_selected = type_selected
+        self.category_selected = category_selected
+        self.payment_selected = payment_selected
+
         self.size_hint = (0.85, 0.9)
         self.auto_dismiss = False
         self.background = ''
         self.background_color = (0, 0, 0, 0)
         self.overlay_color = (0, 0, 0, 0.7)
+
+        now = datetime.now()
+        self._initial_start = start_date or (now - timedelta(days=365))
+        self._initial_end = end_date or now
+        self.static = App.get_running_app().static_data_service
+
         self.build_ui()
 
     def build_ui(self):
         scroll = ScrollView(do_scroll_x=False, do_scroll_y=True, size_hint=(1, 1))
         content = BoxLayout(
-            orientation='vertical',
+            orientation="vertical",
             spacing=dp(12),
             padding=dp(20),
             size_hint_y=None,
             opacity=0
         )
-        content.bind(minimum_height=content.setter('height'))
+        content.bind(minimum_height=content.setter("height"))
 
         with content.canvas.before:
             Color(rgba=get_primary_color())
             self.bg_rect = RoundedRectangle(size=content.size, pos=content.pos, radius=[dp(20)])
         content.bind(
-            size=lambda inst, val: setattr(self.bg_rect, 'size', val),
-            pos=lambda inst, val: setattr(self.bg_rect, 'pos', inst.pos)
+            size=lambda inst, val: setattr(self.bg_rect, "size", val),
+            pos=lambda inst, val: setattr(self.bg_rect, "pos", inst.pos)
         )
 
-        # title
         title = Label(
-            text='Фільтр транзакцій',
+            text=LM.message("filter_title"),
             font_size=sp(22),
             bold=True,
             color=get_text_primary_color(),
-            halign='center',
+            halign="center",
             size_hint_y=None,
             height=dp(50)
         )
-        title.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, None)))
+        title.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, None)))
         content.add_widget(title)
 
-        # sum
-        self.min_amount = LabeledInput(label_text='Сума від:', hint_text='0', text='0')
-        self.max_amount = LabeledInput(label_text='Сума до:', hint_text='1000000', text='1000000')
+        self.min_amount = LabeledInput(
+            label_text=LM.field_name("amount") + " " + LM.message("from") + ":",
+            hint_text="0",
+            text=self.min_amount_val
+        )
+        self.max_amount = LabeledInput(
+            label_text=LM.field_name("amount") + " " + LM.message("to") + ":",
+            hint_text="1000000",
+            text=self.max_amount_val
+        )
         content.add_widget(self.min_amount)
         content.add_widget(self.max_amount)
 
-        # date
-        self.start_date = LabeledDateInput(label_text='Початкова дата:')
-        year_ago = datetime.now() - timedelta(days=365)
-        self.start_date.date_text = year_ago.strftime('%d.%m.%Y')
-        self.end_date = LabeledDateInput(label_text='Кінцева дата:')
-        self.end_date.date_text = datetime.now().strftime('%d.%m.%Y')
+        self.start_date = LabeledDateInput(label_text=LM.message("start_date_label"))
+        self.start_date.date_text = self._initial_start.strftime('%d.%m.%Y')
+        self.end_date = LabeledDateInput(label_text=LM.message("end_date_label"))
+        self.end_date.date_text = self._initial_end.strftime('%d.%m.%Y')
         content.add_widget(self.start_date)
         content.add_widget(self.end_date)
 
-        # type
         self.type_spinner = LabeledSpinner(
-            label_text='Тип транзакції:',
-            values=[TRANSACTION_TYPE_ALL, TRANSACTION_TYPE_INCOME, TRANSACTION_TYPE_EXPENSE],
-            selected=TRANSACTION_TYPE_ALL
+            label_text=LM.message("transaction_type_label"),
+            values=TRANSACTION_TYPES + [ALL],
+            selected=self.type_selected,
+            displayed_value=LM.transaction_type
         )
         content.add_widget(self.type_spinner)
 
-        # method
-        self.payment_spinner = LabeledSpinner(
-            label_text='Спосіб оплати:',
-            values=[PAYMENT_METHOD_ALL, PAYMENT_METHOD_CARD, PAYMENT_METHOD_CASH],
-            selected=PAYMENT_METHOD_ALL
+        # categories/payment method
+        categories, _ = self.static.get_categories()
+        category_names = sorted(set([c.name for c in categories]))
+        category_names.insert(0, ALL)
+
+        self.category_spinner = LabeledSpinner(
+            label_text=LM.message("category_label"),
+            values=category_names,
+            selected=self.category_selected if self.category_selected in category_names else ALL,
+            displayed_value=LM.category
         )
+        content.add_widget(self.category_spinner)
+
+        self.payment_spinner = LabeledSpinner(
+            label_text=LM.message("payment_method_label"),
+            values=PAYMENT_METHODS + [ALL],
+            selected=self.payment_selected,
+            displayed_value=LM.payment_method
+        )
+
         content.add_widget(self.payment_spinner)
 
-        # space
         content.add_widget(BoxLayout(size_hint_y=1))
 
-        # buttons
         btn_box = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
-        reset_btn = RoundedButton(text='Скинути', bg_color='#445555', font_size=sp(14))
-        close_btn = RoundedButton(text='Закрити', bg_color='#666666', font_size=sp(14))
-        apply_btn = RoundedButton(text='Застосувати', bg_color='#0F7055', font_size=sp(14))
+        reset_btn = RoundedButton(text=LM.message("reset_button"), bg_color='#445555', font_size=sp(14))
+        close_btn = RoundedButton(text=LM.message("close_button"), bg_color='#666666', font_size=sp(14))
+        apply_btn = RoundedButton(text=LM.message("apply_button"), bg_color='#0F7055', font_size=sp(14))
 
         reset_btn.bind(on_press=self._reset_fields)
         close_btn.bind(on_press=lambda *a: self.dismiss())
@@ -120,18 +150,18 @@ class FilterPopup(ModalView):
 
         scroll.add_widget(content)
         self.add_widget(scroll)
-        self.open()
         Animation(opacity=1, d=0.3).start(content)
 
     def _reset_fields(self, *args):
         now = datetime.now()
-        self.min_amount.text = '0'
-        self.max_amount.text = '1000000'
+        self.min_amount.text = "0"
+        self.max_amount.text = "1000000"
         year_ago = now - timedelta(days=365)
         self.start_date.date_text = year_ago.strftime('%d.%m.%Y')
         self.end_date.date_text = now.strftime('%d.%m.%Y')
-        self.type_spinner.selected = TRANSACTION_TYPE_ALL
-        self.payment_spinner.selected = PAYMENT_METHOD_ALL
+        self.type_spinner.selected = ALL
+        self.payment_spinner.selected = ALL
+        self.category_spinner.selected = ALL
         if self.on_reset:
             self.on_reset()
 
@@ -148,13 +178,12 @@ class FilterPopup(ModalView):
             if not end_ok:
                 end_dt = datetime.now()
 
-            inc = None
-            if self.type_spinner.selected == TRANSACTION_TYPE_INCOME:
-                inc = True
-            elif self.type_spinner.selected == TRANSACTION_TYPE_EXPENSE:
-                inc = False
+            ttype = None if self.type_spinner.selected == ALL else self.type_spinner.selected
+            pay = None if self.payment_spinner.selected == ALL else self.payment_spinner.selected
 
-            pay = None if self.payment_spinner.selected == PAYMENT_METHOD_ALL else self.payment_spinner.selected
+            category = None
+            if self.category_spinner.selected != ALL:
+                category = self.category_spinner.selected
 
             if self.on_apply:
                 self.on_apply(
@@ -162,9 +191,12 @@ class FilterPopup(ModalView):
                     max_amount=max_val,
                     start_date=start_dt,
                     end_date=end_dt,
-                    is_income=inc,
-                    payment_method=pay
+                    type=ttype,
+                    payment_method=pay,
+                    category=category
                 )
             self.dismiss()
         except Exception as e:
-            print(f"Filter error: {e}")
+            import traceback
+            traceback.print_exc()
+            self._show_temp_error(LM.server_error("unknown_error"))

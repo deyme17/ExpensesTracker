@@ -79,15 +79,14 @@ class BaseScreen(Screen):
             self.manager.current = screen_name
     
     def show_error_message(self, message):
-        """Display an error message to the user."""
+        """Display an error message with slight delay to allow UI to update."""
         from app.views.widgets.popups.alert_popup import ErrorPopup
-        popup = ErrorPopup(message=message)
-        popup.open()
+        Clock.schedule_once(lambda dt: ErrorPopup(message=message).open(), 0.2)
+
     def show_success_message(self, message):
-        """Display a success message to the user."""
+        """Display a success message with slight delay to allow UI to update."""
         from app.views.widgets.popups.alert_popup import SuccessPopup
-        popup = SuccessPopup(message=message)
-        popup.open()
+        Clock.schedule_once(lambda dt: SuccessPopup(message=message).open(), 0.2)
 
     def show_menu(self, *args):
         from app.views.widgets.popups.menu_popup import MenuPopup
@@ -97,9 +96,9 @@ class BaseScreen(Screen):
     def _logout(self):
         from kivy.app import App
         app = App.get_running_app()
-        if hasattr(app, 'auth_controller'):
+        if hasattr(app, "auth_controller"):
             app.auth_controller.logout()
-        self.switch_screen('first_screen', 'right')
+        self.switch_screen("first_screen", "right")
 
     def _exit_app(self):
         from kivy.core.window import Window

@@ -1,18 +1,14 @@
 class Category:
-    def __init__(self, name, is_income, mcc_code=None, color=None):
+    def __init__(self, name, mcc_code=None):
         """
         Initialize a Category instance.
         
         Args:
             name (str): Category name
-            is_income (bool): Whether this is an income category
             mcc_code (int, optional): Merchant Category Code for mapping with bank data
-            color (str, optional): Color hex code for the category
         """
         self.name = name
-        self.is_income = is_income
         self.mcc_code = mcc_code
-        self.color = color 
     
     def to_dict(self):
         """
@@ -22,10 +18,8 @@ class Category:
             dict: Dictionary representation of the category
         """
         return {
-            'name': self.name,
-            'is_income': self.is_income,
-            'mcc_code': self.mcc_code,
-            'color': self.color
+            "name": self.name,
+            "mcc_code": self.mcc_code,
         }
     
     @classmethod
@@ -43,10 +37,8 @@ class Category:
             return None
         
         return cls(
-            name=data.get('name', ''),
-            is_income=data.get('is_income', False),
-            mcc_code=data.get('mcc_code'),
-            color=data.get('color')
+            name=data.get("name", ""),
+            mcc_code=data.get("mcc_code")
         )
     
     def __str__(self):
@@ -56,4 +48,4 @@ class Category:
         Returns:
             str: String representation
         """
-        return f"{self.name} ({'Дохід' if self.is_income else 'Витрата'})"
+        return f"{self.name}"

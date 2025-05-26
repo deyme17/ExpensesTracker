@@ -23,11 +23,11 @@ class SegmentedButton(BoxLayout):
     selected_text_color = StringProperty('#FFFFFF')
     
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'horizontal')
-        kwargs.setdefault('size_hint_y', None)
-        kwargs.setdefault('height', dp(45))
-        kwargs.setdefault('padding', dp(2))
-        kwargs.setdefault('spacing', dp(2))
+        kwargs.setdefault("orientation", "horizontal")
+        kwargs.setdefault("size_hint_y", None)
+        kwargs.setdefault("height", dp(45))
+        kwargs.setdefault("padding", dp(2))
+        kwargs.setdefault("spacing", dp(2))
         
         super(SegmentedButton, self).__init__(**kwargs)
         

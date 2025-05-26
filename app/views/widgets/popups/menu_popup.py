@@ -4,6 +4,7 @@ from kivy.uix.label import Label
 from kivy.metrics import dp, sp
 from kivy.graphics import Color, RoundedRectangle
 from app.views.widgets.buttons.styled_button import RoundedButton
+from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_primary_color, get_text_primary_color
 
 
@@ -22,7 +23,7 @@ class MenuPopup(ModalView):
         self._build_content()
 
     def _build_content(self):
-        content = BoxLayout(orientation='vertical', spacing=dp(10), padding=dp(10))
+        content = BoxLayout(orientation="vertical", spacing=dp(10), padding=dp(10))
         with content.canvas.before:
             Color(rgba=get_primary_color())
             self.content_rect = RoundedRectangle(size=content.size, pos=content.pos, radius=[dp(10)])
@@ -30,7 +31,7 @@ class MenuPopup(ModalView):
 
         # title
         title_label = Label(
-            text='Меню',
+            text=LM.message("menu_title"),
             font_size=sp(18),
             bold=True,
             color=get_text_primary_color(),
@@ -40,14 +41,14 @@ class MenuPopup(ModalView):
 
         # buttons
         logout_btn = RoundedButton(
-            text='Вийти з акаунту',
+            text=LM.message("account_exit_button"),
             size_hint_y=None,
             height=dp(45),
             bg_color='#D8F3EB',
             text_color=[0.04, 0.25, 0.21, 1]
         )
         exit_btn = RoundedButton(
-            text='Вихід із програми',
+            text=LM.message("app_exit_button"),
             size_hint_y=None,
             height=dp(45),
             bg_color='#D8F3EB',
@@ -64,6 +65,6 @@ class MenuPopup(ModalView):
         self.add_widget(content)
 
     def _update_rect(self, instance, value):
-        if hasattr(self, 'content_rect'):
+        if hasattr(self, "content_rect"):
             self.content_rect.pos = instance.pos
             self.content_rect.size = instance.size

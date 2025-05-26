@@ -7,10 +7,12 @@ from kivy.graphics import Color, RoundedRectangle
 from kivy.utils import get_color_from_hex
 from kivy.uix.scrollview import ScrollView
 
+from app.utils.language_mapper import LanguageMapper as LM
+from app.utils.formatters import format_date
+from app.utils.constants import INCOME
 from app.views.widgets.buttons.styled_button import RoundedButton
 
 class TransactionDetailsPopup(ModalView):
-    """Popup to display transaction details on mobile-friendly layout."""
     def __init__(self, transaction, on_edit, on_delete, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (0.8, 0.7)
@@ -23,8 +25,11 @@ class TransactionDetailsPopup(ModalView):
         self.build_ui()
 
     def build_ui(self):
+        from kivy.app import App
+        static = App.get_running_app().static_data_service
+
         content = BoxLayout(
-            orientation='vertical',
+            orientation="vertical",
             spacing=dp(12),
             padding=[dp(20), dp(10), dp(20), dp(20)],
             opacity=0
@@ -35,86 +40,94 @@ class TransactionDetailsPopup(ModalView):
         content.bind(size=self._update_bg, pos=self._update_bg)
 
         title = Label(
-            text='Деталі транзакції',
+            text=LM.message("transaction_details_title"),
             font_size=sp(20),
             bold=True,
             color=get_color_from_hex('#FFFFFF'),
             size_hint_y=None,
             height=dp(40),
-            halign='center',
-            valign='middle'
+            halign="center",
+            valign="middle"
         )
-        title.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, inst.height)))
+        title.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, inst.height)))
         content.add_widget(title)
 
         scroll = ScrollView(size_hint=(1, 1))
         details_layout = BoxLayout(
-            orientation='vertical',
+            orientation="vertical",
             spacing=dp(10),
             size_hint_y=None,
             padding=[0, 0, 0, dp(10)]
         )
-        details_layout.bind(minimum_height=details_layout.setter('height'))
+        details_layout.bind(minimum_height=details_layout.setter("height"))
 
-        def add_detail(label_text, value_text):
+        def add_detail(label_key, value_text):
             row = BoxLayout(size_hint_y=None, height=dp(32), spacing=dp(12))
             lbl = Label(
-                text=f"{label_text}:",
+                text=f"{LM.field_name(label_key)}:",
                 font_size=sp(16),
                 color=get_color_from_hex('#FFFFFF'),
                 size_hint_x=0.35,
-                halign='left',
-                valign='middle'
+                halign="left",
+                valign="middle"
             )
-            lbl.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, inst.height)))
+            lbl.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, inst.height)))
             val = Label(
                 text=str(value_text),
                 font_size=sp(16),
                 color=get_color_from_hex('#D8F3EB'),
                 size_hint_x=0.40,
-                halign='left',
-                valign='middle'
+                halign="left",
+                valign="middle"
             )
-            val.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, inst.height)))
+            val.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, inst.height)))
             row.add_widget(lbl)
             row.add_widget(val)
             return row
 
         t = self.transaction
-        details_layout.add_widget(add_detail('Категорія', t.category))
+
+        category_name = static.get_category_name_by_mcc(t.mcc_code)
+        currency_name = static.get_currency_name_by_code(t.currency_code)
+
+        details_layout.add_widget(add_detail("category", LM.category(category_name)))
+
         try:
             amt = abs(float(t.amount))
-            amt_text = f"{'+' if t.is_income else '-'}{amt:,.2f} {t.currency}"
-        except:
-            amt_text = f"{t.amount} {t.currency}"
-        details_layout.add_widget(add_detail('Сума', amt_text))
-        details_layout.add_widget(add_detail('Дата', t.get_formatted_date()))
-        details_layout.add_widget(add_detail('Спосіб оплати', t.payment_method))
+            sign = "+" if t.type == INCOME else "-"
+            amt_text = f"{sign}{amt:,.2f} ({currency_name})"
+        except Exception:
+            amt_text = f"{t.amount} ({currency_name})"
+
+        details_layout.add_widget(add_detail("amount", amt_text))
+        details_layout.add_widget(add_detail("date", format_date(t.date)))
+        details_layout.add_widget(add_detail("payment_method", LM.payment_method(t.payment_method)))
 
         try:
             cb = float(t.cashback)
             if cb > 0:
-                details_layout.add_widget(add_detail('Кешбек', cb))
-        except:
+                details_layout.add_widget(add_detail("cashback", cb))
+        except Exception:
             pass
+
         try:
             cm = float(t.commission)
             if cm > 0:
-                details_layout.add_widget(add_detail('Комісія', cm))
-        except:
+                details_layout.add_widget(add_detail("commission", cm))
+        except Exception:
             pass
 
         if t.description and t.description.strip():
             desc_lbl = Label(
-                text='Опис:',
+                text=LM.field_name("description") + ":",
                 font_size=sp(16),
                 color=get_color_from_hex('#FFFFFF'),
                 size_hint_y=None,
                 height=dp(32),
-                halign='left',
-                valign='middle'
+                halign="left",
+                valign="middle"
             )
-            desc_lbl.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, inst.height)))
+            desc_lbl.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, inst.height)))
             details_layout.add_widget(desc_lbl)
 
             desc_text = Label(
@@ -123,20 +136,19 @@ class TransactionDetailsPopup(ModalView):
                 color=get_color_from_hex('#D8F3EB'),
                 size_hint_y=None,
                 height=dp(60),
-                halign='center',
-                valign='middle'
+                halign="center",
+                valign="middle"
             )
-            desc_text.bind(size=lambda inst, val: setattr(inst, 'text_size', (inst.width, inst.height)))
+            desc_text.bind(size=lambda inst, val: setattr(inst, "text_size", (inst.width, inst.height)))
             details_layout.add_widget(desc_text)
 
         scroll.add_widget(details_layout)
         content.add_widget(scroll)
 
-
         btn_box = BoxLayout(size_hint_y=None, height=dp(48), spacing=dp(10))
-        btn_edit = RoundedButton(text='Редагувати', bg_color='#0F7055', font_size=sp(13))
-        btn_delete = RoundedButton(text='Видалити', bg_color='#F44336', font_size=sp(13))
-        btn_close = RoundedButton(text='Закрити', bg_color='#445555', font_size=sp(13))
+        btn_edit = RoundedButton(text=LM.message("edit_button"), bg_color='#0F7055', font_size=sp(13))
+        btn_delete = RoundedButton(text=LM.message("delete_button"), bg_color='#F44336', font_size=sp(13))
+        btn_close = RoundedButton(text=LM.message("close_button"), bg_color='#445555', font_size=sp(13))
         btn_edit.bind(on_press=lambda inst: (self.dismiss(), self.on_edit()))
         btn_delete.bind(on_press=lambda inst: (self.dismiss(), self.on_delete()))
         btn_close.bind(on_press=lambda inst: self.dismiss())

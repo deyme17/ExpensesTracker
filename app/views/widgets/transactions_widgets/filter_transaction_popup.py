@@ -110,8 +110,7 @@ class FilterPopup(ModalView):
         content.add_widget(self.type_spinner)
 
         # categories/payment method
-        from app.utils.helpers import get_static_data_service
-        static = get_static_data_service()
+        static = App.get_running_app().static_data_service
 
         categories = static.get_categories()
         category_codes = ["all"] + [c.mcc_code for c in categories]
@@ -183,8 +182,7 @@ class FilterPopup(ModalView):
             # category
             category = None
             if self.category_spinner.selected != "all":
-                from app.utils.helpers import get_static_data_service
-                static = get_static_data_service()
+                static = App.get_running_app().static_data_service
                 selected_name = self.category_spinner.selected
                 for c in static.get_categories():
                     if c.name == selected_name:

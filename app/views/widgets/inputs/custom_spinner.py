@@ -3,7 +3,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
 from kivy.uix.button import Button
-from kivy.graphics import Color, RoundedRectangle, Triangle
+from kivy.graphics import Color, RoundedRectangle, Triangle, Line
 from kivy.properties import StringProperty, ObjectProperty, NumericProperty, ListProperty
 from kivy.metrics import dp, sp
 from kivy.utils import get_color_from_hex
@@ -23,9 +23,8 @@ class CustomSpinner(Spinner):
     padding_x = NumericProperty(dp(15))
     label_text = StringProperty("")
     selected = StringProperty("")  
-
+    
     def __init__(self, **kwargs):
-        self.display_transform = kwargs.pop("display_transform", lambda x: x)
         kwargs.setdefault("background_color", (0, 0, 0, 0))
         kwargs.setdefault("color", get_text_dark_color())
         kwargs.setdefault("bold", True)
@@ -38,7 +37,9 @@ class CustomSpinner(Spinner):
             self.selected_value = self.text
         
         self.bind(pos=self.update_rect, size=self.update_rect)
+        
         self.bind(text=self._on_text_changed)
+   
         Clock.schedule_once(lambda dt: self.update_rect(), 0)
     
     def update_rect(self, *args):
@@ -47,6 +48,7 @@ class CustomSpinner(Spinner):
         with self.canvas.before:
             Color(rgba=get_secondary_color())
             RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(10)])
+            
             Color(rgba=get_primary_color())
             x = self.x + self.width - self.padding_x
             y = self.y + self.height / 2 - dp(2)
@@ -59,7 +61,6 @@ class CustomSpinner(Spinner):
     def _on_text_changed(self, instance, value):
         """Update the selected value when the text changes."""
         self.selected_value = value
-
 
 class LabeledSpinner(BoxLayout):
     """
@@ -78,8 +79,7 @@ class LabeledSpinner(BoxLayout):
 
         super(LabeledSpinner, self).__init__(**kwargs)
 
-        self._display_to_key = {}
-
+        # label
         self.label = Label(
             text=self.label_text,
             size_hint_y=None,
@@ -90,14 +90,15 @@ class LabeledSpinner(BoxLayout):
             text_size=(None, dp(25))
         )
 
+        # spinner
         self.spinner = CustomSpinner(
-            text="",
-            values=[],
+            text=self.displayed_value(self.selected) if self.selected else (
+                self.displayed_value(self.values[0]) if self.values else ""
+            ),
+            values=[self.displayed_value(v) for v in self.values],
             size_hint_y=None,
             height=dp(45)
         )
-
-        self.spinner.bind(text=self._on_spinner_changed)
 
         self.add_widget(self.label)
         self.add_widget(self.spinner)
@@ -107,30 +108,32 @@ class LabeledSpinner(BoxLayout):
         self.bind(selected=self._update_selected)
         self.bind(displayed_value=self._update_displayed_values)
 
-        Clock.schedule_once(lambda dt: self._update_displayed_values(), 0)
+        self.spinner.bind(text=self._on_spinner_changed)
 
     def _update_label_text(self, instance, value):
         self.label.text = value
 
     def _update_values(self, instance, value):
-        self._update_displayed_values()
+        self.spinner.values = [self.displayed_value(v) for v in value]
+        if self.selected not in value and value:
+            self.selected = value[0]
+        else:
+            self._update_selected(self, self.selected)
 
     def _update_displayed_values(self, *args):
-        self._display_to_key = {self.displayed_value(v): v for v in self.values}
-        self.spinner.values = list(self._display_to_key.keys())
+        self.spinner.values = [self.displayed_value(v) for v in self.values]
         self._update_selected(self, self.selected)
 
     def _update_selected(self, instance, value):
-        for display, key in self._display_to_key.items():
-            if key == value:
-                self.spinner.text = display
-                break
+        self.spinner.text = self.displayed_value(value)
 
     def _on_spinner_changed(self, instance, value):
-        if value in self._display_to_key:
-            self.selected = self._display_to_key[value]
-        else:
-            self.selected = value
+        for real_value in self.values:
+            if self.displayed_value(real_value) == value:
+                self.selected = real_value
+                return
+        self.selected = value
+
 
 class SpinnerOption(Button):
     """

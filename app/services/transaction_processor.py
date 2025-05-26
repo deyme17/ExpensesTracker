@@ -1,18 +1,23 @@
 from datetime import datetime
+from kivy.app import App
 
 class TransactionProcessor:
     @staticmethod
     def filter(transactions, min_amount=0, max_amount=float('inf'),
             start_date=None, end_date=None, type=None,
             payment_method=None, category=None, account_id=None):
+        
+        static = App.get_running_app().static_data_service
+
         def predicate(tx):
+            tx_category_name = static.get_category_name_by_mcc(tx.mcc_code)
             return all([
                 min_amount <= abs(tx.amount) <= max_amount,
                 (start_date is None or tx.date >= start_date),
                 (end_date is None or tx.date <= end_date),
                 (type is None or tx.type == type),
                 (payment_method is None or tx.payment_method == payment_method),
-                (category is None or tx.category == category),
+                (category is None or tx_category_name == category),
                 (account_id is None or tx.account_id == account_id)
             ])
 

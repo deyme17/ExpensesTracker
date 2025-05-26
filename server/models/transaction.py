@@ -1,6 +1,6 @@
 from sqlalchemy import Column, BigInteger, String, DECIMAL, Date, ForeignKey, Enum, Computed
 from server.database.db import Base
-import uuid
+from sqlalchemy import text
 import enum
 
 class PaymentMethod(enum.Enum):
@@ -10,7 +10,7 @@ class PaymentMethod(enum.Enum):
 class Transaction(Base):
     __tablename__ = "transactions"
 
-    transaction_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    transaction_id = Column(String, primary_key=True, server_default=text("gen_random_uuid()"))
     user_id = Column(String, ForeignKey("users.user_id"), nullable=False)
     amount = Column(DECIMAL(19, 4), nullable=False)
     date = Column(Date, nullable=False)

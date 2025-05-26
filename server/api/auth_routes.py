@@ -44,3 +44,9 @@ def login():
         })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 401
+    
+ping_bp = Blueprint("ping", __name__)
+
+@ping_bp.route("/ping", methods=["GET"])
+def ping():
+    return jsonify({"status": "ok"}), 200

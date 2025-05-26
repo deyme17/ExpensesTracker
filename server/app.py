@@ -1,8 +1,7 @@
-from server.api.auth_routes import auth_bp
+from server.api.auth_routes import auth_bp, ping_bp
 from flask import Flask
 from flask_cors import CORS
 from server.api.endpoints import api
-from server.api.base import ping_bp
 
 
 def create_app():

@@ -62,7 +62,7 @@ class TransactionsScreen(BaseScreen):
 
             acc_id = app.account_service.storage_service.get_active_account_id()
             if acc_id:
-                self.selected_account_id = acc_id
+                self._on_account_selected(acc_id)
 
             self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
             self.update_balance_label()

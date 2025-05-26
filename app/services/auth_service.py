@@ -92,21 +92,20 @@ class AuthService:
             from kivy.app import App
             app = App.get_running_app()
 
-            app.transaction_controller.transaction_service.user_id = user.user_id
+            app.transaction_controller.transaction_service = TransactionService(user_id=user.user_id, storage_service=self.storage)
             app.account_service.user_id = user.user_id
 
-            # get and save data
             app.account_service.get_accounts()
-            TransactionService(user_id=user.user_id, storage_service=self.storage).get_transactions(force_refresh=True)
+            app.transaction_controller.transaction_service.get_transactions(force_refresh=True)
             StaticDataService(self.storage).get_categories()
             StaticDataService(self.storage).get_currencies()
 
-            # active account
+            # set active account if exists
             accounts, _ = app.account_service.get_accounts()
             if accounts:
                 self.storage.set_active_account(accounts[0].account_id)
 
-            print("[AuthService] Start loading transactions for", user.user_id)
+            print("[AuthService] Transactions loaded for:", user.user_id)
 
         except Exception as e:
             print(f"[AuthService] load data error: {e}")

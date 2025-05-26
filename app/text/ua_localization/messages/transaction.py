@@ -23,4 +23,7 @@ TRANSACTION = {
     "transaction_deleted_offline": "Транзакцію успішно видалено (офлайн)",
     "unable_delete_transaction": "Не вдалося видалити транзакцію",
     "edit_transaction": "Редагувати транзакцію",
+    "transaction_saved": "Транзакцію збережено",
+    "transaction_deleted": "Транзакцію видалено",
+    "transaction_updated": "Транзакцію оновлено",
 }

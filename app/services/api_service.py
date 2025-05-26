@@ -32,6 +32,14 @@ def api_add_transaction(data):
     ).json()
 
 
+def api_get_transaction_by_id(transaction_id):
+    try:
+        response = requests.get(f"{API_BASE}/api/transaction/{transaction_id}")
+        return response.json()
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 def api_delete_transaction(transaction_id):
     return requests.delete(
         f"{API_BASE}/api/transaction/{transaction_id}",

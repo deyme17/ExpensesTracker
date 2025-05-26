@@ -9,7 +9,7 @@ class TransactionController:
     def add_transaction(self, **kwargs):
         return self.transaction_service.add_transaction(**kwargs)
 
-    def update_transaction(self, transaction_id, type, category, amount, date,
+    def update_transaction(self, transaction_id, category, amount, date,
                            description, payment_method, currency, cashback,
                            commission, account_id):
         try:
@@ -17,7 +17,6 @@ class TransactionController:
             currency_code = int(self.static_service.get_currency_code_by_name(currency))
 
             data = {
-                "type": type,
                 "mcc_code": mcc_code,
                 "amount": float(amount),
                 "date": date,

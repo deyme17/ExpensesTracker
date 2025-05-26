@@ -37,7 +37,7 @@ class AnalyticsService:
                 "max": round(max_val, 2),
                 "total": round(total, 2),
                 "count": count,
-                "top_category": top_category
+                "top_category": LM.category(top_category)
             }
 
         # update hash
@@ -46,9 +46,13 @@ class AnalyticsService:
         return result
 
     def _calc_top_category(self, transactions):
+        from kivy.app import App
+        static = App.get_running_app().static_data_service
+
         category_sums = defaultdict(float)
         for tx in transactions:
-            category_sums[tx.category] += abs(tx.amount)
+            name = static.get_category_name_by_mcc(tx.mcc_code)
+            category_sums[name] += abs(tx.amount)
         return max(category_sums.items(), key=lambda x: x[1])[0] if category_sums else "—"
 
     def _compute_hash(self, transactions):

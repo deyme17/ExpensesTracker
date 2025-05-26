@@ -8,7 +8,7 @@ def format_amount(amount, currency, show_sign=True):
     
     Args:
         amount (float): Amount to format
-        currency (str): Currency code
+        currency (str): Currency name
         show_sign (bool): Whether to show + or - sign
         
     Returns:

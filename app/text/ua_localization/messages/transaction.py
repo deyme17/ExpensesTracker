@@ -26,4 +26,5 @@ TRANSACTION = {
     "transaction_saved": "Транзакцію збережено",
     "transaction_deleted": "Транзакцію видалено",
     "transaction_updated": "Транзакцію оновлено",
+    "amount_required": "Введіть суму транзакції",
 }

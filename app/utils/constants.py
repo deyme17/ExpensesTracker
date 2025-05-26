@@ -21,3 +21,5 @@ SORT_FIELDS = ['date', 'amount', 'cashback', 'commission']
 
 # Default currency
 DEFAULT_CURRENCY = "UAH"
+DEFAULT_CURRENCY_CODE = "980"
+DEFAULT_MCC = "0"

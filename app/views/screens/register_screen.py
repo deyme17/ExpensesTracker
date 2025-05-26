@@ -84,7 +84,7 @@ class RegistrationScreen(BaseScreen):
 
         def reg_callback(success, message):
             if success:
-                self.switch_screen("transactions_screen", "left")
+                self.switch_screen("splash_screen", "left")
             else:
                 self.error_message = message
                 self._show_error()

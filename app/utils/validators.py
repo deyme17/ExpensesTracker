@@ -30,11 +30,9 @@ def validate_password(password):
 
 
 def validate_monobank_token(token):
-    if not token:
+    if not token or not isinstance(token, str):
         return False
-
-    pattern = r'^[a-zA-Z0-9]{44}$'
-    return bool(re.fullmatch(pattern, token))
+    return bool(re.fullmatch(r'^[a-zA-Z0-9\-_]{40,50}$', token))
 
 
 def validate_amount(amount_str):

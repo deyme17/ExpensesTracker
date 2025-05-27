@@ -78,7 +78,7 @@ D:/ExpensesTracker/
 
 │   ├── api/
 │   │   ├── auth_routes.py                  # /auth/register, /auth/login
-│   │   ├── endpoints.py                    # /accounts, /transactions, /categories
+│   │   ├── main_routes.py                  # /accounts, /transactions, /categories
 │   │   ├── webhook_routes.py               # Обробка webhooks від Monobank
 │
 │   ├── database/

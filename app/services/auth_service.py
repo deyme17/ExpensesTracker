@@ -68,7 +68,7 @@ class AuthService:
                     "password": password,
                     "encrypted_token": token
                 }
-                print("REGISTRATION PAYLOAD:", payload)
+                print("REGISTRATION")
                 response = api_register(payload)
                 if response.get("success"):
                     user = User.from_api_dict(response)

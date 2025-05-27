@@ -67,6 +67,7 @@ class TransactionsScreen(BaseScreen):
             self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
             self.update_balance_label()
             self.refresh_transactions(force=False)
+            App.get_running_app().root.get_screen("analytics_screen").refresh_analytics()
 
     def update_balance_label(self):
         acc = next((a for a in self.accounts if a.account_id == self.selected_account_id), None)
@@ -131,6 +132,7 @@ class TransactionsScreen(BaseScreen):
 
         if success:
             self.refresh_transactions()
+            App.get_running_app().root.get_screen("analytics_screen").refresh_analytics()
             self.show_success_message(LM.message("transaction_saved"))
         else:
             self.show_error_message(msg)
@@ -161,6 +163,7 @@ class TransactionsScreen(BaseScreen):
         )
         if success:
             Clock.schedule_once(lambda dt: self.refresh_transactions(), 0.2)
+            App.get_running_app().root.get_screen("analytics_screen").refresh_analytics()
             self.show_success_message(LM.message("transaction_updated"))
             if popup:
                 popup.dismiss()
@@ -177,6 +180,7 @@ class TransactionsScreen(BaseScreen):
             deleted, msg = result
             if deleted:
                 Clock.schedule_once(lambda dt: self.refresh_transactions(), 0)
+                App.get_running_app().root.get_screen("analytics_screen").refresh_analytics()
                 Clock.schedule_once(lambda dt: self.show_success_message(LM.message("transaction_deleted")), 3)
             else:
                 print("[DEBUG] Delete failed:", msg)
@@ -269,6 +273,7 @@ class TransactionsScreen(BaseScreen):
         App.get_running_app().account_service.storage_service.set_active_account(selected_account_id)
         self.update_balance_label()
         self.refresh_transactions()
+        App.get_running_app().root.get_screen("analytics_screen").refresh_analytics()
         self.show_success_message(LM.message("account_changed"))
 
     def go_analytics(self):

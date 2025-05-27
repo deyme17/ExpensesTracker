@@ -27,6 +27,11 @@ CHART_TYPE_LINE = "line"
 # sorting fields
 SORT_FIELDS = ['date', 'amount', 'cashback', 'commission']
 
+# stats
+STATS = "avg", "min", "max", "total", "count", "top_category"
+NUM_STATS_SET = {"avg", "min", "max", "total"}
+SHARE_NUM = 6
+
 # Default currency
 DEFAULT_CURRENCY = "UAH"
 DEFAULT_CURRENCY_CODE = "980"

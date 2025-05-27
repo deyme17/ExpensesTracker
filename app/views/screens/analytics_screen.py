@@ -4,17 +4,13 @@ from app.utils.constants import CHART_TYPE_HISTOGRAM, EXPENSE
 from app.views.widgets.analytics_widgets.analytics_filter_popup import AnalyticsFilterPopup
 from app.views.widgets.analytics_widgets.graph_section import GraphSection
 
-from kivy.properties import StringProperty, ObjectProperty
 from kivy.clock import Clock
 from kivy.lang import Builder
 from datetime import datetime
 
 from app.views.screens.base_screen import BaseScreen
 from app.models.analytics import AnalyticsData
-from app.views.widgets.analytics_widgets.analytics_filter_popup import AnalyticsFilterPopup
-from app.views.widgets.analytics_widgets.graph_section import GraphSection
 from app.views.widgets.analytics_widgets.stats_section import StatsSection
-from app.utils.constants import CHART_TYPE_HISTOGRAM, EXPENSE
 from app.utils.language_mapper import LanguageMapper as LM
 from app.services.local_storage import LocalStorageService
 
@@ -81,20 +77,17 @@ class AnalyticsScreen(BaseScreen):
         self._update_sections()
 
     def _update_sections(self):
-        # ensure graph section exists
         if not self.graph_section:
             self.graph_section = GraphSection(chart_type=self.current_chart_type)
             container = self.ids['graph_box']
             container.clear_widgets()
             container.add_widget(self.graph_section)
 
-        # update graph with filtered transactions
         self.graph_section.update_graph(
             transactions=self.data.raw_transactions,
             chart_type=self.current_chart_type
         )
 
-        # ensure stats section exists
         if not self.stats_section:
             self.stats_section = StatsSection()
             self.ids['stats_box'].clear_widgets()
@@ -141,6 +134,10 @@ class AnalyticsScreen(BaseScreen):
                 transactions=self.data.raw_transactions,
                 chart_type=self.current_chart_type
             )
+
+    def refresh_analytics(self):
+        self._load_analytics_data()
+        self._update_sections()
 
     def go_to_transactions(self):
         if self.manager:

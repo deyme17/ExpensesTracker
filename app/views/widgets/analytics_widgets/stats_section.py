@@ -6,6 +6,7 @@ from kivy.properties import DictProperty
 from kivy.graphics import Color, RoundedRectangle
 from kivy.utils import get_color_from_hex
 from app.utils.theme import get_text_secondary_color, get_text_primary_color, STAT_COLORS
+from app.utils.constants import EXPENSE, NUM_STATS_SET, STATS
 from app.utils.language_mapper import LanguageMapper as LM
 
 card_color = get_color_from_hex("#0A4035")
@@ -22,9 +23,10 @@ class StatsSection(GridLayout):
         super().__init__(**kwargs)
         self.cols = 3
         self.size_hint_y = None
-        self.height = dp(150)
-        self.padding = [dp(10), dp(10), dp(10), dp(10)]
-        self.spacing = [dp(5), dp(10)]
+        self.height = dp(120)
+        self.padding = [dp(6), dp(6), dp(6), dp(6)]
+        self.spacing = [dp(4), dp(6)]
+
 
         with self.canvas.before:
             Color(rgba=card_color)
@@ -33,7 +35,7 @@ class StatsSection(GridLayout):
 
         fields = [
             (LM.stat_name(key), key)
-            for key in ["avg", "min", "max", "total", "count", "top_category"]
+            for key in STATS
         ]
         self._value_labels = {}
         for caption, key in fields:
@@ -66,26 +68,25 @@ class StatsSection(GridLayout):
         self._bg_rect.pos = self.pos
         self._bg_rect.size = self.size
 
-    def update_stats(self, stats, transaction_type="expense"):
+    def update_stats(self, stats, transaction_type=EXPENSE):
         """
         Refresh displayed statistics. Accepts either string or dict with value+color.
         Adds + or - sign depending on transaction type for numeric fields.
         """
         self.stats_data = stats
-        prefix = "-" if transaction_type == "expense" else "+"
+        prefix = "-" if transaction_type == EXPENSE else "+"
 
-        numeric_fields = {"avg", "min", "max", "total"}
         for key, lbl in self._value_labels.items():
             value = stats.get(key, "0")
             if isinstance(value, dict):
                 raw_value = value.get("value", "0")
                 lbl.text = (
-                    f"{prefix}{raw_value}" if key in numeric_fields else str(raw_value)
+                    f"{prefix}{raw_value}" if key in NUM_STATS_SET else str(raw_value)
                 )
                 lbl.color = value.get("color", STAT_COLORS.get(key, get_text_primary_color()))
             else:
                 lbl.text = (
-                    f"{prefix}{value}" if key in numeric_fields else str(value)
+                    f"{prefix}{value}" if key in NUM_STATS_SET else str(value)
                 )
                 lbl.color = STAT_COLORS.get(key, get_text_primary_color())
 

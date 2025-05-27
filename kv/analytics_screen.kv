@@ -114,20 +114,8 @@
         BoxLayout:
             id: graph_box
             orientation: 'vertical'
-            size_hint_y: 0.5
-            padding: dp(8)
-            canvas.before:
-                Color:
-                    rgba: card_color
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [dp(12)]
-                Color:
-                    rgba: 1, 1, 1, 0.05
-                Line:
-                    rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
-                    width: 1
+            size_hint_y: 1
+            padding: 0
 
         # Chart type buttons
         GridLayout:
@@ -155,7 +143,7 @@
         # Statistics panel
         BoxLayout:
             size_hint_y: None
-            height: dp(160)
+            height: dp(130)
             orientation: 'horizontal'
             padding: dp(8)
             spacing: dp(8)

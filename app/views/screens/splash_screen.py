@@ -64,7 +64,13 @@ class SplashScreen(BaseScreen):
             app.transaction_controller.get_transactions(force_refresh=True)
 
             acc_id = app.account_service.storage_service.get_active_account_id()
-            if acc_id:
+
+            if not acc_id:
+                accounts, _ = app.account_service.get_accounts()
+                if accounts:
+                    acc_id = accounts[0].account_id
+                    app.account_service.storage_service.set_active_account(acc_id)
+            else:
                 app.account_service.storage_service.set_active_account(acc_id)
 
             from kivy.clock import Clock

@@ -71,6 +71,7 @@ class AuthService:
                 }
                 print("REGISTRATION")
                 response = api_register(payload)
+                print(response)
                 if response.get("success"):
                     user = User.from_api_dict(response)
                     self.storage.save_user(user)

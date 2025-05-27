@@ -1,18 +1,16 @@
 from collections import defaultdict
 from kivy.utils import get_color_from_hex
 from kivy.properties import ListProperty
-from kivy.logger import Logger
-Logger.setLevel("ERROR")
 from kivy_garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib.pyplot as plt
 from app.models.graphs.base_graph import BaseGraphWidget
 from app.utils.theme import ACCENT_COLOR
 from app.utils.constants import SHARE_NUM
-from app.services.crud_services.static_data import StaticDataService
+from app.services.crud_services.category import CategoryService
 from app.utils.language_mapper import LanguageMapper
 
-_static_service = StaticDataService()
-_static_service.get_categories()
+_category_service = CategoryService()
+_category_service.get_categories()
 
 class ShareGraph(BaseGraphWidget):
     """
@@ -23,7 +21,7 @@ class ShareGraph(BaseGraphWidget):
     def fit(self, transactions):
         totals = defaultdict(float)
         for tx in transactions:
-            raw_name = _static_service.get_category_name_by_mcc(tx.mcc_code)
+            raw_name = _category_service.get_category_name_by_mcc(tx.mcc_code)
             translated_name = LanguageMapper.category(raw_name)
             totals[translated_name] += abs(tx.amount)
 
@@ -93,8 +91,8 @@ class ShareGraph(BaseGraphWidget):
 # from app.utils.language_mapper import LanguageMapper as LM
 # from app.utils.constants import SHARE_NUM
 
-# _static_service = StaticDataService()
-# _static_service.get_categories()  # preload cache
+# _category_service = StaticDataService()
+# _category_service.get_categories()  # preload cache
 
 # class ShareGraph(BaseGraphWidget):
 #     """
@@ -103,7 +101,7 @@ class ShareGraph(BaseGraphWidget):
 #     def fit(self, transactions):
 #         totals = defaultdict(float)
 #         for tx in transactions:
-#             raw_name = _static_service.get_category_name_by_mcc(tx.mcc_code)
+#             raw_name = _category_service.get_category_name_by_mcc(tx.mcc_code)
 #             translated_name = LM.category(raw_name)
 #             totals[translated_name] += abs(tx.amount)
 

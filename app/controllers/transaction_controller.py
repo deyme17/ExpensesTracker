@@ -4,9 +4,10 @@ from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.error_codes import ErrorCodes
 
 class TransactionController:
-    def __init__(self, transaction_service, static_service):
+    def __init__(self, transaction_service, category_service, currency_service):
         self.transaction_service = transaction_service
-        self.static_service = static_service
+        self.category_service = category_service
+        self.currency_service = currency_service
 
     def add_transaction(self, **kwargs):
         return self.transaction_service.add_transaction(**kwargs)
@@ -15,8 +16,8 @@ class TransactionController:
                            description, payment_method, currency, cashback,
                            commission, account_id):
         try:
-            mcc_code = int(self.static_service.get_mcc_by_name(category))
-            currency_code = int(self.static_service.get_currency_code_by_name(currency))
+            mcc_code = int(self.category_service.get_mcc_by_name(category))
+            currency_code = int(self.currency_service.get_currency_code_by_name(currency))
 
             data = {
                 "mcc_code": mcc_code,

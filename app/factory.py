@@ -13,7 +13,8 @@ from app.services.local_storage import LocalStorageService
 from app.services.auth_service import AuthService
 from app.services.crud_services.transaction import TransactionService
 from app.services.crud_services.account import AccountService
-from app.services.crud_services.static_data import StaticDataService
+from app.services.crud_services.category import CategoryService
+from app.services.crud_services.currency import CurrencyService
 
 from app.app import ExpensesTrackerApp
 
@@ -27,7 +28,8 @@ def create_app():
         storage_service=storage_service,
         user_id=current_user.user_id if current_user else None
     )
-    static_data_service = StaticDataService(storage_service=storage_service)
+    category_service = CategoryService(storage_service=storage_service)
+    currency_service = CurrencyService(storage_service=storage_service)
 
     transaction_service = TransactionService(
         user_id=current_user.user_id if current_user else None,
@@ -35,7 +37,7 @@ def create_app():
     )
 
     auth_controller = AuthController(storage_service)
-    transaction_controller = TransactionController(transaction_service, static_data_service)
+    transaction_controller = TransactionController(transaction_service, category_service, currency_service)
     analytics_controller = AnalyticsController()
 
     return ExpensesTrackerApp(
@@ -44,7 +46,8 @@ def create_app():
         transaction_controller=transaction_controller,
         analytics_controller=analytics_controller,
         account_service=account_service,
-        static_data_service=static_data_service,
+        category_service=category_service,
+        currency_service=currency_service,
         splash_screen_cls=SplashScreen,
         first_screen_cls=FirstScreen,
         login_screen_cls=LoginScreen,

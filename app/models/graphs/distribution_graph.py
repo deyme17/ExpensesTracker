@@ -2,9 +2,6 @@ import numpy as np
 from kivy.utils import get_color_from_hex
 from app.utils.helpers import set_bins
 from kivy.properties import ListProperty
-
-from kivy.logger import Logger
-Logger.setLevel("ERROR")
 from kivy_garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 
 import matplotlib.pyplot as plt

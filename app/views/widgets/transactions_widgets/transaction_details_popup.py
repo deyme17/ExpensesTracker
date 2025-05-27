@@ -26,7 +26,8 @@ class TransactionDetailsPopup(ModalView):
 
     def build_ui(self):
         from kivy.app import App
-        static = App.get_running_app().static_data_service
+        category_service = App.get_running_app().category_service
+        currency_service = App.get_running_app().currency_service
 
         content = BoxLayout(
             orientation="vertical",
@@ -87,8 +88,8 @@ class TransactionDetailsPopup(ModalView):
 
         t = self.transaction
 
-        category_name = static.get_category_name_by_mcc(t.mcc_code)
-        currency_name = static.get_currency_name_by_code(t.currency_code)
+        category_name = category_service.get_category_name_by_mcc(t.mcc_code)
+        currency_name = currency_service.get_currency_name_by_code(t.currency_code)
 
         details_layout.add_widget(add_detail("category", LM.category(category_name)))
 

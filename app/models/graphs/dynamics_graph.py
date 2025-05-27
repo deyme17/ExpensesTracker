@@ -1,7 +1,5 @@
 from datetime import datetime
 from kivy.utils import get_color_from_hex
-from kivy.logger import Logger
-Logger.setLevel("ERROR")
 from kivy_garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter

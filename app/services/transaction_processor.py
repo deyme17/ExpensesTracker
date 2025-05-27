@@ -6,11 +6,11 @@ class TransactionProcessor:
     def filter(transactions, min_amount=0, max_amount=float('inf'),
             start_date=None, end_date=None, type=None,
             payment_method=None, category=None, account_id=None):
-        
-        static = App.get_running_app().static_data_service
+
+        category_service = App.get_running_app().category_service
 
         def predicate(tx):
-            tx_category_name = static.get_category_name_by_mcc(tx.mcc_code)
+            tx_category_name = category_service.get_category_name_by_mcc(tx.mcc_code)
             return all([
                 min_amount <= abs(tx.amount) <= max_amount,
                 (start_date is None or tx.date >= start_date),

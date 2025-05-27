@@ -47,7 +47,7 @@ class FilterPopup(ModalView):
         now = datetime.now()
         self._initial_start = start_date or (now - timedelta(days=365))
         self._initial_end = end_date or now
-        self.static = App.get_running_app().static_data_service
+        self.category_service = App.get_running_app().category_service
 
         self.build_ui()
 
@@ -111,7 +111,7 @@ class FilterPopup(ModalView):
         content.add_widget(self.type_spinner)
 
         # categories/payment method
-        categories, _ = self.static.get_categories()
+        categories, _ = self.category_service.get_categories()
         category_names = sorted(set([c.name for c in categories]))
         category_names.insert(0, ALL)
 

@@ -50,12 +50,12 @@ class AnalyticsService:
 
     def _calc_top_category(self, transactions):
         from kivy.app import App
-        static = App.get_running_app().static_data_service
+        category_service = App.get_running_app().category_service
 
         category_sums = defaultdict(float)
         try:
             for tx in transactions:
-                name = static.get_category_name_by_mcc(tx.mcc_code)
+                name = category_service.get_category_name_by_mcc(tx.mcc_code)
                 category_sums[name] += abs(tx.amount)
             return max(category_sums.items(), key=lambda x: x[1])[0] if category_sums else "—"
         except Exception:

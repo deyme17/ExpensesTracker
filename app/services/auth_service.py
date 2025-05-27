@@ -2,7 +2,8 @@ from app.models.user import User
 from app.services.api import api_register, api_login
 from app.services.crud_services.account import AccountService
 from app.services.crud_services.transaction import TransactionService
-from app.services.crud_services.static_data import StaticDataService
+from app.services.crud_services.category import CategoryService
+from app.services.crud_services.currency import CurrencyService
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.error_codes import ErrorCodes
 from kivy.clock import Clock
@@ -97,8 +98,8 @@ class AuthService:
 
             app.account_service.get_accounts()
             app.transaction_controller.transaction_service.get_transactions(force_refresh=True)
-            StaticDataService(self.storage).get_categories()
-            StaticDataService(self.storage).get_currencies()
+            CategoryService(self.storage).get_categories()
+            CurrencyService(self.storage).get_currencies()
 
             # set active account if exists
             accounts, _ = app.account_service.get_accounts()

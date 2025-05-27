@@ -90,16 +90,18 @@ class TransactionsScreen(BaseScreen):
         self.transactions_data = {}
 
     def _add_row(self, tx):
-        static = App.get_running_app().static_data_service
+        category_service = App.get_running_app().category_service
+        currency_service = App.get_running_app().currency_service
+        
         row = TransactionRow(
             transaction_id=tx.transaction_id,
-            category=static.get_category_name_by_mcc(tx.mcc_code),
+            category=category_service.get_category_name_by_mcc(tx.mcc_code),
             amount=str(abs(tx.amount)),
             date=format_date(tx.date),
             payment_method=tx.payment_method,
             type=tx.type,
             description=tx.description,
-            currency=static.get_currency_name_by_code(tx.currency_code),
+            currency=currency_service.get_currency_name_by_code(tx.currency_code),
             cashback=str(tx.cashback),
             commission=str(tx.commission),
             controller=self.controller,

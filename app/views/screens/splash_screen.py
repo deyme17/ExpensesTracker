@@ -58,8 +58,8 @@ class SplashScreen(BaseScreen):
         try:
             app = self.get_app()
 
-            app.static_data_service.get_categories()
-            app.static_data_service.get_currencies()
+            app.category_service.get_categories()
+            app.currency_service.get_currencies()
             app.account_service.get_accounts()
             app.transaction_controller.get_transactions(force_refresh=True)
 

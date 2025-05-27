@@ -40,7 +40,8 @@ class AddTransactionPopup(ModalView):
             self._fill_fields_with_existing_transaction()
 
     def build_ui(self):
-        static = App.get_running_app().static_data_service
+        category_service = App.get_running_app().category_service
+        currency_service = App.get_running_app().currency_service
 
         self.content = BoxLayout(orientation="vertical", spacing=dp(15), padding=dp(20), opacity=0)
 
@@ -62,12 +63,12 @@ class AddTransactionPopup(ModalView):
         fields_container = BoxLayout(orientation="vertical", spacing=dp(10), size_hint_y=None)
         fields_container.bind(minimum_height=fields_container.setter("height"))
 
-        # Load static data
-        categories, _ = static.get_categories()
+        # Load category and currency
+        categories, _ = category_service.get_categories()
         name_to_mcc = {c.name: str(c.mcc_code) for c in categories}
         self.name_to_mcc = name_to_mcc
 
-        currencies, _ = static.get_currencies()
+        currencies, _ = currency_service.get_currencies()
         name_to_currency = {c.name: str(c.currency_code) for c in currencies}
         self.name_to_currency = name_to_currency
 

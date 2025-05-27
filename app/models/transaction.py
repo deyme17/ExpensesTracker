@@ -1,7 +1,7 @@
 from datetime import datetime
 from kivy.app import App
 from app.utils.formatters import format_amount, format_date
-from app.utils.constants import CARD, EXPENSE, DEFAULT_CURRENCY_CODE
+from app.utils.constants import CARD, EXPENSE, DEFAULT_CURRENCY_CODE, INCOME
 
 
 class Transaction:
@@ -74,11 +74,11 @@ class Transaction:
     @classmethod
     def from_monobank(cls, data, user_id, account_id):
         app = App.get_running_app()
-        static = app.static_data_service
+        currency_service = app.currency_service
 
         amount = data.get("amount", 0) / 100.0
         mcc_code = data.get("mcc", 0)
-        currency_code = static.get_currency_code_by_number(data.get("currencyCode", 980))
+        currency_code = currency_service.get_currency_code_by_number(data.get("currencyCode", 980))
 
         return cls(
             transaction_id=data.get("id"),
@@ -86,7 +86,7 @@ class Transaction:
             amount=amount,
             date=datetime.fromtimestamp(data.get("time", datetime.now().timestamp())),
             account_id=account_id,
-            type="income" if amount > 0 else "expense",
+            type=INCOME if amount > 0 else EXPENSE,
             mcc_code=mcc_code,
             currency_code=currency_code,
             description=data.get("description", ""),
@@ -99,9 +99,11 @@ class Transaction:
     def __str__(self):
         try:
             app = App.get_running_app()
-            static = app.static_data_service
-            category = static.get_category_name_by_mcc(self.mcc_code)
-            currency = static.get_currency_name_by_code(self.currency_code)
+            category_service = app.category_service
+            currency_service = app.currency_service
+            
+            category = category_service.get_category_name_by_mcc(self.mcc_code)
+            currency = currency_service.get_currency_name_by_code(self.currency_code)
         except Exception:
             category = str(self.mcc_code)
             currency = str(self.currency_code)

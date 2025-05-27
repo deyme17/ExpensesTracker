@@ -40,7 +40,8 @@ D:/ExpensesTracker/
 │   │   ├── transaction_processor.py        # Сортування та фільрація транзакцій
 │   │   └── crud_services/
 │   │       ├── account.py
-│   │       ├── static_data.py
+│   │       ├── currency.py
+│   │       ├── category.py
 │   │       ├── transaction.py
 │   │   └── analytics/
 │   │       ├── analytics_service.py

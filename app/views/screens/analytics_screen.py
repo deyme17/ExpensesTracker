@@ -1,3 +1,9 @@
+from kivy.uix.screenmanager import Screen
+from kivy.properties import StringProperty, ObjectProperty
+from app.utils.constants import CHART_TYPE_HISTOGRAM, EXPENSE
+from app.views.widgets.analytics_widgets.analytics_filter_popup import AnalyticsFilterPopup
+from app.views.widgets.analytics_widgets.graph_section import GraphSection
+
 from kivy.properties import StringProperty, ObjectProperty
 from kivy.clock import Clock
 from kivy.lang import Builder
@@ -75,19 +81,29 @@ class AnalyticsScreen(BaseScreen):
         self._update_sections()
 
     def _update_sections(self):
+        # ensure graph section exists
         if not self.graph_section:
             self.graph_section = GraphSection(chart_type=self.current_chart_type)
-            self.ids.graph_box.clear_widgets()
-            self.ids.graph_box.add_widget(self.graph_section)
+            container = self.ids['graph_box']
+            container.clear_widgets()
+            container.add_widget(self.graph_section)
 
-        self.graph_section.update_graph(self.data.raw_transactions)
+        # update graph with filtered transactions
+        self.graph_section.update_graph(
+            transactions=self.data.raw_transactions,
+            chart_type=self.current_chart_type
+        )
 
+        # ensure stats section exists
         if not self.stats_section:
             self.stats_section = StatsSection()
-            self.ids.stats_box.clear_widgets()
-            self.ids.stats_box.add_widget(self.stats_section)
+            self.ids['stats_box'].clear_widgets()
+            self.ids['stats_box'].add_widget(self.stats_section)
 
-        self.stats_section.update_stats(self.data.stats, transaction_type=self.current_type)
+        self.stats_section.update_stats(
+            self.data.stats,
+            transaction_type=self.current_type
+        )
         self.translated_type = LM.transaction_type(self.current_type)
 
     def show_filter(self):
@@ -104,16 +120,27 @@ class AnalyticsScreen(BaseScreen):
         self.translated_type = LM.transaction_type(transaction_type)
         self.start_date = start_date
         self.end_date = end_date
-        self._load_analytics_data(0)
+        Clock.schedule_once(lambda dt: self._update_chart_type(), 0)
         self.show_success_message(LM.message("filter_applied"))
+        self._load_analytics_data()
+        self._update_sections()
+
+    def _update_chart_type(self):
+        if self.graph_section:
+            self.graph_section.update_graph(
+                transactions=self.data.raw_transactions,
+                chart_type=self.current_chart_type
+            )
 
     def change_chart_type(self, chart_type):
         if self.current_chart_type == chart_type:
             return
         self.current_chart_type = chart_type
         if self.graph_section:
-            self.graph_section.chart_type = chart_type
-            self.graph_section.update_graph(self.data.raw_transactions)
+            self.graph_section.update_graph(
+                transactions=self.data.raw_transactions,
+                chart_type=self.current_chart_type
+            )
 
     def go_to_transactions(self):
         if self.manager:

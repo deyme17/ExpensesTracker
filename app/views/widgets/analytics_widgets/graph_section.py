@@ -1,64 +1,30 @@
 from kivy.uix.boxlayout import BoxLayout
-from kivy.animation import Animation
-from kivy.metrics import dp
-from kivy.clock import Clock
-from kivy.properties import StringProperty, ObjectProperty
-from app.services.analytics.graph_factory import GraphFactory
-import hashlib
+from kivy.properties import StringProperty
+from app.models.graphs.distribution_graph import DistributionGraph
+from app.models.graphs.dynamics_graph import DynamicsGraph
+from app.models.graphs.share_graph import ShareGraph
+from app.utils.constants import CHART_TYPE_HISTOGRAM, CHART_TYPE_LINE, CHART_TYPE_PIE
 
 class GraphSection(BoxLayout):
-    chart_type = StringProperty()
-    controller = ObjectProperty()
-    transaction_type = StringProperty()
-    transactions = ObjectProperty()
-    category = StringProperty(allownone=True)
+    """
+    Displays graphs based on chart_type and transactions, filling full area and updating on filter.
+    """
+    chart_type = StringProperty(CHART_TYPE_LINE)
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.orientation = "vertical"
-        self.padding = dp(10)
-        self.graph_widget = None
-        self._last_graph_key = None
-        Clock.schedule_once(lambda dt: self._load_graph())
-
-    def _load_graph(self):
-        current_key = self._compute_graph_key()
-
-        if current_key == self._last_graph_key and self.graph_widget:
+    def update_graph(self, transactions, chart_type=None):
+        self.clear_widgets()
+        if chart_type:
+            self.chart_type = chart_type
+        if self.chart_type == CHART_TYPE_HISTOGRAM:
+            widget = DistributionGraph()
+        elif self.chart_type == CHART_TYPE_LINE:
+            widget = DynamicsGraph()
+        elif self.chart_type == CHART_TYPE_PIE:
+            widget = ShareGraph()
+        else:
             return
-
-        if self.graph_widget:
-            self.remove_widget(self.graph_widget)
-
-        try:
-            self.graph_widget = GraphFactory.create_graph(
-                chart_type=self.chart_type,
-                controller=self.controller,
-                transaction_type=self.transaction_type,
-                transactions=self.transactions,
-                category=self.category
-            )
-            self.graph_widget.opacity = 0
-            self.add_widget(self.graph_widget)
-            Animation(opacity=1, d=0.5).start(self.graph_widget)
-            self._last_graph_key = current_key
-        except Exception as e:
-            print(f"[GraphSection] Помилка створення графіка: {e}")
-            self.graph_widget = None
-
-    def update_graph(self, transactions=None, chart_type=None):
-        if chart_type is not None:
-            self.chart_type = str(chart_type)
-        if transactions is not None:
-            self.transactions = transactions
-        self._load_graph()
-
-    def _compute_graph_key(self):
-        if not self.transactions:
-            return None
-        hasher = hashlib.md5()
-        for tx in self.transactions:
-            hasher.update(f"{tx.transaction_id}-{tx.amount}-{tx.date}".encode())
-        key = f"{self.chart_type}-{self.transaction_type}-{self.category or 'all'}"
-        hasher.update(key.encode())
-        return hasher.hexdigest()
+        # apply filtered transactions and render
+        widget.transactions = transactions
+        widget._render()
+        widget.size_hint = (1, 1)
+        self.add_widget(widget)

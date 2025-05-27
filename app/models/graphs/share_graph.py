@@ -7,14 +7,13 @@ except ImportError:
     raise ImportError("kivy_garden.matplotlib not found. Install via: garden install matplotlib")
 import matplotlib.pyplot as plt
 from app.models.graphs.base_graph import BaseGraphWidget
-from app.utils.constants import ACCENT_COLOR
+from app.utils.theme import ACCENT_COLOR
 from app.services.crud_services.static_data import StaticDataService
 from app.utils.language_mapper import LanguageMapper
 
 
-# Singleton service for caching categories
 _static_service = StaticDataService()
-_static_service.get_categories()  # preload cache into service
+_static_service.get_categories()
 
 class ShareGraph(BaseGraphWidget):
     """
@@ -30,7 +29,6 @@ class ShareGraph(BaseGraphWidget):
             translated_name = LanguageMapper.category(raw_name)
             totals[translated_name] += abs(tx.amount)
 
-        # sort descending and take top 10 categories
         items = sorted(totals.items(), key=lambda x: x[1], reverse=True)[:10]
 
         if not items:
@@ -58,23 +56,20 @@ class ShareGraph(BaseGraphWidget):
             values,
             labels=None,
             startangle=90,
-            radius=1.3,              # 🔸 більша діаграма
-            wedgeprops={"linewidth": 0.5, "edgecolor": "#0A4035"}  # 🔸 обводка як фон
+            radius=1.3,
+            wedgeprops={"linewidth": 0.5, "edgecolor": "#0A4035"}
         )
-
-        # Розширити область діаграми
         ax.set_position([0.25, 0.3, 0.5, 0.7])    
 
         legend_labels = [
         f"{label[:10]} — {int(value)}₴" for label, value in zip(labels, values)
     ]
-
         ax.legend(
                 wedges,
                 legend_labels,
                 loc='upper center',
                 bbox_to_anchor=(0.5, -0.1),
-                ncol=2,  # 2 колонки (опціонально)
+                ncol=2,
                 fontsize=4,
                 labelcolor=get_color_from_hex(ACCENT_COLOR),
                 facecolor=get_color_from_hex('#0A4035'),
@@ -82,7 +77,6 @@ class ShareGraph(BaseGraphWidget):
                 handlelength=0.8,
                 columnspacing=0.5
             )
-
         canvas = FigureCanvasKivyAgg(fig)
         canvas.size_hint = (1, 1)
         canvas.pos_hint = {"center_x": 0.5, "top": 1}

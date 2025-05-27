@@ -7,7 +7,7 @@ except ImportError:
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 from app.models.graphs.base_graph import BaseGraphWidget
-from app.utils.constants import ACCENT_COLOR
+from app.utils.theme import ACCENT_COLOR
 
 class DynamicsGraph(BaseGraphWidget):
     """
@@ -23,13 +23,11 @@ class DynamicsGraph(BaseGraphWidget):
         dates, values = zip(*sorted(data.items())) if data else ([], [])
         return dates, values
 
-
     def _render(self):
         self.clear_widgets()
         dates, values = self.fit(self.transactions)
         if not dates:
             return
-        
 
         fig = plt.figure(figsize=(2, 2), dpi=75)
         ax = fig.add_subplot(111)
@@ -37,18 +35,14 @@ class DynamicsGraph(BaseGraphWidget):
         for spine in ax.spines.values():
             spine.set_visible(False)
 
-        # фон — темніший
-        dark_bg = get_color_from_hex("#08382C")  # півтону темніше
+        dark_bg = get_color_from_hex("#08382C")
         fig.patch.set_facecolor("#0A4035")
         ax.set_facecolor(dark_bg)
 
-
-         # сітка
         ax.grid(True, color=(1, 1, 1, 0.005), linestyle='-', linewidth=0.1)
 
-        # orange line
         ax.plot(dates, values, marker='o', linestyle='-', color=get_color_from_hex(ACCENT_COLOR), markersize = 1)
-        # orange labels
+
         ax.xaxis.set_major_formatter(DateFormatter('%d.%m'))
         ax.tick_params(colors="#FFFFFF")
         fig.autofmt_xdate()

@@ -29,27 +29,20 @@ class DistributionGraph(BaseGraphWidget):
         if not xs:
             return
 
-
-
-
         fig = plt.figure(figsize=(4, 3), dpi=100)
         ax = fig.add_subplot(111)
         fig.subplots_adjust(bottom=0.1)
 
-
         for spine in ax.spines.values():
             spine.set_visible(False)
 
-        # фон — темніший
-        dark_bg = get_color_from_hex("#08382C")  # півтону темніше
+        dark_bg = get_color_from_hex("#08382C")
         fig.patch.set_facecolor("#0A4035")
         ax.set_facecolor(dark_bg)
 
-
-         # сітка
         ax.grid(True, color=(1, 1, 1, 0.005), linestyle='-', linewidth=0.1)
 
-        # гістограма
+        # hist
         ax.bar(
             xs, ys,
             color=get_color_from_hex(ACCENT_COLOR),
@@ -57,12 +50,8 @@ class DistributionGraph(BaseGraphWidget):
             width=(xs[1] - xs[0])
         )
 
-        # підписи осі X
         ax.tick_params(colors="#FFFFFF", rotation=45, labelsize=5)
 
-       
-
-        # інтерактивне полотно
         canvas = FigureCanvasKivyAgg(fig)
         canvas.size_hint = (1, 1)
         canvas.pos_hint = {"top": 1}

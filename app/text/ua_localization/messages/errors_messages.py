@@ -15,6 +15,19 @@ ERRORS = {
     "invalid_token_format": "Невірний формат токену Monobank",
     "registration_failed": "Помилка під час реєстрації: {error}",
 
+    # Input validation (form fields)
+    "email_required": "Email обов’язковий",
+    "email_invalid": "Некоректний email",
+    "password_required": "Пароль обов’язковий",
+    "password_too_short": "Пароль має містити щонайменше 6 символів",
+    "password_needs_digit": "Пароль повинен містити щонайменше одну цифру",
+    "password_needs_letter": "Пароль повинен містити щонайменше одну літеру",
+    "password_mismatch": "Паролі не співпадають",
+    "amount_required": "Поле суми обов’язкове",
+    "nonzero_amount": "Сума не може дорівнювати нулю",
+    "positive_cashback": "Кешбек не може бути від’ємним",
+    "positive_commission": "Комісія не може бути від’ємною",
+
     # System-side (unexpected or backend issues)
     "server_unreachable": "Сервер недоступний. Перевірте підключення до інтернету",
     "offline_mode": "Ви працюєте в офлайн-режимі. Деякі функції можуть бути недоступні",

@@ -18,6 +18,7 @@ from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_color_from_hex, get_text_primary_color
 from app.utils.formatters import format_date
+from app.utils.validators import validate_transaction_inputs
 from app.utils.constants import PAYMENT_METHODS, INCOME, DEFAULT_CURRENCY
 import traceback
 
@@ -164,9 +165,16 @@ class AddTransactionPopup(ModalView):
     def _save_transaction(self, *args):
         if self.on_save:
             try:
-                if not self.amount_input.text.strip():
-                    self._show_temp_error(LM.message("amount_required"))
+                data_to_validate = {    
+                    "amount": self.amount_input.text,
+                    "cashback": self.cashback_input.text,
+                    "commission": self.commission_input.text
+                 }
+                valid, message = validate_transaction_inputs(data_to_validate)
+                if not valid:
+                    self._show_temp_error(message)
                     return
+                
                 data = {
                     "category": self.category_input.selected,
                     "amount": float(self.amount_input.text) if self.type == INCOME else -float(self.amount_input.text),

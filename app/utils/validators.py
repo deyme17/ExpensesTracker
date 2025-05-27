@@ -88,3 +88,25 @@ def validate_registration_inputs(inputs):
         return False, LM.message("invalid_token_format")
 
     return True, ""
+
+def validate_transaction_inputs(inputs):
+    from app.utils.language_mapper import LanguageMapper as LM
+    import traceback
+
+    try:
+        valid_amount, amount = validate_amount(inputs.get("amount", ""))
+        valid_cashback, cashback = validate_amount(inputs.get("cashback", "0"))
+        valid_commission, commission = validate_amount(inputs.get("commission", "0"))
+
+        if not valid_amount or amount == 0:
+            return False, LM.server_error("nonzero_amount")
+        if not valid_cashback or cashback < 0:
+            return False, LM.server_error("positive_cashback")
+        if not valid_commission or commission < 0:
+            return False, LM.server_error("positive_commission")
+
+        return True, ""
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        return False, LM.server_error("unknown_error")

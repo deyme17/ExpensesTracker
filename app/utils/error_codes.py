@@ -14,6 +14,7 @@ class ErrorCodes:
     REGISTRATION_NOT_SUPPORTED_LOCAL = "registration_not_supported_local"
     INVALID_TOKEN_FORMAT = "invalid_token_format"
     REGISTRATION_FAILED = "registration_failed"
+    INVALID_DATE_FORMAT = "invalid_date_format"
 
     # System-side
     SERVER_UNREACHABLE = "server_unreachable"

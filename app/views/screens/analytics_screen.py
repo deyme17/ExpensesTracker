@@ -136,9 +136,10 @@ class AnalyticsScreen(BaseScreen):
             )
 
     def refresh_analytics(self):
+        self.selected_account_id = self.storage.get_active_account_id()
         self._load_analytics_data()
         self._update_sections()
-
+        
     def go_to_transactions(self):
         if self.manager:
             self.manager.transition.direction = "right"

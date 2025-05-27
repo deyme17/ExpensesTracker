@@ -1,6 +1,7 @@
 from datetime import datetime
 from app.utils.constants import SHORT_MONTHS, LONG_MONTHS
 from app.utils.language_mapper import LanguageMapper as LM
+from datetime import datetime, date
 
 def format_amount(amount, currency, show_sign=True):
     """
@@ -29,30 +30,37 @@ def format_amount(amount, currency, show_sign=True):
     
     return formatted
 
-def format_date(date, format_str="%d.%m.%Y"):
+
+def format_date(date_value, format_str="%d.%m.%Y"):
     """
-    Format a date.
+    Format a date or parse from known formats.
     
     Args:
-        date (datetime): Date to format
+        date_value (datetime | str): Date to format
         format_str (str): Format string
         
     Returns:
         str: Formatted date string
     """
-    if not date:
+    if not date_value:
         return ""
-    
-    if isinstance(date, str):
-        try:
-            date = datetime.strptime(date, "%d.%m.%Y")
-        except ValueError:
+
+    if isinstance(date_value, str):
+        for fmt in ("%d.%m.%Y", "%Y-%m-%d"):
             try:
-                date = datetime.strptime(date, "%Y-%m-%d")
+                date_value = datetime.strptime(date_value, fmt)
+                break
             except ValueError:
-                return date
-    
-    return date.strftime(format_str)
+                continue
+        else:
+            return date_value
+        
+    if isinstance(date_value, datetime):
+        return date_value.strftime(format_str)
+    elif isinstance(date_value, date):
+        return datetime.combine(date_value, datetime.min.time()).strftime(format_str)
+
+    return ""
 
 def format_date_range(start_date, end_date, format_str="%d.%m.%Y"):
     """

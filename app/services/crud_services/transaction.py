@@ -8,6 +8,7 @@ from app.services.api import (
 from app.models.transaction import Transaction
 from app.utils.connection_manager import ConnectionManager
 from app.utils.error_codes import ErrorCodes
+from app.utils.formatters import format_date
 
 class TransactionService:
     def __init__(self, user_id, storage_service):
@@ -44,16 +45,34 @@ class TransactionService:
 
     def post_transaction(self, data):
         data["user_id"] = self.user_id
+
+        date_str = data.get("date")
+        if date_str:
+            formatted = format_date(date_str, "%Y-%m-%d")
+            if formatted == date_str:
+                print(f"[TransactionService] Неверный формат даты: {date_str}")
+                return {"success": False, "error": ErrorCodes.INVALID_DATE_FORMAT}
+            data["date"] = formatted
+
         result = api_add_transaction(data)
         if result.get("success"):
             self._invalidate_cache()
         return result
 
     def patch_transaction(self, transaction_id, data):
+        date_str = data.get("date")
+        if date_str:
+            formatted = format_date(date_str, "%Y-%m-%d")
+            if formatted == date_str: 
+                print(f"[TransactionService] Неверный формат даты: {date_str}")
+                return {"success": False, "error": ErrorCodes.INVALID_DATE_FORMAT}
+            data["date"] = formatted
+
         result = api_update_transaction(transaction_id, data)
         if result.get("success"):
             self._invalidate_cache()
         return result
+
 
     def delete_transaction(self, transaction_id):
         result = api_delete_transaction(transaction_id)

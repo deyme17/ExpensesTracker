@@ -27,4 +27,5 @@ TRANSACTION = {
     "transaction_deleted": "Транзакцію видалено",
     "transaction_updated": "Транзакцію оновлено",
     "amount_required": "Введіть суму транзакції",
+    "invalid_date_format": "Некоректний формат дати.",
 }

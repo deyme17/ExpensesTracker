@@ -2,12 +2,12 @@ import numpy as np
 from kivy.utils import get_color_from_hex
 from kivy.properties import ListProperty
 try:
-    from gar_mat.backend_kivyagg import FigureCanvasKivyAgg
+    from resources.gar_mat.backend_kivyagg import FigureCanvasKivyAgg
 except ImportError:
     raise ImportError("kivy_garden.matplotlib not found. Install via: garden install matplotlib")
 import matplotlib.pyplot as plt
 from app.models.graphs.base_graph import BaseGraphWidget
-from app.utils.constants import ACCENT_COLOR
+from app.utils.theme import ACCENT_COLOR
 
 class DistributionGraph(BaseGraphWidget):
     """

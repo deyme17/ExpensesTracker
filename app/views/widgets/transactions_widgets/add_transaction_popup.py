@@ -18,10 +18,7 @@ from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.theme import get_color_from_hex, get_text_primary_color
 from app.utils.formatters import format_date
-<<<<<<< HEAD
 from app.utils.validators import validate_transaction_inputs
-=======
->>>>>>> graph_branch
 from app.utils.constants import PAYMENT_METHODS, INCOME, DEFAULT_CURRENCY
 import traceback
 

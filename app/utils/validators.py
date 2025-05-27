@@ -30,17 +30,9 @@ def validate_password(password):
 
 
 def validate_monobank_token(token):
-<<<<<<< HEAD
     if not token or not isinstance(token, str):
         return False
     return bool(re.fullmatch(r'^[a-zA-Z0-9\-_]{40,50}$', token))
-=======
-    if not token:
-        return False
-
-    pattern = r'^[a-zA-Z0-9]{44}$'
-    return bool(re.fullmatch(pattern, token))
->>>>>>> graph_branch
 
 
 def validate_amount(amount_str):
@@ -95,7 +87,6 @@ def validate_registration_inputs(inputs):
     if token and not validate_monobank_token(token):
         return False, LM.message("invalid_token_format")
 
-<<<<<<< HEAD
     return True, ""
 
 def validate_transaction_inputs(inputs):
@@ -119,6 +110,3 @@ def validate_transaction_inputs(inputs):
         import traceback
         traceback.print_exc()
         return False, LM.server_error("unknown_error")
-=======
-    return True, ""
->>>>>>> graph_branch

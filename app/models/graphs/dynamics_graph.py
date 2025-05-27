@@ -1,9 +1,10 @@
 from datetime import datetime
 from kivy.utils import get_color_from_hex
-try:
-        from resources.gar_mat.backend_kivyagg import FigureCanvasKivyAgg
-except ImportError:
-    raise ImportError("kivy_garden.matplotlib not found. Install via: garden install matplotlib")
+
+from kivy.logger import Logger
+Logger.setLevel("ERROR")
+from kivy_garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 from app.models.graphs.base_graph import BaseGraphWidget

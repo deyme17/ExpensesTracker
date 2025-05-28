@@ -104,8 +104,13 @@ class AuthService:
 
             # set active account if exists
             accounts, _ = app.account_service.get_accounts()
+            print("[AuthService] Accounts fetched:", accounts)
             if accounts:
-                self.storage.set_active_account(accounts[0].account_id)
+                print("[AuthService] Setting active account:", accounts[-1].account_id)
+                self.storage.set_active_account(accounts[-1].account_id)
+            else:
+                print("[AuthService] No accounts returned")
+
 
             print("[AuthService] Transactions loaded for:", user.user_id)
 

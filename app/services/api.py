@@ -3,7 +3,8 @@ import os
 from dotenv import load_dotenv
 from app.utils.error_codes import ErrorCodes
 
-load_dotenv()
+from pathlib import Path
+load_dotenv(dotenv_path=Path(__file__).resolve().parents[2] / ".env")
 API_BASE = os.getenv("API_BASE")
 
 def get_auth_headers():

@@ -1,0 +1,51 @@
+from kivy.clock import Clock
+
+
+class DataLoader:
+    """
+    Handles asynchronous loading of financial data.
+    Args:
+        storage_service: Storage handler for persistent data
+        account_service: Account operations service
+        transaction_service: Transaction operations service
+        category_service: Category operations service
+        currency_service: Currency operations service
+    """
+
+    def __init__(self,
+                 storage_service,
+                 account_service,
+                 transaction_service,
+                 category_service,
+                 currency_service):
+        self.storage = storage_service
+        self.account_service = account_service
+        self.transaction_service = transaction_service
+        self.category_service = category_service
+        self.currency_service = currency_service
+
+    def load_data(self, callback=None):
+        """
+        Loads all financial data asynchronously.
+        Args:
+            callback: Optional function to execute after loading completes
+        """
+        def _execute_load():
+            try:
+                # Load data
+                accounts, _ = self.account_service.get_accounts()
+                self.transaction_service.get_transactions(force_refresh=True)
+                self.category_service.get_categories()
+                self.currency_service.get_currencies()
+
+                # Auto-select most recent account if available
+                if accounts:
+                    self.storage.set_active_account(accounts[-1].account_id)
+
+            except Exception as e:
+                print(f"[DataLoader] Error: {str(e)}")
+            finally:
+                if callback:
+                    callback()
+
+        Clock.schedule_once(_execute_load)

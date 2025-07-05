@@ -7,7 +7,7 @@ from app.views.screens.analytics_screen import AnalyticsScreen
 
 from app.controllers import AnalyticsController, AuthController, TransactionController
     
-from app.services import LocalStorageService, AuthService, TransactionProcessor
+from app.services import LocalStorageService, AuthService, TransactionProcessor, DataLoader
 from app.services.analytics import AnalyticsService
 from app.services.crud_services import AccountService, CategoryService, CurrencyService, TransactionService
 
@@ -15,30 +15,47 @@ from app.app import ExpensesTrackerApp
 
 
 def create_app():
-    storage_service = LocalStorageService()
-    auth_service = AuthService(storage_service)
-    current_user = auth_service.get_current_user()
-
-    account_service = AccountService(
-        storage_service=storage_service,
-        user_id=current_user.user_id if current_user else None
-    )
-    category_service = CategoryService(storage_service=storage_service)
-    currency_service = CurrencyService(storage_service=storage_service)
-
-    transaction_service = TransactionService(
-        user_id=current_user.user_id if current_user else None,
-        storage_service=storage_service
-    )
+    storage = LocalStorageService()
+    
+    # services
+    category_service = CategoryService(storage)
+    currency_service = CurrencyService(storage)
     transaction_processor = TransactionProcessor(category_service)
     analytics_service = AnalyticsService(category_service)
 
-    auth_controller = AuthController(auth_service)
-    transaction_controller = TransactionController(transaction_service, transaction_processor, category_service, currency_service)
+    # user
+    auth = AuthService(storage, None)  # data_loader = None 
+    user = auth.get_current_user()
+    user_id = user.user_id if user else None
+
+    # user-dependended
+    account_service = AccountService(storage, user_id)
+    transaction_service = TransactionService(user_id, storage)
+
+    # DataLoader
+    data_loader = DataLoader(
+        storage,
+        account_service,
+        transaction_service, 
+        category_service,
+        currency_service
+    )
+    
+    # update data_loader
+    auth.data_loader = data_loader
+
+    # controllers
+    auth_controller = AuthController(auth)
+    transaction_controller = TransactionController(
+        transaction_service,
+        transaction_processor,
+        category_service,
+        currency_service
+    )
     analytics_controller = AnalyticsController(analytics_service)
 
     return ExpensesTrackerApp(
-        storage_service=storage_service,
+        storage_service=storage,
         auth_controller=auth_controller,
         transaction_controller=transaction_controller,
         analytics_controller=analytics_controller,

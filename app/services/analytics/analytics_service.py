@@ -4,11 +4,32 @@ from app.utils.error_codes import ErrorCodes
 import hashlib
 
 class AnalyticsService:
-    def __init__(self):
+    """
+    Provides transaction statistics and analytics with caching support.
+    Args:
+        category_service: Provides MCC code lookups and category management.
+    """
+    def __init__(self, category_service):
+        self.category_service = category_service
         self._last_hash = None
         self._last_result = None
 
     def get_statistics(self, transactions):
+        """
+        Calculates key statistics for given transactions.
+        Args:
+            transactions: List of Transaction objects to analyze
+        Returns:
+            Tuple: (statistics_dict, error_message)
+            
+            statistics_dict contains:
+            - avg: Average transaction amount
+            - min: Minimum amount
+            - max: Maximum amount  
+            - total: Sum of amounts
+            - count: Number of transactions
+            - top_category: Most frequent category by amount
+        """
         current_hash = self._compute_hash(transactions)
 
         if current_hash == self._last_hash:
@@ -49,19 +70,30 @@ class AnalyticsService:
             return {}, ErrorCodes.UNKNOWN_ERROR
 
     def _calc_top_category(self, transactions):
-        from kivy.app import App
-        category_service = App.get_running_app().category_service
-
+        """
+        Calculates the top spending category by total amount.
+        Args:
+            transactions: List of Transaction objects
+        Returns:
+            str: Name of top category or "—" if undetermined
+        """
         category_sums = defaultdict(float)
         try:
             for tx in transactions:
-                name = category_service.get_category_name_by_mcc(tx.mcc_code)
+                name = self.category_service.get_category_name_by_mcc(tx.mcc_code)
                 category_sums[name] += abs(tx.amount)
             return max(category_sums.items(), key=lambda x: x[1])[0] if category_sums else "—"
         except Exception:
             return "—"
 
     def _compute_hash(self, transactions):
+        """
+        Generates MD5 hash of transactions for change detection.
+        Args:
+            transactions: List of Transaction objects
+        Returns:
+            str: Hex digest of transactions fingerprint or None if empty
+        """
         if not transactions:
             return None
         hasher = hashlib.md5()

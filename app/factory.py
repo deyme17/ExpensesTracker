@@ -31,7 +31,7 @@ def create_app():
         storage_service=storage_service
     )
     transaction_processor = TransactionProcessor()
-    analytics_service = AnalyticsService()
+    analytics_service = AnalyticsService(category_service)
 
     auth_controller = AuthController(auth_service)
     transaction_controller = TransactionController(transaction_service, transaction_processor, category_service, currency_service)

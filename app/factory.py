@@ -7,14 +7,9 @@ from app.views.screens.analytics_screen import AnalyticsScreen
 
 from app.controllers import AnalyticsController, AuthController, TransactionController
     
-from app.services.local_storage import LocalStorageService
-from app.services.auth_service import AuthService
-from app.services.crud_services.transaction import TransactionService
-from app.services.analytics.analytics_service import AnalyticsService
-from app.services.transaction_processor import TransactionProcessor
-from app.services.crud_services.account import AccountService
-from app.services.crud_services.category import CategoryService
-from app.services.crud_services.currency import CurrencyService
+from app.services import LocalStorageService, AuthService, TransactionProcessor
+from app.services.analytics import AnalyticsService
+from app.services.crud_services import AccountService, CategoryService, CurrencyService, TransactionService
 
 from app.app import ExpensesTrackerApp
 

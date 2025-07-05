@@ -3,7 +3,7 @@ from pathlib import Path
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv, set_key
 
-class EncryptionService:
+class Encryption:
     ENV_PATH = Path(".env")
     ENV_KEY_NAME = "FERNET_KEY"
     _fernet = None

@@ -30,7 +30,7 @@ def create_app():
         user_id=current_user.user_id if current_user else None,
         storage_service=storage_service
     )
-    transaction_processor = TransactionProcessor()
+    transaction_processor = TransactionProcessor(category_service)
     analytics_service = AnalyticsService(category_service)
 
     auth_controller = AuthController(auth_service)

@@ -1,4 +1,4 @@
-from app.services.api import (
+from app.api import (
     api_get_transactions,
     api_add_transaction,
     api_update_transaction,
@@ -6,18 +6,33 @@ from app.services.api import (
     api_get_transaction_by_id
 )
 from app.models.transaction import Transaction
-from app.utils.connection_manager import ConnectionManager
+from app.utils.helpers import is_online
 from app.utils.error_codes import ErrorCodes
 from app.utils.formatters import format_date
 
+
 class TransactionService:
+    """
+    Handles transaction operations including CRUD and caching.
+    Args:
+        user_id: ID of the current user
+        storage_service: Storage handler for offline operations (must implement
+                       `get_transactions()` and `save_transactions()`)
+    """
     def __init__(self, user_id, storage_service):
         self.user_id = user_id
         self.storage = storage_service
-        self.offline_mode = not ConnectionManager.is_online()
+        self.offline_mode = not is_online()
         self._cached = None
 
     def get_transactions(self, force_refresh=False):
+        """
+        Retrieves transactions from cache, API, or local storage.
+        Args:
+            force_refresh: If True, bypasses cache
+        Returns:
+            List[Transaction]: List of transaction objects
+        """
         if self.offline_mode:
             print("[TransactionService] OFFLINE mode: loading from local storage")
             return self.storage.get_transactions()
@@ -37,6 +52,13 @@ class TransactionService:
             return self.storage.get_transactions()
 
     def get_transaction_by_id(self, transaction_id):
+        """
+        Gets single transaction by ID.
+        Args:
+            transaction_id: ID of transaction to retrieve
+        Returns:
+            Transaction or None if not found
+        """
         result = api_get_transaction_by_id(transaction_id)
         if result.get("success"):
             return Transaction.from_dict(result["data"])
@@ -44,13 +66,20 @@ class TransactionService:
         return None
 
     def post_transaction(self, data):
+        """
+        Creates a new transaction.
+        Args:
+            data: Transaction data dict
+        Returns:
+            Dict: API response with success/error status
+        """
         data["user_id"] = self.user_id
 
         date_str = data.get("date")
         if date_str:
             formatted = format_date(date_str, "%Y-%m-%d")
             if formatted == date_str:
-                print(f"[TransactionService] Неверный формат даты: {date_str}")
+                print(f"[TransactionService] Invalid date format: {date_str}")
                 return {"success": False, "error": ErrorCodes.INVALID_DATE_FORMAT}
             data["date"] = formatted
 
@@ -60,11 +89,19 @@ class TransactionService:
         return result
 
     def patch_transaction(self, transaction_id, data):
+        """
+        Updates an existing transaction.
+        Args:
+            transaction_id: ID of transaction to update
+            data: Partial transaction data
+        Returns:
+            Dict: API response with success/error status
+        """
         date_str = data.get("date")
         if date_str:
             formatted = format_date(date_str, "%Y-%m-%d")
             if formatted == date_str: 
-                print(f"[TransactionService] Неверный формат даты: {date_str}")
+                print(f"[TransactionService] Invalid date format: {date_str}")
                 return {"success": False, "error": ErrorCodes.INVALID_DATE_FORMAT}
             data["date"] = formatted
 
@@ -73,8 +110,14 @@ class TransactionService:
             self._invalidate_cache()
         return result
 
-
     def delete_transaction(self, transaction_id):
+        """
+        Deletes a transaction.
+        Args:
+            transaction_id: ID of transaction to delete
+        Returns:
+            Dict: API response with success/error status
+        """
         result = api_delete_transaction(transaction_id)
         if result.get("success"):
             if self._cached:
@@ -84,4 +127,5 @@ class TransactionService:
         return result
 
     def _invalidate_cache(self):
+        """Clears the internal transactions cache."""
         self._cached = None

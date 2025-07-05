@@ -1,19 +1,26 @@
-import requests
-from app.models.account import Account
-import os
-from dotenv import load_dotenv
-from app.services.api import get_auth_headers, safe_request
+from app.api import get_auth_headers, safe_request, API_BASE
 from app.utils.error_codes import ErrorCodes
+from app.models.user import User
 
-load_dotenv()
-API_BASE = os.getenv("API_BASE")
 
 class AccountService:
+    """
+    Handles account data retrieval from local storage or API.
+    Args:
+        storage_service: Service for local account storage operations
+        user_id: Optional user identifier for API requests
+    """
     def __init__(self, storage_service, user_id=None):
         self.storage_service = storage_service
         self.user_id = user_id
 
     def get_accounts(self):
+        """
+        Retrieves accounts from local storage or API.
+        Returns:
+            Tuple: (list_of_accounts, error_message) 
+                   Prioritizes local storage, falls back to API when needed
+        """
         # local
         try:
             accounts = self.storage_service.get_accounts()
@@ -31,7 +38,7 @@ class AccountService:
                 result = safe_request("GET", url, headers=get_auth_headers())
 
                 if result.get("success"):
-                    accounts = [Account.from_dict(acc) for acc in result["data"]]
+                    accounts = [User.from_dict(acc) for acc in result["data"]]
 
                     if self.storage_service:
                         self.storage_service.save_accounts(accounts)

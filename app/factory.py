@@ -5,13 +5,13 @@ from app.views.screens.register_screen import RegistrationScreen
 from app.views.screens.transactions_screen import TransactionsScreen
 from app.views.screens.analytics_screen import AnalyticsScreen
 
-from app.controllers.auth_controller import AuthController
-from app.controllers.transaction_controller import TransactionController
-from app.controllers.analytics_controller import AnalyticsController
+from app.controllers import AnalyticsController, AuthController, TransactionController
     
 from app.services.local_storage import LocalStorageService
 from app.services.auth_service import AuthService
 from app.services.crud_services.transaction import TransactionService
+from app.services.analytics.analytics_service import AnalyticsService
+from app.services.transaction_processor import TransactionProcessor
 from app.services.crud_services.account import AccountService
 from app.services.crud_services.category import CategoryService
 from app.services.crud_services.currency import CurrencyService
@@ -35,10 +35,12 @@ def create_app():
         user_id=current_user.user_id if current_user else None,
         storage_service=storage_service
     )
+    transaction_processor = TransactionProcessor()
+    analytics_service = AnalyticsService()
 
-    auth_controller = AuthController(storage_service)
-    transaction_controller = TransactionController(transaction_service, category_service, currency_service)
-    analytics_controller = AnalyticsController()
+    auth_controller = AuthController(auth_service)
+    transaction_controller = TransactionController(transaction_service, transaction_processor, category_service, currency_service)
+    analytics_controller = AnalyticsController(analytics_service)
 
     return ExpensesTrackerApp(
         storage_service=storage_service,

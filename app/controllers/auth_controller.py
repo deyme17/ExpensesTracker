@@ -1,9 +1,10 @@
-from kivy.clock import Clock
-from app.services.auth_service import AuthService
-
 class AuthController:
-    def __init__(self, storage_service):
-        self.auth_service = AuthService(storage_service)
+    """Handles user authentication and session management operations.
+    Args:
+        auth_service: Service layer handling authentication logic and storage.
+    """
+    def __init__(self, auth_service):
+        self.auth_service = auth_service
 
     def login(self, email, password, callback=None):
         return self.auth_service.login(email, password, callback)

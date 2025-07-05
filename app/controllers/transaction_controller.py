@@ -1,10 +1,16 @@
-from app.services.crud_services.transaction import TransactionService
-from app.services.transaction_processor import TransactionProcessor
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.error_codes import ErrorCodes
 
 class TransactionController:
-    def __init__(self, transaction_service, category_service, currency_service):
+    """Handles business logic for transaction operations including CRUD, filtering, and sorting.
+    Args:
+        transaction_service: Service layer for direct transaction database operations.
+        transaction_processor: Handles complex transaction processing like filtering rules.
+        category_service: Provides MCC code lookups and category management.
+        currency_service: Manages currency conversions and code lookups.
+    """
+    def __init__(self, transaction_service, transaction_processor, category_service, currency_service):
+        self.transaction_processor = transaction_processor
         self.transaction_service = transaction_service
         self.category_service = category_service
         self.currency_service = currency_service
@@ -61,7 +67,7 @@ class TransactionController:
                             min_amount=0, max_amount=1e9, payment_method=None,
                             category=None, account_id=None):
         transactions = self.get_transactions()
-        return TransactionProcessor.filter(
+        return self.transaction_processor.filter(
             transactions,
             type=type,
             start_date=start_date,
@@ -74,4 +80,5 @@ class TransactionController:
         )
 
     def sort_transactions(self, transactions, field='date', ascending=True):
-        return TransactionProcessor.sort(transactions, field, ascending)
+        """Sorts transactions by specified field and direction."""
+        return self.transaction_processor.sort(transactions, field, ascending)

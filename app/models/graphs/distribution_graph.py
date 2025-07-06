@@ -26,7 +26,8 @@ class DistributionGraph(BaseGraphWidget):
     def _render(self):
         self.clear_widgets()
         xs, ys = self.fit(self.transactions)
-        if not xs:
+        if not xs or len(xs) < 2:
+            print("[DistributionGraph] Недостатньо даних для побудови графіка")
             return
 
         fig = plt.figure(figsize=(5, 4), dpi=100)

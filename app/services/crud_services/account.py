@@ -1,6 +1,6 @@
 from app.api import get_auth_headers, safe_request, API_BASE
 from app.utils.error_codes import ErrorCodes
-from app.models.user import User
+from app.models.account import Account
 
 
 class AccountService:
@@ -38,7 +38,7 @@ class AccountService:
                 result = safe_request("GET", url, headers=get_auth_headers())
 
                 if result.get("success"):
-                    accounts = [User.from_dict(acc) for acc in result["data"]]
+                    accounts = [Account.from_dict(acc) for acc in result["data"]]
 
                     if self.storage_service:
                         self.storage_service.save_accounts(accounts)

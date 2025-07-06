@@ -19,25 +19,34 @@ def get_auth_headers():
         pass
     return {}
 
-def safe_request(method, url, **kwargs):
+def safe_request(method, url, timeout=15, **kwargs):
     try:
-        response = requests.request(method, url, timeout=5, **kwargs)
+        print(f"[REQUEST] {method} {url}")
+        response = requests.request(method, url, timeout=timeout, **kwargs)
+        print(f"[RESPONSE] Status: {response.status_code}")
+        print(f"[RESPONSE] Body: {response.text}")
 
         if response.status_code == 429:
             return {"success": False, "error": ErrorCodes.TOO_MANY_REQUESTS}
-        
-        if not response.ok:
-            return {"success": False, "error": ErrorCodes.SERVER_UNREACHABLE}
-        
-        return response.json()
-    
-    except requests.ConnectionError:
-        return {"success": False, "error": ErrorCodes.SERVER_UNREACHABLE}
-    
+
+        try:
+            data = response.json()
+        except Exception as json_err:
+            print(f"[ERROR] JSON decode failed: {json_err}")
+            return {"success": False, "error": ErrorCodes.UNKNOWN_ERROR}
+
+        return data
+
     except requests.Timeout:
+        print("[ERROR] Request timed out")
         return {"success": False, "error": ErrorCodes.TIMEOUT}
-    
-    except Exception:
+
+    except requests.ConnectionError:
+        print("[ERROR] Server unreachable")
+        return {"success": False, "error": ErrorCodes.SERVER_UNREACHABLE}
+
+    except Exception as e:
+        print(f"[ERROR] Unexpected: {str(e)}")
         return {"success": False, "error": ErrorCodes.UNKNOWN_ERROR}
 
 def api_get_transactions(user_id):
@@ -70,7 +79,7 @@ def api_get_currencies():
 
 def api_register(payload):
     return safe_request("POST", f"{API_BASE}/api/auth/register", 
-                        json=payload)
+                        json=payload, timeout=25)
 
 def api_login(payload):
     return safe_request("POST", f"{API_BASE}/api/auth/login", 

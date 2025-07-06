@@ -11,11 +11,26 @@ class AuthService:
     Args:
         storage_service: Storage handler for user persistence
         data_loader: Component responsible for loading user data
+        account_service:
+        transaction_service:
     """
-    def __init__(self, storage_service, data_loader):
+    def __init__(self, storage_service, data_loader, account_service, transaction_service):
         self.storage = storage_service
         self.data_loader = data_loader
+        self.account_service = account_service
+        self.transaction_service = transaction_service
         self.current_user = None
+
+    def on_user_authenticated(self, user, callback=None):
+        self.current_user = user
+        self.storage.save_user(user)
+
+        # update user_id
+        self.account_service.user_id = user.user_id
+        self.transaction_service.user_id = user.user_id
+        self.transaction_service.storage = self.storage
+
+        self.data_loader.load_data(user, callback=callback)
 
     def is_authenticated(self):
         """
@@ -62,25 +77,24 @@ class AuthService:
         def try_login(dt):
             try:
                 response = api_login({"email": email, "password": password})
+
                 if response.get("success"):
                     user = User.from_api_dict(response)
-                    self.storage.save_user(user)
-                    self.current_user = user
-                    self.data_loader.load_data(user, callback=lambda: callback(True, LM.message("login_success")) if callback else None)
+                    self.on_user_authenticated(user, callback=lambda: callback(True, LM.message("login_success")) if callback else None)
                 else:
                     local_user = self.storage.get_user()
+
                     if local_user and local_user.email == email:
-                        self.current_user = local_user
-                        self.data_loader.load_data(local_user, callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None)
+                        self.on_user_authenticated(local_user, callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None)
                     else:
                         error_code = response.get("error", ErrorCodes.UNKNOWN_ERROR)
                         if callback:
                             callback(False, LM.server_error(error_code))
-            except Exception as e:
+
+            except Exception:
                 local_user = self.storage.get_user()
                 if local_user and local_user.email == email:
-                    self.current_user = local_user
-                    self.data_loader.load_data(local_user, callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None)
+                    self.on_user_authenticated(local_user, callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None)
                 else:
                     if callback:
                         callback(False, LM.server_error(ErrorCodes.UNKNOWN_ERROR))

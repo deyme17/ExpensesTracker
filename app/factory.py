@@ -17,20 +17,14 @@ from app.app import ExpensesTrackerApp
 def create_app():
     storage = LocalStorageService()
     
-    # services
     category_service = CategoryService(storage)
     currency_service = CurrencyService(storage)
     transaction_processor = TransactionProcessor(category_service)
     analytics_service = AnalyticsService(category_service)
 
-    # user
-    auth = AuthService(storage, None)  # data_loader = None 
-    user = auth.get_current_user()
-    user_id = user.user_id if user else None
-
-    # user-dependended
-    account_service = AccountService(storage, user_id)
-    transaction_service = TransactionService(user_id, storage)
+    # services
+    account_service = AccountService(storage)
+    transaction_service = TransactionService(None, storage)
 
     # DataLoader
     data_loader = DataLoader(
@@ -40,9 +34,9 @@ def create_app():
         category_service,
         currency_service
     )
-    
-    # update data_loader
-    auth.data_loader = data_loader
+
+    # auth
+    auth = AuthService(storage, data_loader, account_service, transaction_service)
 
     # controllers
     auth_controller = AuthController(auth)

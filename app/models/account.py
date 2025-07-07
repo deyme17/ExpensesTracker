@@ -27,14 +27,3 @@ class Account:
             balance=data.get("balance"),
             masked_pan=data.get("masked_pan")
         )
-
-    @classmethod
-    def from_monobank_dict(cls, data, user_id):
-        return cls(
-            account_id=data.get("id"),
-            user_id=user_id,
-            type=data.get("type"),
-            currency_code=data.get("currencyCode"),
-            balance=data.get("balance", 0) / 100.0,
-            masked_pan=data.get("maskedPan", [None])[0]
-        )

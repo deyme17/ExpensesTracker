@@ -1,7 +1,7 @@
 # screens
 from app.views.screens import SplashScreen, FirstScreen, LoginScreen, RegistrationScreen, TransactionsScreen, AnalyticsScreen
 # controllers
-from app.controllers import AnalyticsController, AuthController, TransactionController
+from app.controllers import AnalyticsController, AuthController, TransactionController, MetaDataController
 # services
 from app.services import LocalStorageService, AuthService, TransactionProcessor, DataLoader
 from app.services.analytics import AnalyticsService
@@ -42,8 +42,10 @@ def create_app():
         currency_service
     )
     analytics_controller = AnalyticsController(analytics_service)
+    meta_data_controller = MetaDataController(currency_service, category_service)
 
-    return ExpensesTrackerApp(
+    # app
+    return ExpensesTrackerApp(  
         splash_screen_cls=lambda name: SplashScreen(name=name, auth_controller=auth_controller, data_loader=data_loader),
         first_screen_cls=FirstScreen,
         login_screen_cls=lambda name: LoginScreen(name=name, auth_controller=auth_controller),
@@ -51,7 +53,9 @@ def create_app():
 
         transactions_screen_cls=lambda name: TransactionsScreen(
             name=name, 
-            controller=transaction_controller, 
+            transaction_controller=transaction_controller, 
+            meta_data_controller=meta_data_controller,
+            storage_service=storage,
             logout_callback=auth_controller.logout),
 
         analytics_screen_cls=lambda name: AnalyticsScreen(

@@ -1,11 +1,10 @@
 from kivy.animation import Animation
 from kivy.clock import Clock
-
 from kivy.lang import Builder
-from app.utils.language_mapper import LanguageMapper as LM
 
+from app.utils.language_mapper import LanguageMapper as LM
 from app.views.screens.base_screen import BaseScreen
-from app.utils.constants import APP_NAME
+
 import threading
 
 

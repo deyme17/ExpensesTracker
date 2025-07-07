@@ -1,11 +1,12 @@
 from kivy.uix.screenmanager import Screen, SlideTransition
 from kivy.properties import StringProperty, NumericProperty, ListProperty, ObjectProperty
+from kivy.graphics import Color, Ellipse
 from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.utils import get_color_from_hex
 from kivy.uix.widget import Widget
-from kivy.graphics import Color, Ellipse
 from kivy.metrics import dp
+
 import random as rnd
 
 

@@ -1,9 +1,9 @@
-from kivy.properties import StringProperty, NumericProperty, ObjectProperty
+from kivy.properties import StringProperty, NumericProperty
 from kivy.animation import Animation
 from kivy.clock import Clock
-from app.utils.language_mapper import LanguageMapper as LM
 from kivy.lang import Builder
 
+from app.utils.language_mapper import LanguageMapper as LM
 from app.views.screens.base_screen import BaseScreen
 
 # Load kv file

@@ -1,20 +1,19 @@
 from kivy.uix.screenmanager import Screen
 from kivy.properties import StringProperty, ObjectProperty
 from app.utils.constants import CHART_TYPE_HISTOGRAM, EXPENSE
-from app.views.widgets.analytics_widgets.analytics_filter_popup import AnalyticsFilterPopup
-from app.views.widgets.analytics_widgets.graph_section import GraphSection
+from app.views.widgets.analytics_widgets.analytics_filter_popup import AnalyticsFilterPopup #???
+from app.views.widgets.analytics_widgets.graph_section import GraphSection #???
 
 from kivy.clock import Clock
 from kivy.lang import Builder
 from datetime import datetime
 
 from app.views.screens.base_screen import BaseScreen
-from app.models.analytics import AnalyticsData
-from app.views.widgets.analytics_widgets.stats_section import StatsSection
+from app.views.widgets.analytics_widgets.stats_section import StatsSection #???
 from app.utils.language_mapper import LanguageMapper as LM
-from app.services.local_storage import LocalStorageService
 
 Builder.load_file("kv/analytics_screen.kv")
+
 
 class AnalyticsScreen(BaseScreen):
     current_chart_type = StringProperty(CHART_TYPE_HISTOGRAM)
@@ -23,24 +22,23 @@ class AnalyticsScreen(BaseScreen):
     start_date = ObjectProperty(None)
     end_date = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
+    def __init__(self, transaction_controller, analytics_controller, local_storage, **kwargs):
         super().__init__(**kwargs)
-        self.name = "analytics_screen"
-
+        # period
         now = datetime.now()
         self.start_date = datetime(now.year - 1, 1, 1)
         self.end_date = now
 
+        # components
         self.stats_section = None
         self.graph_section = None
 
-        from kivy.app import App
-        app = App.get_running_app()
-        self.transaction_controller = app.transaction_controller
-        self.analytics_controller = app.analytics_controller
-        self.selected_account_id = app.account_service.storage_service.get_active_account_id()
-
-        self.storage = LocalStorageService()
+        # controllers
+        self.transaction_controller = transaction_controller
+        self.analytics_controller=analytics_controller
+        
+        # data
+        self.storage = local_storage
         self.selected_account_id = self.storage.get_active_account_id()
 
     def on_enter(self):
@@ -58,22 +56,25 @@ class AnalyticsScreen(BaseScreen):
         )
 
         if not transactions:
-            self.data = AnalyticsData.empty()
+            self.data = self.analytics_controller.get_empty_analytics(
+                transaction_type=self.current_type,
+                start_date=self.start_date,
+                end_date=self.end_date
+            )
             self._update_sections()
             return
 
-        stats, error = self.analytics_controller.get_statistics(transactions)
-        if error:
-            self.show_error_message(error)
-            return
-
-        self.data = AnalyticsData(
-            stats=stats,
-            raw_transactions=transactions,
+        data, error = self.analytics_controller.get_analytics_data(
+            transactions=transactions,
             transaction_type=self.current_type,
             start_date=self.start_date,
             end_date=self.end_date
         )
+        if error:
+            self.show_error_message(error)
+            return
+        self.data = data
+
         self._update_sections()
 
     def _update_sections(self):

@@ -15,7 +15,7 @@ class AnalyticsData:
         self.start_date = start_date
         self.end_date = end_date
 
-        self._chart = {
+        self._chart = { #???
             CHART_TYPE_HISTOGRAM: DistributionGraph(),
             CHART_TYPE_PIE: ShareGraph(),
             CHART_TYPE_LINE: DynamicsGraph()
@@ -46,11 +46,18 @@ class AnalyticsData:
         return chart.fit(self.raw_transactions)
 
     @staticmethod
-    def empty():
+    def empty(transaction_type, start_date, end_date):
         return AnalyticsData(
-            stats={"avg": 0, "min": 0, "max": 0, "total": 0, "count": 0, "top_category": LM.message("no_data")},
+            stats={
+                "avg": 0,
+                "min": 0,
+                "max": 0,
+                "total": 0,
+                "count": 0,
+                "top_category": LM.message("no_data")
+            },
             raw_transactions=[],
-            transaction_type=LM.category(ALL),
-            start_date=None,
-            end_date=None
+            transaction_type=transaction_type,
+            start_date=start_date,
+            end_date=end_date
         )

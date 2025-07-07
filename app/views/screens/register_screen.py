@@ -13,13 +13,14 @@ from app.utils.language_mapper import LanguageMapper as LM
 
 Builder.load_file("kv/register_screen.kv")
 
+
 class RegistrationScreen(BaseScreen):
     error_message = StringProperty("")
     show_error = NumericProperty(0)
-    controller = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
+    def __init__(self, auth_controller, **kwargs):
         super(RegistrationScreen, self).__init__(**kwargs)
+        self.auth_controller=auth_controller
         self._add_back_button()
 
     def _add_back_button(self):
@@ -91,8 +92,8 @@ class RegistrationScreen(BaseScreen):
                 self.register_button.text = LM.message("register_button_action")
                 self.register_button.disabled = False
 
-        if self.controller:
-            self.controller.register(
+        if self.auth_controller:
+            self.auth_controller.register(
                 email=inputs["email"], password=inputs["password"],
                 confirm_password=inputs["confirm_password"],
                 monobank_token=inputs["monobank_token"], callback=reg_callback

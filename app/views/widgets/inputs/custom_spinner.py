@@ -1,17 +1,14 @@
-from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
 from kivy.uix.button import Button
-from kivy.graphics import Color, RoundedRectangle, Triangle, Line
+from kivy.graphics import Color, RoundedRectangle, Triangle
 from kivy.properties import StringProperty, ObjectProperty, NumericProperty, ListProperty
 from kivy.metrics import dp, sp
-from kivy.utils import get_color_from_hex
 from kivy.clock import Clock
-from datetime import datetime
 
 from app.utils.theme import (
-    get_text_dark_color, get_secondary_color, get_text_primary_color,
+    get_text_dark_color, get_secondary_color,
     get_primary_color, FONT_SIZE_MEDIUM
 )
 

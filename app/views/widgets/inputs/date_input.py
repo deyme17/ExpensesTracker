@@ -3,9 +3,10 @@ from kivy.uix.label import Label
 from kivy.properties import StringProperty
 from kivy.metrics import dp, sp
 from kivy.clock import Clock
-from datetime import datetime
-from app.views.widgets.inputs.custom_spinner import CustomSpinner
 
+from datetime import datetime
+
+from app.views.widgets.inputs.custom_spinner import CustomSpinner
 from app.utils.theme import FONT_SIZE_MEDIUM
 
 

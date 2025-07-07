@@ -3,8 +3,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty
-from kivy.metrics import dp, sp
 from kivy.graphics import Color, RoundedRectangle
+from kivy.metrics import dp, sp
 from kivy.animation import Animation
 
 from app.views.widgets.inputs.custom_spinner import CustomSpinner

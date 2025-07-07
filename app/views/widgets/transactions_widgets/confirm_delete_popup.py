@@ -3,12 +3,12 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.metrics import dp, sp
-from kivy.animation import Animation
 from kivy.graphics import Color, RoundedRectangle
 
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
 from app.utils.language_mapper import LanguageMapper as LM
+
 
 class ConfirmDeletePopup(ModalView):
     def __init__(self, on_confirm, on_cancel=None, message=None, **kwargs):

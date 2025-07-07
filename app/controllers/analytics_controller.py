@@ -1,6 +1,7 @@
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.error_codes import ErrorCodes
 from app.services.analytics.graph_factory import GraphFactory
+from app.models.analytics import AnalyticsData
 
 class AnalyticsController:
     """Handles business logic for analytics operations including statistics and graph generation.
@@ -25,6 +26,23 @@ class AnalyticsController:
             import traceback
             traceback.print_exc()
             return None, LM.server_error(ErrorCodes.UNKNOWN_ERROR)
+        
+    def get_analytics_data(self, transactions, transaction_type, start_date, end_date):
+        stats, error = self.get_statistics(transactions)
+        if error:
+            return None, error
+
+        data = AnalyticsData(
+            stats=stats,
+            raw_transactions=transactions,
+            transaction_type=transaction_type,
+            start_date=start_date,
+            end_date=end_date
+        )
+        return data, None
+    
+    def get_empty_analytics(self, transaction_type, start_date, end_date):
+        return AnalyticsData.empty(transaction_type, start_date, end_date)
 
     def create_graph(self, chart_type, transactions, transaction_type, category=None):
         try:

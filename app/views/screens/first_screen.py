@@ -11,10 +11,8 @@ Builder.load_file("kv/first_screen.kv")
 class FirstScreen(BaseScreen):
     """
     First screen shown to users who are not logged in.
-    
     This screen provides options to login or register.
     """
-    
     def __init__(self, **kwargs):
         super(FirstScreen, self).__init__(**kwargs)
     

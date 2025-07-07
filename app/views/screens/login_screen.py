@@ -13,16 +13,15 @@ Builder.load_file("kv/login_screen.kv")
 class LoginScreen(BaseScreen):
     """
     Screen for user login.
-    
     Handles the UI representation of the login process, delegating actual
     authentication logic to the AuthController.
     """
     error_message = StringProperty("")
     show_error = NumericProperty(0)
-    controller = ObjectProperty(None)
     
-    def __init__(self, **kwargs):
+    def __init__(self, auth_controller, **kwargs):
         super(LoginScreen, self).__init__(**kwargs)
+        self.auth_controller=auth_controller
     
     def on_enter(self):
         """Reset login button and input fields when screen is entered."""
@@ -73,7 +72,7 @@ class LoginScreen(BaseScreen):
                 self.login_button.text = LM.message("login_button")
                 self.login_button.disabled = False
         
-        self.controller.login(email, password, auth_callback)
+        self.auth_controller.login(email, password, auth_callback)
     
     def _show_error(self):
         """Display error message with animation."""
@@ -86,7 +85,6 @@ class LoginScreen(BaseScreen):
     def _fade_in_error(self):
         """Animate error message fade-in."""
         Animation(show_error=1, duration=0.3).start(self)
-        
         Clock.schedule_once(
             lambda dt: Animation(show_error=0, duration=0.5).start(self), 
             5

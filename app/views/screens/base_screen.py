@@ -6,12 +6,12 @@ from kivy.utils import get_color_from_hex
 from kivy.uix.widget import Widget
 from kivy.graphics import Color, Ellipse
 from kivy.metrics import dp
-import random
+import random as rnd
 
 
 class BaseScreen(Screen):
     opacity = NumericProperty(0)
-    controller = ObjectProperty(None)
+    logout_callback = ObjectProperty(None)
     
     def __init__(self, **kwargs):
         super(BaseScreen, self).__init__(**kwargs)
@@ -36,11 +36,11 @@ class BaseScreen(Screen):
             particle = Widget(
                 size_hint=(None, None),
                 size=(dp(3), dp(3)),
-                pos_hint={'x': random.random(), 'y': random.random()}
+                pos_hint={'x': rnd.random(), 'y': rnd.random()}
             )
             
             with particle.canvas:
-                color_choice = random.choice([
+                color_choice = rnd.choice([
                     get_color_from_hex('#FF7043'),
                     get_color_from_hex('#FFB74D'),
                     get_color_from_hex('#0F7055'),
@@ -48,16 +48,16 @@ class BaseScreen(Screen):
                 ])
                 
                 r, g, b = color_choice[0:3]
-                alpha = random.uniform(0.1, 0.4)
+                alpha = rnd.uniform(0.1, 0.4)
                 
                 Color(r, g, b, alpha)
                 Ellipse(pos=particle.pos, size=particle.size)
             
             self.add_widget(particle)
             
-            anim_duration = random.uniform(5, 15)
-            anim_x = random.uniform(0, 1)
-            anim_y = random.uniform(0, 1)
+            anim_duration = rnd.uniform(5, 15)
+            anim_x = rnd.uniform(0, 1)
+            anim_y = rnd.uniform(0, 1)
             
             anim = Animation(
                 pos_hint={'x': anim_x, 'y': anim_y},
@@ -94,10 +94,8 @@ class BaseScreen(Screen):
         popup.open()
 
     def _logout(self):
-        from kivy.app import App
-        app = App.get_running_app()
-        if hasattr(app, "auth_controller"):
-            app.auth_controller.logout()
+        if self.logout_callback:
+            self.logout_callback()
         self.switch_screen("first_screen", "right")
 
     def _exit_app(self):

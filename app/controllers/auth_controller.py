@@ -1,5 +1,6 @@
 class AuthController:
-    """Handles user authentication and session management operations.
+    """
+    Handles user authentication and session management operations.
     Args:
         auth_service: Service layer handling authentication logic and storage.
     """

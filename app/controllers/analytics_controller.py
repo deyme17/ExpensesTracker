@@ -4,7 +4,8 @@ from app.services.analytics.graph_factory import GraphFactory
 from app.models.analytics import AnalyticsData
 
 class AnalyticsController:
-    """Handles business logic for analytics operations including statistics and graph generation.
+    """
+    Handles business logic for analytics operations including statistics and graph generation.
     Args:
         analytics_service: Service layer for core analytics calculations and data processing.
     """
@@ -44,7 +45,7 @@ class AnalyticsController:
     def get_empty_analytics(self, transaction_type, start_date, end_date):
         return AnalyticsData.empty(transaction_type, start_date, end_date)
 
-    def create_graph(self, chart_type, transactions, transaction_type, category=None):
+    def create_graph(self, chart_type, transactions, transaction_type, category=None): #???
         try:
             key = (chart_type, transaction_type, category, len(transactions))
             

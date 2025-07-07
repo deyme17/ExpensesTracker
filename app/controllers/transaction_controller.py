@@ -2,7 +2,8 @@ from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.error_codes import ErrorCodes
 
 class TransactionController:
-    """Handles business logic for transaction operations including CRUD, filtering, and sorting.
+    """
+    Handles business logic for transaction operations including CRUD, filtering, and sorting.
     Args:
         transaction_service: Service layer for direct transaction database operations.
         transaction_processor: Handles complex transaction processing like filtering rules.

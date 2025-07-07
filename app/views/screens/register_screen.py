@@ -1,15 +1,16 @@
-from kivy.properties import StringProperty, NumericProperty, ObjectProperty
+from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.button import Button
 from kivy.animation import Animation
 from kivy.clock import Clock
-from kivy.metrics import dp, sp
+from kivy.metrics import dp
 from kivy.utils import get_color_from_hex
 from kivy.lang import Builder
 
-from app.views.screens.base_screen import BaseScreen
 from app.utils.validators import validate_registration_inputs
-from app.views.widgets.popups.info_popup import MonobankTokenInfoPopup
 from app.utils.language_mapper import LanguageMapper as LM
+# components
+from app.views.screens.base_screen import BaseScreen
+from app.views.widgets.popups.info_popup import MonobankTokenInfoPopup
 
 Builder.load_file("kv/register_screen.kv")
 

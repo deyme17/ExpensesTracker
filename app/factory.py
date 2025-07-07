@@ -1,30 +1,25 @@
-from app.views.screens.splash_screen import SplashScreen
-from app.views.screens.first_screen import FirstScreen
-from app.views.screens.login_screen import LoginScreen
-from app.views.screens.register_screen import RegistrationScreen
-from app.views.screens.transactions_screen import TransactionsScreen
-from app.views.screens.analytics_screen import AnalyticsScreen
-
+# screens
+from app.views.screens import SplashScreen, FirstScreen, LoginScreen, RegistrationScreen, TransactionsScreen, AnalyticsScreen
+# controllers
 from app.controllers import AnalyticsController, AuthController, TransactionController
-    
+# services
 from app.services import LocalStorageService, AuthService, TransactionProcessor, DataLoader
 from app.services.analytics import AnalyticsService
 from app.services.crud_services import AccountService, CategoryService, CurrencyService, TransactionService
-
+# app cls
 from app.app import ExpensesTrackerApp
 
 
 def create_app():
     storage = LocalStorageService()
     
+    # services
     category_service = CategoryService(storage)
     currency_service = CurrencyService(storage)
     transaction_processor = TransactionProcessor(category_service)
     analytics_service = AnalyticsService(category_service)
-
-    # services
-    account_service = AccountService(storage)
-    transaction_service = TransactionService(None, storage)
+    account_service = AccountService(storage_service=storage)
+    transaction_service = TransactionService(storage_service=storage)
 
     # DataLoader
     data_loader = DataLoader(
@@ -49,17 +44,23 @@ def create_app():
     analytics_controller = AnalyticsController(analytics_service)
 
     return ExpensesTrackerApp(
-        storage_service=storage,
-        auth_controller=auth_controller,
-        transaction_controller=transaction_controller,
-        analytics_controller=analytics_controller,
-        account_service=account_service,
-        category_service=category_service,
-        currency_service=currency_service,
-        splash_screen_cls=SplashScreen,
+        splash_screen_cls=lambda name: SplashScreen(name=name, auth_controller=auth_controller, data_loader=data_loader),
         first_screen_cls=FirstScreen,
-        login_screen_cls=LoginScreen,
-        register_screen_cls=lambda name: RegistrationScreen(name=name),
-        transactions_screen_cls=TransactionsScreen,
-        analytics_screen_cls=AnalyticsScreen,
+        login_screen_cls=lambda name: LoginScreen(name=name, auth_controller=auth_controller),
+        register_screen_cls=lambda name: RegistrationScreen(name=name, controller=auth_controller),
+
+        transactions_screen_cls=lambda name: TransactionsScreen(
+            name=name, 
+            controller=transaction_controller, 
+            logout_callback=auth_controller.logout),
+
+        analytics_screen_cls=lambda name: AnalyticsScreen(
+            name=name,
+            transaction_controller=transaction_controller,
+            analytics_controller=analytics_controller,
+            local_storage=storage,
+            logout_callback=auth_controller.logout
+        ),
+        storage_service=storage,
+        is_authenticated=auth_controller.is_authenticated
     )

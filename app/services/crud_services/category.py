@@ -16,7 +16,7 @@ class CategoryService:
         self._mcc_to_name = {}
         self._name_to_mcc = {}
 
-    def get_categories(self):
+    def get_categories(self) -> tuple[list, str]:
         """
         Retrieves categories from cache, API, or local storage (in priority order).
         Returns:
@@ -48,7 +48,7 @@ class CategoryService:
 
         return [], ErrorCodes.UNKNOWN_ERROR
 
-    def _update_category_cache(self, categories):
+    def _update_category_cache(self, categories: list):
         """
         Updates internal MCC/category name mappings.
         Args:
@@ -57,7 +57,7 @@ class CategoryService:
         self._mcc_to_name = {c.mcc_code: c.name for c in categories}
         self._name_to_mcc = {v: k for k, v in self._mcc_to_name.items()}
 
-    def get_category_name_by_mcc(self, mcc_code):
+    def get_category_name_by_mcc(self, mcc_code: str|int) -> str:
         """
         Gets category name for given MCC code.
         Args:
@@ -71,7 +71,7 @@ class CategoryService:
 
         return self._mcc_to_name.get(int(mcc_code), DEFAULT_CATEGORY)
 
-    def get_mcc_by_name(self, name):
+    def get_mcc_by_name(self, name: str) -> str:
         """
         Gets MCC code for given category name.
         Args:
@@ -83,4 +83,4 @@ class CategoryService:
             categories, _ = self.get_categories()
             self._update_category_cache(categories)
 
-        return self._name_to_mcc.get(name, DEFAULT_MCC)
+        return str(self._name_to_mcc.get(name, DEFAULT_MCC))

@@ -19,13 +19,13 @@ class TransactionService:
         storage_service: Storage handler for offline operations (must implement
                        `get_transactions()` and `save_transactions()`)
     """
-    def __init__(self, user_id, storage_service):
+    def __init__(self, user_id: str|None, storage_service):
         self.user_id = user_id
         self.storage = storage_service
         self.offline_mode = not is_online()
         self._cached = None
 
-    def get_transactions(self, force_refresh=False):
+    def get_transactions(self, force_refresh: bool = False) -> list:
         """
         Retrieves transactions from cache, API, or local storage.
         Args:
@@ -51,7 +51,7 @@ class TransactionService:
             print("[TransactionService] API error:", result.get("error"))
             return self.storage.get_transactions()
 
-    def get_transaction_by_id(self, transaction_id):
+    def get_transaction_by_id(self, transaction_id: str):
         """
         Gets single transaction by ID.
         Args:
@@ -65,7 +65,7 @@ class TransactionService:
         print("[TransactionService] get by id error:", result.get("error"))
         return None
 
-    def post_transaction(self, data):
+    def post_transaction(self, data: dict) -> dict:
         """
         Creates a new transaction.
         Args:
@@ -88,7 +88,7 @@ class TransactionService:
             self._invalidate_cache()
         return result
 
-    def patch_transaction(self, transaction_id, data):
+    def patch_transaction(self, transaction_id: str, data: dict) -> dict:
         """
         Updates an existing transaction.
         Args:
@@ -110,7 +110,7 @@ class TransactionService:
             self._invalidate_cache()
         return result
 
-    def delete_transaction(self, transaction_id):
+    def delete_transaction(self, transaction_id: str) -> dict:
         """
         Deletes a transaction.
         Args:

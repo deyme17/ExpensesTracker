@@ -14,7 +14,7 @@ class AccountService:
         self.storage_service = storage_service
         self.user_id = user_id
 
-    def get_accounts(self):
+    def get_accounts(self) -> tuple[list, str]:
         """
         Retrieves accounts from local storage or API.
         Returns:

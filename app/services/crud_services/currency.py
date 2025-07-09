@@ -17,7 +17,7 @@ class CurrencyService:
         self._code_to_currency = {}
         self._name_to_currency_code = {}
 
-    def get_currencies(self):
+    def get_currencies(self) -> tuple[list, str]:
         """
         Retrieves currencies from cache, API, or local storage (in priority order).
         Returns:
@@ -48,7 +48,7 @@ class CurrencyService:
 
         return [], ErrorCodes.UNKNOWN_ERROR
 
-    def _update_currency_cache(self, currencies):
+    def _update_currency_cache(self, currencies: list):
         """
         Updates internal currency code/name mappings.
         Args:
@@ -57,7 +57,7 @@ class CurrencyService:
         self._code_to_currency = {str(c.currency_code): c.name for c in currencies}
         self._name_to_currency_code = {v: str(k) for k, v in self._code_to_currency.items()}
 
-    def get_currency_name_by_code(self, currency_code):
+    def get_currency_name_by_code(self, currency_code: int|str) -> str:
         """
         Gets currency name for given currency code.
         Args:
@@ -71,7 +71,7 @@ class CurrencyService:
                 self._update_currency_cache(currencies)
         return self._code_to_currency.get(str(currency_code), str(currency_code))
 
-    def get_currency_code_by_name(self, name):
+    def get_currency_code_by_name(self, name: str) -> str:
         """
         Gets currency code for given currency name.
         Args:
@@ -83,4 +83,4 @@ class CurrencyService:
             currencies, _ = self.get_currencies()
             if currencies:
                 self._update_currency_cache(currencies)
-        return self._name_to_currency_code.get(name, DEFAULT_CURRENCY_CODE)
+        return str(self._name_to_currency_code.get(name, DEFAULT_CURRENCY_CODE))

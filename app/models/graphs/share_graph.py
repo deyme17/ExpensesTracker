@@ -6,11 +6,7 @@ import matplotlib.pyplot as plt
 from app.models.graphs.base_graph import BaseGraphWidget
 from app.utils.theme import ACCENT_COLOR
 from app.utils.constants import SHARE_NUM
-from app.services.crud_services.category import CategoryService
 from app.utils.language_mapper import LanguageMapper
-
-_category_service = CategoryService()
-_category_service.get_categories()
 
 class ShareGraph(BaseGraphWidget):
     """
@@ -20,6 +16,11 @@ class ShareGraph(BaseGraphWidget):
 
     def fit(self, transactions):
         totals = defaultdict(float)
+
+        from app.services.crud_services.category import CategoryService
+        _category_service = CategoryService()
+        _category_service.get_categories()
+        
         for tx in transactions:
             raw_name = _category_service.get_category_name_by_mcc(tx.mcc_code)
             translated_name = LanguageMapper.category(raw_name)

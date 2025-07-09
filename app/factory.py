@@ -44,6 +44,13 @@ def create_app():
     analytics_controller = AnalyticsController(analytics_service)
     meta_data_controller = MetaDataController(currency_service, category_service)
 
+    # CallBack
+    def refresh_analytics():
+        from kivy.app import App
+        app = App.get_running_app()
+        analytics_screen = app.root.get_screen("analytics_screen")
+        analytics_screen.refresh_analytics()
+
     # app
     return ExpensesTrackerApp(  
         splash_screen_cls=lambda name: SplashScreen(name=name, auth_controller=auth_controller, data_loader=data_loader),
@@ -56,6 +63,7 @@ def create_app():
             transaction_controller=transaction_controller, 
             meta_data_controller=meta_data_controller,
             storage_service=storage,
+            update_analytics_callback=refresh_analytics,
             logout_callback=auth_controller.logout),
 
         analytics_screen_cls=lambda name: AnalyticsScreen(

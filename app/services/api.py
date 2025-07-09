@@ -7,7 +7,7 @@ from pathlib import Path
 load_dotenv(dotenv_path=Path(__file__).resolve().parents[2] / ".env")
 API_BASE = os.getenv("API_BASE")
 
-def get_auth_headers():
+def get_auth_headers() -> dict:
     try:
         from app.services.local_storage import LocalStorageService
         user = LocalStorageService().get_user()
@@ -19,7 +19,7 @@ def get_auth_headers():
         pass
     return {}
 
-def safe_request(method, url, timeout=15, **kwargs):
+def safe_request(method: str, url: str, timeout: int = 15, **kwargs) -> dict:
     try:
         print(f"[REQUEST] {method} {url}")
         response = requests.request(method, url, timeout=timeout, **kwargs)
@@ -49,38 +49,38 @@ def safe_request(method, url, timeout=15, **kwargs):
         print(f"[ERROR] Unexpected: {str(e)}")
         return {"success": False, "error": ErrorCodes.UNKNOWN_ERROR}
 
-def api_get_transactions(user_id):
+def api_get_transactions(user_id: str) -> dict:
     return safe_request("GET", f"{API_BASE}/api/transactions/{user_id}", 
                         headers=get_auth_headers())
 
-def api_add_transaction(data):
+def api_add_transaction(data: dict) -> dict:
     return safe_request("POST", f"{API_BASE}/api/transaction", 
                         json=data, headers=get_auth_headers())
 
-def api_get_transaction_by_id(transaction_id):
+def api_get_transaction_by_id(transaction_id: str) -> dict:
     return safe_request("GET", f"{API_BASE}/api/transaction/{transaction_id}", 
                         headers=get_auth_headers())
 
-def api_delete_transaction(transaction_id):
+def api_delete_transaction(transaction_id: str) -> dict:
     return safe_request("DELETE", f"{API_BASE}/api/transaction/{transaction_id}", 
                         headers=get_auth_headers())
 
-def api_update_transaction(transaction_id, data):
+def api_update_transaction(transaction_id: str, data) -> dict:
     return safe_request("PATCH", f"{API_BASE}/api/transaction/{transaction_id}", 
                         json=data, headers=get_auth_headers())
 
-def api_get_categories():
+def api_get_categories() -> dict:
     return safe_request("GET", f"{API_BASE}/api/categories", 
                         headers=get_auth_headers())
 
-def api_get_currencies():
+def api_get_currencies() -> dict:
     return safe_request("GET", f"{API_BASE}/api/currencies", 
                         headers=get_auth_headers())
 
-def api_register(payload):
+def api_register(payload: dict) -> dict:
     return safe_request("POST", f"{API_BASE}/api/auth/register", 
                         json=payload, timeout=25)
 
-def api_login(payload):
+def api_login(payload: dict) -> dict:
     return safe_request("POST", f"{API_BASE}/api/auth/login", 
                         json=payload)

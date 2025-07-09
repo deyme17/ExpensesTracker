@@ -11,7 +11,6 @@ class DataLoader:
         category_service: Category operations service
         currency_service: Currency operations service
     """
-
     def __init__(self,
                  storage_service,
                  account_service,

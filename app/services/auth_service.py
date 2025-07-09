@@ -32,7 +32,7 @@ class AuthService:
 
         self.data_loader.load_data(user, callback=callback)
 
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         """
         Checks if a user is currently authenticated.
         Returns:
@@ -56,7 +56,7 @@ class AuthService:
             self.current_user = self.storage.get_user()
         return self.current_user
 
-    def logout(self):
+    def logout(self) -> bool:
         """
         Terminates the current user session.
         Returns:
@@ -66,7 +66,7 @@ class AuthService:
         self.storage.clear_user()
         return True
 
-    def login(self, email, password, callback=None):
+    def login(self, email: str, password: str, callback=None):
         """
         Authenticates a user with email/password credentials.
         Args:
@@ -101,7 +101,7 @@ class AuthService:
 
         Clock.schedule_once(try_login, 0.5)
 
-    def register(self, email, password, confirm_password, token, callback=None):
+    def register(self, email: str, password: str, confirm_password: str, token: str, callback=None):
         """
         Registers a new user account.
         Args:

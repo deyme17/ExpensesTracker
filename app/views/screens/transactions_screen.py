@@ -162,6 +162,7 @@ class TransactionsScreen(BaseScreen):
             return
         popup = TransactionDetailsPopup(
             transaction=tx,
+            meta_data_controller=self.meta_data_controller,
             on_edit=lambda: self.edit_transaction(transaction_id),
             on_delete=lambda: self.confirm_delete_transaction(transaction_id)
         )

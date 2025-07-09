@@ -13,22 +13,22 @@ from app.utils.constants import INCOME
 from app.views.widgets.buttons.styled_button import RoundedButton
 
 class TransactionDetailsPopup(ModalView):
-    def __init__(self, transaction, on_edit, on_delete, **kwargs):
+    def __init__(self, transaction, meta_data_controller, on_edit, on_delete, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (0.8, 0.7)
         self.background = ''
         self.background_color = (0, 0, 0, 0)
         self.overlay_color = (0, 0, 0, 0.6)
+
         self.transaction = transaction
+        self.meta_data_controller = meta_data_controller
+
         self.on_edit = on_edit
         self.on_delete = on_delete
+
         self.build_ui()
 
     def build_ui(self):
-        from kivy.app import App
-        category_service = App.get_running_app().category_service
-        currency_service = App.get_running_app().currency_service
-
         content = BoxLayout(
             orientation="vertical",
             spacing=dp(12),
@@ -88,8 +88,8 @@ class TransactionDetailsPopup(ModalView):
 
         t = self.transaction
 
-        category_name = category_service.get_category_name_by_mcc(t.mcc_code)
-        currency_name = currency_service.get_currency_name_by_code(t.currency_code)
+        category_name = self.meta_data_controller.get_category_name_by_mcc(t.mcc_code)
+        currency_name = self.meta_data_controller.get_currency_name_by_code(t.currency_code)
 
         details_layout.add_widget(add_detail("category", LM.category(category_name)))
 

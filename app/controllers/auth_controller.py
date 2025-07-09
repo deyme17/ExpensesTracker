@@ -7,16 +7,16 @@ class AuthController:
     def __init__(self, auth_service):
         self.auth_service = auth_service
 
-    def login(self, email, password, callback=None):
+    def login(self, email: str, password: str, callback=None):
         return self.auth_service.login(email, password, callback)
 
-    def register(self, email, password, confirm_password, monobank_token, callback=None):
+    def register(self, email: str, password: str, confirm_password: str, monobank_token: str, callback=None):
         return self.auth_service.register(email, password, confirm_password, monobank_token, callback)
 
-    def logout(self):
+    def logout(self) -> bool:
         return self.auth_service.logout()
 
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         return self.auth_service.is_authenticated()
 
     def get_current_user(self):

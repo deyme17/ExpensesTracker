@@ -3,6 +3,7 @@ from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.error_codes import ErrorCodes
 import hashlib
 
+
 class AnalyticsService:
     """
     Provides transaction statistics and analytics with caching support.
@@ -14,7 +15,7 @@ class AnalyticsService:
         self._last_hash = None
         self._last_result = None
 
-    def get_statistics(self, transactions):
+    def get_statistics(self, transactions: list) -> tuple[dict|None, None|str]:
         """
         Calculates key statistics for given transactions.
         Args:
@@ -69,7 +70,7 @@ class AnalyticsService:
         except Exception:
             return {}, ErrorCodes.UNKNOWN_ERROR
 
-    def _calc_top_category(self, transactions):
+    def _calc_top_category(self, transactions: list) -> str:
         """
         Calculates the top spending category by total amount.
         Args:
@@ -86,7 +87,7 @@ class AnalyticsService:
         except Exception:
             return "—"
 
-    def _compute_hash(self, transactions):
+    def _compute_hash(self, transactions: list) -> str:
         """
         Generates MD5 hash of transactions for change detection.
         Args:

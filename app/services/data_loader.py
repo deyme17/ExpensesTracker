@@ -43,7 +43,13 @@ class DataLoader:
                 self.currency_service.get_currencies()
 
                 if accounts:
-                    self.storage.set_active_account(accounts[-1].account_id)
+                    previous_account_id = self.storage.get_active_account_id()
+                    matching_account = next((acc for acc in accounts if acc.account_id == previous_account_id), None)
+
+                    if matching_account:
+                        self.storage.set_active_account(previous_account_id)
+                    else:
+                        self.storage.set_active_account(accounts[0].account_id)
 
             except Exception as e:
                 print(f"[DataLoader] Error: {e}")

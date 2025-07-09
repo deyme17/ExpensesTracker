@@ -1,38 +1,16 @@
 class Category:
-    def __init__(self, name, mcc_code=None):
-        """
-        Initialize a Category instance.
-        
-        Args:
-            name (str): Category name
-            mcc_code (int, optional): Merchant Category Code for mapping with bank data
-        """
+    def __init__(self, name: str, mcc_code: int|str):
         self.name = name
-        self.mcc_code = mcc_code
+        self.mcc_code = int(mcc_code)
     
-    def to_dict(self):
-        """
-        Convert the category to a dictionary for storage.
-        
-        Returns:
-            dict: Dictionary representation of the category
-        """
+    def to_dict(self) -> dict:
         return {
             "name": self.name,
             "mcc_code": self.mcc_code,
         }
     
     @classmethod
-    def from_dict(cls, data):
-        """
-        Create a Category instance from a dictionary.
-        
-        Args:
-            data (dict): Dictionary with category data
-            
-        Returns:
-            Category: New Category instance
-        """
+    def from_dict(cls, data: dict) -> 'Category':
         if not data:
             return None
         
@@ -41,11 +19,5 @@ class Category:
             mcc_code=data.get("mcc_code")
         )
     
-    def __str__(self):
-        """
-        Get a string representation of the category.
-        
-        Returns:
-            str: String representation
-        """
+    def __str__(self) -> str:
         return f"{self.name}"

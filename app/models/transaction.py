@@ -1,12 +1,12 @@
 from datetime import datetime
 from app.utils.formatters import format_amount, format_date
-from app.utils.constants import CARD, EXPENSE, DEFAULT_CURRENCY_CODE, INCOME
+from app.utils.constants import CARD, EXPENSE, DEFAULT_CURRENCY_CODE
 
 
 class Transaction:
-    def __init__(self, transaction_id, user_id, amount, date, account_id,
-                 mcc_code, currency_code, description="", payment_method=CARD, type=EXPENSE,
-                 cashback=0.0, commission=0.0, is_synced=True):
+    def __init__(self, transaction_id: str, user_id: str, amount: str|int|float, date: datetime, account_id: str,
+                 mcc_code: int|str, currency_code: int|str, description: str = "", payment_method: str = CARD, type: str = EXPENSE,
+                 cashback: float|int|str = 0.0, commission: float|int|str = 0.0, is_synced: bool = True):
 
         self.transaction_id = transaction_id
         self.user_id = user_id
@@ -22,7 +22,7 @@ class Transaction:
         self.commission = float(commission)
         self.is_synced = is_synced
 
-    def _parse_date(self, date):
+    def _parse_date(self, date: str) -> datetime:
         if isinstance(date, datetime):
             return date
         if isinstance(date, str):
@@ -33,7 +33,7 @@ class Transaction:
                     continue
         return datetime.now()
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             "transaction_id": self.transaction_id,
             "user_id": self.user_id,
@@ -51,7 +51,7 @@ class Transaction:
         }
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict) -> 'Transaction'|None:
         if not data:
             return None
         return cls(
@@ -70,5 +70,5 @@ class Transaction:
             is_synced=data.get("is_synced", True)
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{format_date(self.date)} | {str(self.mcc_code)} | {format_amount(self.amount, str(self.currency_code))}"

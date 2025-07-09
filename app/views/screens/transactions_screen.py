@@ -17,6 +17,14 @@ Builder.load_file("kv/transactions_screen.kv")
 
 
 class TransactionsScreen(BaseScreen):
+    """
+    Screen for displaying and managing financial transactions.
+    Args:
+        transactions_controller: Handles transaction operations
+        meta_data_controller: Provides currency/category metadata
+        storage_service: Persistent storage handler
+        update_analytics_callback: Callback for analytics updates
+    """
     balance_text = StringProperty("")
     account_options = ListProperty([])
     selected_account_id = StringProperty(allownone=True)

@@ -18,8 +18,8 @@ def create_app():
     currency_service = CurrencyService(storage)
     transaction_processor = TransactionProcessor(category_service)
     analytics_service = AnalyticsService(category_service)
-    account_service = AccountService(storage_service=storage)
-    transaction_service = TransactionService(storage_service=storage)
+    account_service = AccountService(storage_service=storage, user_id=None)
+    transaction_service = TransactionService(storage_service=storage, user_id=None)
 
     # DataLoader
     data_loader = DataLoader(
@@ -56,11 +56,11 @@ def create_app():
         splash_screen_cls=lambda name: SplashScreen(name=name, auth_controller=auth_controller, data_loader=data_loader),
         first_screen_cls=FirstScreen,
         login_screen_cls=lambda name: LoginScreen(name=name, auth_controller=auth_controller),
-        register_screen_cls=lambda name: RegistrationScreen(name=name, controller=auth_controller),
+        register_screen_cls=lambda name: RegistrationScreen(name=name, auth_controller=auth_controller),
 
         transactions_screen_cls=lambda name: TransactionsScreen(
             name=name, 
-            transaction_controller=transaction_controller, 
+            transactions_controller=transaction_controller, 
             meta_data_controller=meta_data_controller,
             storage_service=storage,
             update_analytics_callback=refresh_analytics,

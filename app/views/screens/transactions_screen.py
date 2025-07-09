@@ -209,8 +209,8 @@ class TransactionsScreen(BaseScreen):
         self.accounts = self.storage_service.get_accounts() or []
         self.selected_account_id = self.storage_service.get_active_account_id()
         self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
-        self.categories = self.meta_data_controller.get_all_categories()
-        self.currencies = self.meta_data_controller.get_all_currencies()
+        self.categories = self.meta_data_controller.get_categories()
+        self.currencies = self.meta_data_controller.get_currencies()
         self._refresh_everything()
 
     def _display_transactions(self, transactions: list):

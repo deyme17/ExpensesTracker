@@ -1,6 +1,7 @@
 from datetime import datetime
 from app.utils.formatters import format_amount, format_date
 from app.utils.constants import CARD, EXPENSE, DEFAULT_CURRENCY_CODE
+from typing import Optional
 
 
 class Transaction:
@@ -51,7 +52,7 @@ class Transaction:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Transaction'|None:
+    def from_dict(cls, data: dict) -> Optional['Transaction']:
         if not data:
             return None
         return cls(

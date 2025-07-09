@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 class TransactionProcessor:
     """
     Provides transaction filtering and sorting operations.
@@ -7,9 +10,9 @@ class TransactionProcessor:
     def __init__(self, category_service):
         self.category_service = category_service
 
-    def filter(self, transactions, min_amount=0, max_amount=float('inf'),
-            start_date=None, end_date=None, type=None,
-            payment_method=None, category=None, account_id=None):
+    def filter(self, transactions: list, min_amount: float = 0.0, max_amount: float = float('inf'),
+            start_date: datetime = None, end_date: datetime = None, type: str = None,
+            payment_method: str = None, category: str = None, account_id: str = None) -> list:
         """Filters transactions based on multiple criteria.
         Args:
             transactions: List of Transaction objects to filter
@@ -38,7 +41,7 @@ class TransactionProcessor:
 
         return [tx for tx in transactions if predicate(tx)]
 
-    def sort(self, transactions, field="date", ascending=True):
+    def sort(self, transactions: list, field: str = "date", ascending: bool = True) -> list:
         """Sorts transactions by specified field.
         Args:
             transactions: List of Transaction objects to sort

@@ -13,7 +13,8 @@ from app.views.widgets.inputs.date_input import LabeledDateInput
 from app.views.widgets.inputs.custom_spinner import LabeledSpinner
 from app.views.widgets.buttons.styled_button import RoundedButton
 from app.utils.theme import get_primary_color, get_text_primary_color
-from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS, ALL, EXPENSE, INCOME
+from app.utils.constants import TRANSACTION_TYPES, EXPENSE
+
 import traceback
 
 class AnalyticsFilterPopup(ModalView):
@@ -100,14 +101,13 @@ class AnalyticsFilterPopup(ModalView):
 
             if self.on_apply:
                 self.on_apply(transaction_type, start_date, end_date)
-
             self.dismiss()
 
         except Exception as e:
             traceback.print_exc()
             self._show_temp_error(LM.server_error("unknown_error"))
 
-    def _show_temp_error(self, text):
+    def _show_temp_error(self, text: str):
         from kivy.uix.label import Label
         label = Label(text=text, color=(1, 0.3, 0.3, 1), font_size=sp(14), size_hint_y=None, height=dp(20))
         self.content.add_widget(label, index=0)

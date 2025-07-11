@@ -2,6 +2,7 @@ from app.models.user import User
 from app.api import api_register, api_login
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.error_codes import ErrorCodes
+from app.utils.token_exp import is_token_expired
 from kivy.clock import Clock
 
 
@@ -39,9 +40,16 @@ class AuthService:
             bool: True if user session exists (checks storage if needed)
         """
         if self.current_user:
+            if is_token_expired(self.current_user.token):
+                self.logout()
+                return False
             return True
+        
         user = self.storage.get_user()
         if user:
+            if is_token_expired(user.token):
+                self.logout()
+                return False
             self.current_user = user
             return True
         return False

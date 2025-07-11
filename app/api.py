@@ -1,4 +1,5 @@
 import requests
+from app.utils.token_exp import is_token_expired
 from app.utils.error_codes import ErrorCodes
 
 import os
@@ -12,6 +13,9 @@ def get_auth_headers():
         user = LocalStorageService().get_user()
 
         if user and user.token:
+            if is_token_expired(user.token):
+                print("[API] Token expired, need to re-login")
+                return {}
             return {"Authorization": f"Bearer {user.token}"}
         
     except Exception:

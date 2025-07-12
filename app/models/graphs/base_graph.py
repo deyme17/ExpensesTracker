@@ -1,18 +1,30 @@
-from abc import ABCMeta, abstractmethod
-from kivy.uix.boxlayout import BoxLayout
+from abc import ABC, abstractmethod
 
-class BaseGraphWidget(BoxLayout):
+
+class BaseGraph(ABC):
     """
-    Abstract base class for graphic widgets.
+    Abstract base class for graphs.
     """
-    def __init__(self, **kwargs):
+    def __init__(self, renderer, **kwargs):
         super().__init__(**kwargs)
         self.data = []
+        self.renderer = renderer
 
+    @abstractmethod
     def fit(self, transactions):
         """
         Process transactions and generate data for the graph.
         Args:
-            Transactions: List of Transaction Objects
+            transactions: List of Transaction Objects
         """
         raise NotImplementedError("The class should implement the method fit(transactions)")
+    
+    def render(self, transactions):
+        """
+        Fit the data and render the graph.
+        Args:
+            transactions: List of Transaction Objects
+        """
+        data = self.fit(transactions)
+        if data:
+            self.renderer._render(*data)

@@ -1,4 +1,4 @@
-from app.utils.constants import ALL, DATE_FIELD
+from app.utils.constants import ALL, DATE_FIELD, EXPENSE
 from datetime import datetime, timedelta
 
 class FilterState:
@@ -24,6 +24,34 @@ class FilterState:
             "category_selected": self.category_selected,
             "payment_selected": self.payment_selected,
         }
+
+class AnalyticsFilterState:
+    def __init__(self, current_type=EXPENSE, start_date=None, end_date=None):
+        now = datetime.now()
+        self.current_type = current_type
+        self.start_date = start_date or datetime(now.year - 1, 1, 1)
+        self.end_date = end_date or now
+
+    def to_dict(self):
+        return {
+            "current_type": self.current_type,
+            "start_date": self.start_date,
+            "end_date": self.end_date,
+        }
+
+    def update(self, *, current_type=None, start_date=None, end_date=None):
+        if current_type is not None:
+            self.current_type = current_type
+        if start_date is not None:
+            self.start_date = start_date
+        if end_date is not None:
+            self.end_date = end_date
+
+    def reset(self):
+        now = datetime.now()
+        self.current_type = EXPENSE
+        self.start_date = datetime(now.year - 1, 1, 1)
+        self.end_date = now
 
 class SortState:
     def __init__(self):

@@ -6,7 +6,7 @@ from app.utils.language_mapper import LanguageMapper as LM
 class DistributionRenderer(Renderer):
     def _render(self, xs, ys):
         if not xs or len(xs) < 2:
-            print("[DistributionGraph] Not enough date for dostribution plotting.")
+            print("[DistributionGraph] Not enough data for distribution plotting.")
             return
 
         fig, ax = self._setup_figure()
@@ -17,7 +17,7 @@ class DistributionRenderer(Renderer):
             xs, ys,
             color=get_color_from_hex(self.ACCENT_COLOR),
             edgecolor="#042721",
-            width=(xs[1] - xs[0])
+            width=(xs[1] - xs[0]) if len(xs) > 1 else 1
         )
 
         # ticks settings

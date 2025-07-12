@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from app.utils.theme import ACCENT_COLOR
 from kivy.uix.boxlayout import BoxLayout
 from kivy_garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib.pyplot as plt
@@ -7,6 +8,7 @@ import matplotlib.pyplot as plt
 class Renderer(BoxLayout):
     BACKGROUND_COLOR = "#0A4035"
     DARK_BG = "#08382C"
+    ACCENT_COLOR = ACCENT_COLOR
 
     @abstractmethod
     def _render(self, *args, **kwargs):

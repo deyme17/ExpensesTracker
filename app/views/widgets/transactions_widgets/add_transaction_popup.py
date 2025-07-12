@@ -5,9 +5,7 @@ from kivy.uix.label import Label
 from kivy.metrics import dp, sp
 from kivy.animation import Animation
 from kivy.graphics import Color, RoundedRectangle
-from kivy.app import App
 from kivy.properties import ObjectProperty
-from datetime import datetime
 from kivy.clock import Clock
 
 from app.views.widgets.inputs.date_input import LabeledDateInput
@@ -20,29 +18,36 @@ from app.utils.theme import get_color_from_hex, get_text_primary_color
 from app.utils.formatters import format_date
 from app.utils.validators import validate_transaction_inputs
 from app.utils.constants import PAYMENT_METHODS, INCOME, DEFAULT_CURRENCY
+
 import traceback
+
 
 class AddTransactionPopup(ModalView):
     type = ObjectProperty(None)
     on_save = ObjectProperty(None)
     existing_transaction = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
+    def __init__(self, currencies: list, categories: list, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (0.9, 0.9)
         self.background = ''
         self.background_color = (0, 0, 0, 0)
         self.overlay_color = (0, 0, 0, 0.7)
         self.on_save = kwargs.get("on_save")
+        self.existing_transaction = kwargs.get("existing_transaction")
+
+        self.currencies = currencies
+        self.categories = categories
+
+        self.name_to_mcc = {c.name: str(c.mcc_code) for c in self.categories}
+        self.name_to_currency = {c.name: str(c.currency_code) for c in self.currencies}
+
         self.build_ui()
 
         if self.existing_transaction:
             self._fill_fields_with_existing_transaction()
 
     def build_ui(self):
-        category_service = App.get_running_app().category_service
-        currency_service = App.get_running_app().currency_service
-
         self.content = BoxLayout(orientation="vertical", spacing=dp(15), padding=dp(20), opacity=0)
 
         with self.content.canvas.before:
@@ -63,92 +68,49 @@ class AddTransactionPopup(ModalView):
         fields_container = BoxLayout(orientation="vertical", spacing=dp(10), size_hint_y=None)
         fields_container.bind(minimum_height=fields_container.setter("height"))
 
-        # Load category and currency
-        categories, _ = category_service.get_categories()
-        name_to_mcc = {c.name: str(c.mcc_code) for c in categories}
-        self.name_to_mcc = name_to_mcc
+        selected_category = self._get_selected_key(self.name_to_mcc, getattr(self.existing_transaction, 'mcc_code', None), LM.category("other"))
+        selected_currency = self._get_selected_key(self.name_to_currency, getattr(self.existing_transaction, 'currency_code', None), DEFAULT_CURRENCY)
 
-        currencies, _ = currency_service.get_currencies()
-        name_to_currency = {c.name: str(c.currency_code) for c in currencies}
-        self.name_to_currency = name_to_currency
+        self.category_input = LabeledSpinner(label_text=LM.field_name("category") + ":",
+                                             values=list(self.name_to_mcc.keys()),
+                                             selected=selected_category,
+                                             displayed_value=LM.category)
 
-        selected_category = (
-            next((name for name, mcc in name_to_mcc.items() if str(mcc) == str(self.existing_transaction.mcc_code)),
-                 list(name_to_mcc.keys())[0])
-            if self.existing_transaction else list(name_to_mcc.keys())[0]
-        )
+        self.payment_input = LabeledSpinner(label_text=LM.field_name("payment_method") + ":",
+                                            values=PAYMENT_METHODS,
+                                            selected=getattr(self.existing_transaction, 'payment_method', PAYMENT_METHODS[0]),
+                                            displayed_value=LM.payment_method)
 
-        selected_currency = (
-            next((name for name, code in name_to_currency.items() if str(code) == str(self.existing_transaction.currency_code)),
-                 list(name_to_currency.keys())[0])
-            if self.existing_transaction else list(name_to_currency.keys())[0]
-        )
+        self.amount_input = LabeledInput(label_text=LM.field_name("amount") + ":",
+                                         hint_text=LM.message("amount_hint"))
 
-        self.category_input = LabeledSpinner(
-            label_text=LM.field_name("category") + ":",
-            values=list(name_to_mcc.keys()),
-            selected=selected_category,
-            displayed_value=LM.category
-        )
-
-        self.payment_input = LabeledSpinner(
-            label_text=LM.field_name("payment_method") + ":",
-            values=PAYMENT_METHODS,
-            selected=self.existing_transaction.payment_method if self.existing_transaction else PAYMENT_METHODS[0],
-            displayed_value=LM.payment_method
-        )
-
-        self.amount_input = LabeledInput(
-            label_text=LM.field_name("amount") + ":",
-            hint_text=LM.message("amount_hint")
-        )
-
-        self.currency_input = LabeledSpinner(
-            label_text=LM.field_name("currency") + ":",
-            values=list(name_to_currency.keys()),
-            selected=selected_currency,
-            displayed_value=lambda name: name
-        )
+        self.currency_input = LabeledSpinner(label_text=LM.field_name("currency") + ":",
+                                             values=list(self.name_to_currency.keys()),
+                                             selected=selected_currency,
+                                             displayed_value=lambda name: name)
 
         self.date_input = LabeledDateInput(label_text=LM.field_name("date") + ":")
 
-        self.cashback_input = LabeledInput(
-            label_text=LM.field_name("cashback") + ":",
-            hint_text=LM.message("cashback_hint"),
-            text="0"
-        )
+        self.cashback_input = LabeledInput(label_text=LM.field_name("cashback") + ":",
+                                           hint_text=LM.message("cashback_hint"), text="0")
 
-        self.commission_input = LabeledInput(
-            label_text=LM.field_name("commission") + ":",
-            hint_text=LM.message("commission_hint"),
-            text="0"
-        )
+        self.commission_input = LabeledInput(label_text=LM.field_name("commission") + ":",
+                                             hint_text=LM.message("commission_hint"), text="0")
 
-        self.description_input = LabeledInput(
-            label_text=LM.field_name("description") + ":",
-            hint_text=LM.message("description_hint")
-        )
+        self.description_input = LabeledInput(label_text=LM.field_name("description") + ":",
+                                              hint_text=LM.message("description_hint"))
 
-        for widget in [
-            self.category_input, self.payment_input, self.amount_input,
-            self.currency_input, self.date_input, self.cashback_input,
-            self.commission_input, self.description_input
-        ]:
+        for widget in [self.category_input, self.payment_input, self.amount_input,
+                       self.currency_input, self.date_input, self.cashback_input,
+                       self.commission_input, self.description_input]:
             fields_container.add_widget(widget)
 
         scroll.add_widget(fields_container)
 
         buttons = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(15))
-        cancel_btn = RoundedButton(
-            text=LM.message("cancel_button"),
-            bg_color='#445555',
-            on_press=lambda x: self.dismiss()
-        )
-        save_btn = RoundedButton(
-            text=LM.message("save_button"),
-            bg_color='#0F7055',
-            on_press=self._save_transaction
-        )
+        cancel_btn = RoundedButton(text=LM.message("cancel_button"), bg_color='#445555', on_press=lambda x: self.dismiss())
+        save_btn = RoundedButton(text=LM.message("save_button"), bg_color='#0F7055', on_press=self._save_transaction)
+
         buttons.add_widget(cancel_btn)
         buttons.add_widget(save_btn)
 
@@ -163,56 +125,58 @@ class AddTransactionPopup(ModalView):
         self.bg_rect.pos = instance.pos
         self.bg_rect.size = instance.size
 
+    def _get_selected_key(self, mapping, target_value, fallback):
+        return next((name for name, val in mapping.items() if str(val) == str(target_value)), fallback)
+
     def _save_transaction(self, *args):
-        if self.on_save:
-            try:
-                data_to_validate = {    
-                    "amount": self.amount_input.text,
-                    "cashback": self.cashback_input.text,
-                    "commission": self.commission_input.text
-                 }
-                valid, message = validate_transaction_inputs(data_to_validate)
-                if not valid:
-                    self._show_temp_error(message)
-                    return
-                
-                data = {
-                    "category": self.category_input.selected,
-                    "amount": float(self.amount_input.text) if self.type == INCOME else -float(self.amount_input.text),
-                    "date": self.date_input.date_text,
-                    "description": self.description_input.text,
-                    "payment_method": self.payment_input.selected,
-                    "currency": self.currency_input.selected,
-                    "cashback": self.cashback_input.text,
-                    "commission": self.commission_input.text,
-                    "transaction_id": self.existing_transaction.transaction_id if self.existing_transaction else None,
-                    "popup": self
-                }
-                self.on_save(**data)
-                self.dismiss()
-            except Exception as e:
-                traceback.print_exc()
-                self._show_temp_error(LM.server_error("unknown_error"))
-        else:
+        if not self.on_save:
             print("self.on_save is None")
+            return
+
+        try:
+            data_to_validate = {
+                "amount": self.amount_input.text,
+                "cashback": self.cashback_input.text,
+                "commission": self.commission_input.text
+            }
+            valid, message = validate_transaction_inputs(data_to_validate)
+            if not valid:
+                self._show_temp_error(message)
+                return
+
+            transaction_data = {
+                "category": self.category_input.selected,
+                "amount": float(self.amount_input.text) if self.type == INCOME else -float(self.amount_input.text),
+                "date": self.date_input.date_text,
+                "description": self.description_input.text,
+                "payment_method": self.payment_input.selected,
+                "currency": self.currency_input.selected,
+                "cashback": self.cashback_input.text,
+                "commission": self.commission_input.text
+            }
+
+            self.on_save(
+                transaction_data=transaction_data,
+                transaction_id=getattr(self.existing_transaction, 'transaction_id', None)
+            )
+            self.dismiss()
+
+        except Exception as e:
+            traceback.print_exc()
+            self._show_temp_error(LM.server_error("unknown_error"))
 
     def _fill_fields_with_existing_transaction(self):
         t = self.existing_transaction
-
-        actual_category_name = next((name for name, mcc in self.name_to_mcc.items() if mcc == str(t.mcc_code)), LM.category("other"))
-        actual_currency_name = next((name for name, code in self.name_to_currency.items() if code == str(t.currency_code)), DEFAULT_CURRENCY)
-
-        self.category_input.selected = str(actual_category_name)
+        self.category_input.selected = self._get_selected_key(self.name_to_mcc, t.mcc_code, LM.category("other"))
         self.payment_input.selected = t.payment_method
         self.amount_input.text = str(abs(t.amount))
-        self.currency_input.selected = str(actual_currency_name)
+        self.currency_input.selected = self._get_selected_key(self.name_to_currency, t.currency_code, DEFAULT_CURRENCY)
         self.date_input.date_text = format_date(t.date)
         self.cashback_input.text = str(t.cashback)
         self.commission_input.text = str(t.commission)
         self.description_input.text = t.description
 
     def _show_temp_error(self, text):
-        from kivy.uix.label import Label
         label = Label(text=text, color=(1, 0.3, 0.3, 1), font_size=sp(14), size_hint_y=None, height=dp(20))
         self.content.add_widget(label, index=0)
         Clock.schedule_once(lambda dt: self.content.remove_widget(label), 2)

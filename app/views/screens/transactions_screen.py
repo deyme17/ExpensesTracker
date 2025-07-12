@@ -108,21 +108,15 @@ class TransactionsScreen(BaseScreen):
 
 # filter
     def show_filter(self):
-        popup = FilterPopup(on_apply=self._apply_filter, on_reset=self._reset_filter, 
-                            categories=self.categories, **self._filter_state.to_dict())
+        popup = FilterPopup(
+            filter_state=self._filter_state,
+            categories=self.categories,
+            on_apply=self._apply_filter,
+            on_reset=self._reset_filter
+        )
         popup.open()
 
-    def _apply_filter(self, min_amount: str, max_amount: str, start_date: datetime, end_date: datetime, 
-                      type: str, payment_method: str, category: str):
-        self._filter_state.update(
-            min_amount=min_amount,
-            max_amount=max_amount,
-            start_date=start_date,
-            end_date=end_date,
-            type_selected=type or ALL,
-            payment_selected=payment_method or ALL,
-            category_selected=category or ALL
-        )
+    def _apply_filter(self, min_amount, max_amount, start_date, end_date, type, payment_method, category):
         filtered = self.transactions_controller.filter_transactions(
             min_amount=min_amount,
             max_amount=max_amount,

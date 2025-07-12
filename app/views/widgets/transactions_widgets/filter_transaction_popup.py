@@ -6,6 +6,9 @@ from kivy.metrics import dp, sp
 from kivy.animation import Animation
 from kivy.graphics import Color, RoundedRectangle
 from kivy.properties import ObjectProperty
+from kivy.uix.label import Label
+from kivy.clock import Clock
+
 from datetime import datetime, timedelta
 
 from app.views.widgets.inputs.date_input import LabeledDateInput
@@ -17,37 +20,25 @@ from app.utils.theme import get_primary_color, get_text_primary_color
 from app.utils.validators import validate_date
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS, ALL
-from kivy.app import App
 
 
 class FilterPopup(ModalView):
     on_apply = ObjectProperty(None)
     on_reset = ObjectProperty(None)
 
-    def __init__(self, *, start_date=None, end_date=None, on_apply=None, on_reset=None,
-                 min_amount="0", max_amount="1000000", type_selected=ALL,
-                 category_selected=ALL, payment_selected=ALL, **kwargs):
+    def __init__(self, *, filter_state, on_apply=None, on_reset=None, categories: list, **kwargs):
         super().__init__(**kwargs)
         self.on_apply = on_apply
         self.on_reset = on_reset
-        self.start_date_val = start_date
-        self.end_date_val = end_date
-        self.min_amount_val = min_amount
-        self.max_amount_val = max_amount
-        self.type_selected = type_selected
-        self.category_selected = category_selected
-        self.payment_selected = payment_selected
+
+        self.category_names = sorted({c.name for c in categories})
+        self.filter_state = filter_state
 
         self.size_hint = (0.85, 0.9)
         self.auto_dismiss = False
         self.background = ''
         self.background_color = (0, 0, 0, 0)
         self.overlay_color = (0, 0, 0, 0.7)
-
-        now = datetime.now()
-        self._initial_start = start_date or (now - timedelta(days=365))
-        self._initial_end = end_date or now
-        self.category_service = App.get_running_app().category_service
 
         self.build_ui()
 
@@ -60,6 +51,7 @@ class FilterPopup(ModalView):
             size_hint_y=None,
             opacity=0
         )
+        self.content = content
         content.bind(minimum_height=content.setter("height"))
 
         with content.canvas.before:
@@ -85,40 +77,38 @@ class FilterPopup(ModalView):
         self.min_amount = LabeledInput(
             label_text=LM.field_name("amount") + " " + LM.message("from") + ":",
             hint_text="0",
-            text=self.min_amount_val
+            text=self.filter_state.min_amount
         )
         self.max_amount = LabeledInput(
             label_text=LM.field_name("amount") + " " + LM.message("to") + ":",
             hint_text="1000000",
-            text=self.max_amount_val
+            text=self.filter_state.max_amount
         )
         content.add_widget(self.min_amount)
         content.add_widget(self.max_amount)
 
         self.start_date = LabeledDateInput(label_text=LM.message("start_date_label"))
-        self.start_date.date_text = self._initial_start.strftime('%d.%m.%Y')
+        self.start_date.date_text = self.filter_state.start_date.strftime('%d.%m.%Y')
         self.end_date = LabeledDateInput(label_text=LM.message("end_date_label"))
-        self.end_date.date_text = self._initial_end.strftime('%d.%m.%Y')
+        self.end_date.date_text = self.filter_state.end_date.strftime('%d.%m.%Y')
         content.add_widget(self.start_date)
         content.add_widget(self.end_date)
 
         self.type_spinner = LabeledSpinner(
             label_text=LM.message("transaction_type_label"),
             values=TRANSACTION_TYPES + [ALL],
-            selected=self.type_selected,
+            selected=self.filter_state.type_selected,
             displayed_value=LM.transaction_type
         )
         content.add_widget(self.type_spinner)
 
-        # categories/payment method
-        categories, _ = self.category_service.get_categories()
-        category_names = sorted(set([c.name for c in categories]))
+        category_names = sorted(set(self.category_names))
         category_names.insert(0, ALL)
 
         self.category_spinner = LabeledSpinner(
             label_text=LM.message("category_label"),
             values=category_names,
-            selected=self.category_selected if self.category_selected in category_names else ALL,
+            selected=self.filter_state.category_selected,
             displayed_value=LM.category
         )
         content.add_widget(self.category_spinner)
@@ -126,10 +116,9 @@ class FilterPopup(ModalView):
         self.payment_spinner = LabeledSpinner(
             label_text=LM.message("payment_method_label"),
             values=PAYMENT_METHODS + [ALL],
-            selected=self.payment_selected,
+            selected=self.filter_state.payment_selected,
             displayed_value=LM.payment_method
         )
-
         content.add_widget(self.payment_spinner)
 
         content.add_widget(BoxLayout(size_hint_y=1))
@@ -153,37 +142,30 @@ class FilterPopup(ModalView):
         Animation(opacity=1, d=0.3).start(content)
 
     def _reset_fields(self, *args):
-        now = datetime.now()
-        self.min_amount.text = "0"
-        self.max_amount.text = "1000000"
-        year_ago = now - timedelta(days=365)
-        self.start_date.date_text = year_ago.strftime('%d.%m.%Y')
-        self.end_date.date_text = now.strftime('%d.%m.%Y')
-        self.type_spinner.selected = ALL
-        self.payment_spinner.selected = ALL
-        self.category_spinner.selected = ALL
+        self.filter_state.reset()
+        self.dismiss()
         if self.on_reset:
             self.on_reset()
 
     def _apply_fields(self, *args):
         try:
-            min_val = float(self.min_amount.text.replace(',', '.'))
-            max_val = float(self.max_amount.text.replace(',', '.'))
-            sd, sm, sy = self.start_date.date_text.split('.')
-            ed, em, ey = self.end_date.date_text.split('.')
-            start_ok, start_dt = validate_date(f"{sd}.{sm}.{sy}")
-            end_ok, end_dt = validate_date(f"{ed}.{em}.{ey}")
+            min_val = self.min_amount.text.replace(',', '.')
+            max_val = self.max_amount.text.replace(',', '.')
+
+            start_ok, start_dt = validate_date(self.start_date.date_text)
+            end_ok, end_dt = validate_date(self.end_date.date_text)
             if not start_ok:
                 start_dt = datetime.now() - timedelta(days=365)
             if not end_ok:
                 end_dt = datetime.now()
 
-            ttype = None if self.type_spinner.selected == ALL else self.type_spinner.selected
-            pay = None if self.payment_spinner.selected == ALL else self.payment_spinner.selected
-
-            category = None
-            if self.category_spinner.selected != ALL:
-                category = self.category_spinner.selected
+            self.filter_state.min_amount = min_val
+            self.filter_state.max_amount = max_val
+            self.filter_state.start_date = start_dt
+            self.filter_state.end_date = end_dt
+            self.filter_state.type_selected = self.type_spinner.selected
+            self.filter_state.payment_selected = self.payment_spinner.selected
+            self.filter_state.category_selected = self.category_spinner.selected
 
             if self.on_apply:
                 self.on_apply(
@@ -191,12 +173,23 @@ class FilterPopup(ModalView):
                     max_amount=max_val,
                     start_date=start_dt,
                     end_date=end_dt,
-                    type=ttype,
-                    payment_method=pay,
-                    category=category
+                    type=None if self.type_spinner.selected == ALL else self.type_spinner.selected,
+                    payment_method=None if self.payment_spinner.selected == ALL else self.payment_spinner.selected,
+                    category=None if self.category_spinner.selected == ALL else self.category_spinner.selected,
                 )
             self.dismiss()
         except Exception as e:
             import traceback
             traceback.print_exc()
             self._show_temp_error(LM.server_error("unknown_error"))
+
+    def _show_temp_error(self, text):
+        label = Label(
+            text=text,
+            color=(1, 0.3, 0.3, 1),
+            font_size=sp(14),
+            size_hint_y=None,
+            height=dp(20)
+        )
+        self.content.add_widget(label, index=0)
+        Clock.schedule_once(lambda dt: self.content.remove_widget(label), 2)

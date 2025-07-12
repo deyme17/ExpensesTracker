@@ -14,6 +14,10 @@ class FilterState:
         self.category_selected = ALL
         self.payment_selected = ALL
 
+    def update(self, selected_field, ascending):
+        self.selected_field = selected_field
+        self.ascending = ascending
+
     def to_dict(self):
         return {
             "min_amount": self.min_amount,

@@ -13,6 +13,22 @@ from app.utils.language_mapper import LanguageMapper as LM
 
 
 class TransactionRow(BoxLayout):
+    """
+    Custom row widget for displaying transaction items in a list.
+    Properties:
+        transaction_id: Unique transaction identifier
+        category: Transaction category name
+        currency: Currency code
+        amount: Formatted amount string  
+        date: Transaction date string
+        type: Transaction type (income/expense)
+        payment_method: Payment method type
+        description: Transaction description
+        cashback: Cashback amount
+        commission: Commission amount
+        controller: Reference to transaction controller
+        transactions_screen: Parent screen reference
+    """
     transaction_id = StringProperty('')
     category = StringProperty('')
     currency = StringProperty('')

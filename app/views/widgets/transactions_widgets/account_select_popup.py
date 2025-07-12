@@ -12,6 +12,11 @@ from app.views.widgets.buttons.styled_button import RoundedButton
 
 
 class AccountSelectPopup(ModalView):
+    """Modal dialog for selecting an account from available options.
+    Args:
+        accounts: List of account objects to display
+        on_account_selected: Callback for selection confirmation
+    """
     accounts = ListProperty()
     on_account_selected = ObjectProperty(None)
 

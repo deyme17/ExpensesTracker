@@ -12,7 +12,16 @@ from app.utils.formatters import format_date
 from app.utils.constants import INCOME
 from app.views.widgets.buttons.styled_button import RoundedButton
 
+
 class TransactionDetailsPopup(ModalView):
+    """
+    Modal popup displaying detailed transaction information with edit/delete actions.
+    Args:
+        transaction: Transaction object to display
+        meta_data_controller: Provides category/currency name resolution
+        on_edit: Callback for edit action
+        on_delete: Callback for delete action
+    """
     def __init__(self, transaction, meta_data_controller, on_edit, on_delete, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (0.8, 0.7)

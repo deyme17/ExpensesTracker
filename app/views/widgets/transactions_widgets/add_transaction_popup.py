@@ -23,6 +23,14 @@ import traceback
 
 
 class AddTransactionPopup(ModalView):
+    """
+    Modal dialog for adding/editing financial transactions.
+    Args:
+        currencies: List of available currencies
+        categories: List of available categories
+        on_save: Callback for save action (receives transaction_data, transaction_id)
+        existing_transaction: Optional transaction to edit
+    """
     type = ObjectProperty(None)
     on_save = ObjectProperty(None)
     existing_transaction = ObjectProperty(None)

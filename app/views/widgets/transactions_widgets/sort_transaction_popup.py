@@ -13,7 +13,15 @@ from app.utils.theme import get_primary_color, get_text_primary_color
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.constants import SORT_FIELDS, DATE_FIELD
 
+
 class SortPopup(ModalView):
+    """
+    Modal dialog for configuring transaction sorting options.
+    Args:
+        on_sort: Callback for sort confirmation
+        selected_field: Initially selected sort field (default: DATE_FIELD)
+        ascending: Initial sort direction (default: True)
+    """
     on_sort = ObjectProperty(None)
 
     def __init__(self, *, on_sort=None, selected_field=DATE_FIELD, ascending=True, **kwargs):

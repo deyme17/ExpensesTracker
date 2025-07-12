@@ -23,6 +23,14 @@ from app.utils.constants import TRANSACTION_TYPES, PAYMENT_METHODS, ALL
 
 
 class FilterPopup(ModalView):
+    """
+    Modal dialog for filtering transactions with multiple criteria.
+    Args:
+        filter_state: Current filter configuration
+        on_apply: Apply filters callback
+        on_reset: Reset filters callback  
+        categories: Available categories for filtering
+    """
     on_apply = ObjectProperty(None)
     on_reset = ObjectProperty(None)
 

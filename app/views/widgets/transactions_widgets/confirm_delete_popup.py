@@ -11,6 +11,13 @@ from app.utils.language_mapper import LanguageMapper as LM
 
 
 class ConfirmDeletePopup(ModalView):
+    """
+    Confirmation dialog for delete operations with yes/no options.
+    Args:
+        on_confirm: Callback when user confirms deletion
+        on_cancel: Optional callback when user cancels
+        message: Custom confirmation message (uses default if None)
+    """
     def __init__(self, on_confirm, on_cancel=None, message=None, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (0.85, None)

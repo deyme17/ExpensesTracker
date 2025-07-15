@@ -10,10 +10,10 @@ class GraphFactory:
     """
     def __init__(self, category_service):
         """Args: category_service: Service for category data operations (is used in ShareGraph)"""
-        self._strategies_by_key = {
-            "distribution": DistributionGraph,
-            "line": DynamicsGraph,
-            "share": lambda: ShareGraph(category_service)
+        self._strategy_constructors = {
+            "distribution": lambda renderer: DistributionGraph(renderer),
+            "line": lambda renderer: DynamicsGraph(renderer),
+            "share": lambda renderer: ShareGraph(renderer, category_service)
         }
 
     def create_graph(self, renderer, transactions):
@@ -26,11 +26,8 @@ class GraphFactory:
             Configured renderer instance
         """
         graph_key = getattr(renderer, "graph_key", None)
-        if graph_key is None or graph_key not in self._strategies_by_key:
+        if not graph_key or graph_key not in self._strategy_constructors:
             raise ValueError(f"No strategy found for renderer with key: {graph_key}")
 
-        strategy_cls = self._strategies_by_key[graph_key]
-        strategy = strategy_cls()
-        x, y = strategy.fit(transactions)
-        renderer._render(x, y)
-        return renderer
+        graph = self._strategy_constructors[graph_key](renderer)
+        return graph.render(transactions)

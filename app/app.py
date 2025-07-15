@@ -15,7 +15,7 @@ class ExpensesTrackerApp(App):
                  register_screen_cls, 
                  transactions_screen_cls, 
                  analytics_screen_cls,
-                 storage_service,
+                 local_storage,
                  is_authenticated,
                  **kwargs):
         super().__init__(**kwargs)
@@ -26,7 +26,7 @@ class ExpensesTrackerApp(App):
         self.transactions_screen_cls = transactions_screen_cls
         self.analytics_screen_cls = analytics_screen_cls
 
-        self.storage_service = storage_service
+        self.local_storage = local_storage
         self.is_authenticated = is_authenticated
 
         self.screen_manager = ScreenManager()
@@ -66,5 +66,5 @@ class ExpensesTrackerApp(App):
             self.screen_manager.current = 'first_screen'
     
     def stop(self):
-        self.storage_service.close()
+        self.local_storage.close()
         return super().stop()

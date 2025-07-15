@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-from typing import Optional
 
 from app.database.repositories.base_repository import BaseRepository
 from app.database.orm_models.category import CategoryORM

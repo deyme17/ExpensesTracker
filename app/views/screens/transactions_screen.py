@@ -50,6 +50,14 @@ class TransactionsScreen(BaseScreen):
     def selected_account(self):
         return next((a for a in self.accounts if a.account_id == self.selected_account_id), None)
     
+    @property
+    def current_user_id(self):
+        try:
+            return self.local_storage.settings.get_current_user_id()
+        except Exception as e:
+            print(f"[ERROR] Failed to get current user ID: {e}")
+            return None
+        
     def on_enter(self):
         if self._first_enter:
             self._first_enter = False
@@ -170,11 +178,17 @@ class TransactionsScreen(BaseScreen):
         popup.open()
 
     def _on_account_selected(self, selected_account_id: str):
-        self.selected_account_id = selected_account_id
-        print("[DEBUG] Account selected:", selected_account_id)
-        self.local_storage.set_active_account(selected_account_id)
-        self._refresh_everything()
-        self.show_success_message(LM.message("account_changed"))
+        try:
+            self.selected_account_id = selected_account_id
+            print(f"[DEBUG] Account selected: {selected_account_id}")
+            user_id = self.current_user_id
+            if user_id:
+                self.local_storage.settings.set_active_account_id(user_id, selected_account_id)
+            self._refresh_everything()
+            self.show_success_message(LM.message("account_changed"))
+        except Exception as e:
+            print(f"[ERROR] Failed to select account: {e}")
+            self.show_error_message(LM.message("failed_to_select_account"))
 
 # other
     def refresh_transactions(self, force: bool =False):
@@ -200,12 +214,31 @@ class TransactionsScreen(BaseScreen):
         self.trigger_analytics_update()
 
     def _initialize_data(self):
-        self.accounts = self.local_storage.get_accounts() or []
-        self.selected_account_id = self.local_storage.get_active_account_id()
-        self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
-        self.categories = self.meta_data_controller.get_categories()
-        self.currencies = self.meta_data_controller.get_currencies()
-        self._refresh_everything()
+        try:
+            user_id = self.current_user_id
+            if not user_id:
+                self.show_error_message(LM.message("no_user_logged_in"))
+                return
+            # account
+            self.accounts = self.local_storage.accounts.get_accounts_by_id(user_id) or []
+            self.selected_account_id = self.local_storage.settings.get_active_account_id(user_id)
+            
+            if not self.selected_account_id and self.accounts:
+                self.selected_account_id = self.accounts[0].account_id
+                self.local_storage.settings.set_active_account_id(user_id, self.selected_account_id)
+
+            self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
+            
+            # metadata
+            self.categories = self.meta_data_controller.get_categories()
+            self.currencies = self.meta_data_controller.get_currencies()
+            
+            # refresh everything
+            self._refresh_everything()
+            
+        except Exception as e:
+            print(f"[ERROR] Failed to initialize data: {e}")
+            self.show_error_message(LM.message("failed_to_initialize_screen"))
 
     def _display_transactions(self, transactions: list):
         self._clear_list()

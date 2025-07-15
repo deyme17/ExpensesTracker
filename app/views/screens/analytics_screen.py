@@ -45,7 +45,7 @@ class AnalyticsScreen(BaseScreen):
 
         # state
         self._filter_state = AnalyticsFilterState()
-        self.selected_account_id = self.local_storage.get_active_account_id()
+        self.selected_account_id = None
 
         # sections
         self.stats_section = None
@@ -55,8 +55,21 @@ class AnalyticsScreen(BaseScreen):
 
     def on_enter(self):
         super().on_enter()
+        self.selected_account_id = self._get_active_account_id()
         self._load_analytics_data()
 
+    def _get_active_account_id(self):
+        """
+        Get active account ID from local storage
+        """
+        try:
+            current_user_id = self.local_storage.settings.get_current_user_id()
+            if current_user_id:
+                return self.local_storage.settings.get_active_account_id(current_user_id)
+        except Exception as e:
+            print(f"[ERROR] Failed to get active account ID: {e}")
+        return None
+    
     def _load_analytics_data(self, *args):
         """
         Loads transactions, applies filters, computes statistics and updates UI sections.
@@ -136,7 +149,7 @@ class AnalyticsScreen(BaseScreen):
         """
         Reloads transactions and updates all sections.
         """
-        self.selected_account_id = self.local_storage.get_active_account_id()
+        self.selected_account_id = self._get_active_account_id()
         self._load_analytics_data()
         self._update_sections()
 

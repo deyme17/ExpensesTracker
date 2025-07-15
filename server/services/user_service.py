@@ -1,5 +1,6 @@
 from server.database.repositories.user_repository import UserRepository
 
+
 class UserService:
     def __init__(self):
         self.repo = UserRepository()

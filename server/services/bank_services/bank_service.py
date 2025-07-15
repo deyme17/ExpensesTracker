@@ -1,5 +1,3 @@
-import requests
-from datetime import datetime, timedelta
 from abc import ABC, abstractmethod
 
 
@@ -16,7 +14,6 @@ class BankService(ABC):
     def get_client_info(self):
         """
         Get the necessary information to create a user in the database.
-        
         Returns:
             dict: {
             "user_id": str,
@@ -30,7 +27,6 @@ class BankService(ABC):
     def get_transactions(self, account_id=None, days=100):
         """
         Import user transactions for the last N days.
-
         Returns:
             dict: {
                 "transaction_id": str,

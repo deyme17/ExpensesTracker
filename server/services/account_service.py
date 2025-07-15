@@ -1,5 +1,6 @@
 from server.database.repositories.account_repository import AccountRepository
 
+
 class AccountService:
     def __init__(self):
         self.repo = AccountRepository()

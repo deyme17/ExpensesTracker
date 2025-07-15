@@ -2,7 +2,6 @@ from server.database.repositories.transaction_repository import TransactionRepos
 import enum
 from datetime import date, datetime
 from decimal import Decimal
-import json
 
 def serialize(obj):
     if isinstance(obj, Decimal):
@@ -12,6 +11,7 @@ def serialize(obj):
     if isinstance(obj, enum.Enum):
         return obj.value
     return str(obj)
+
 
 class TransactionService:
     def __init__(self):
@@ -38,7 +38,7 @@ class TransactionService:
         ]
 
     def create(self, data):
-        return self.repo.create_transaction(data)
+        return self.repo.create(data)
 
     def delete(self, transaction_id):
         return self.repo.delete(transaction_id)
@@ -47,7 +47,7 @@ class TransactionService:
         return self.repo.update(transaction_id, data)
     
     def map_transactions(self, tx_data, user_id, account_id):
-        from server.models.transaction import Transaction
+        from server.database.orm_models.transaction import Transaction
         return [
             Transaction(
                 transaction_id=t["id"],

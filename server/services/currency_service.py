@@ -1,5 +1,6 @@
 from server.database.repositories.currency_repository import CurrencyRepository
 
+
 class CurrencyService:
     def __init__(self):
         self.repo = CurrencyRepository()

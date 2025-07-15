@@ -21,7 +21,7 @@ class DataLoader:
         category_service,
         currency_service
     ):
-        self.storage = local_storage
+        self.local_storage = local_storage
         self.account_service = account_service
         self.transaction_service = transaction_service
         self.category_service = category_service
@@ -38,7 +38,7 @@ class DataLoader:
             try:
                 self.account_service.user_id = user.user_id
                 self.transaction_service.user_id = user.user_id
-                self.transaction_service.storage = self.storage
+                self.transaction_service.local_storage = self.local_storage
 
                 accounts, _ = self.account_service.get_accounts()
                 self.transaction_service.get_transactions(force_refresh=True)
@@ -46,13 +46,13 @@ class DataLoader:
                 self.currency_service.get_currencies()
 
                 if accounts:
-                    previous_account_id = self.storage.settings.get(user.user_id, "active_account_id")
+                    previous_account_id = self.local_storage.settings.get_active_account_id(user.user_id)
                     matching_account = next((acc for acc in accounts if acc.account_id == previous_account_id), None)
 
                 if matching_account:
-                    self.storage.settings.set(user.user_id, "active_account_id", previous_account_id)
+                    self.local_storage.settings.set_active_account_id(user.user_id, previous_account_id)
                 elif accounts:
-                    self.storage.settings.set(user.user_id, "active_account_id", accounts[0].account_id)
+                    self.local_storage.settings.set_active_account_id(user.user_id, accounts[0].account_id)
 
             except Exception as e:
                 print(f"[DataLoader] Error: {e}")

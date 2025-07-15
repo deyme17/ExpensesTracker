@@ -4,6 +4,8 @@ from app.utils.language_mapper import LanguageMapper as LM
 
 
 class DistributionRenderer(Renderer):
+    graph_key = "distribution"
+    
     def _render(self, xs, ys):
         if not xs or len(xs) < 2:
             print("[DistributionGraph] Not enough data for distribution plotting.")

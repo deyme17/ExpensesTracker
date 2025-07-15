@@ -4,6 +4,8 @@ from kivy.utils import get_color_from_hex
 
 
 class ShareRenderer(Renderer):
+    graph_key = "share"
+    
     def _render(self, labels, values):
         if not labels or len(labels) != len(values):
             return

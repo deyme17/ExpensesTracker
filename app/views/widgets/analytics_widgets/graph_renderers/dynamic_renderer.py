@@ -5,6 +5,8 @@ from app.utils.language_mapper import LanguageMapper as LM
 
 
 class DynamicRenderer(Renderer):
+    graph_key = "line"
+    
     def _render(self, dates, values):
         if not dates:
             return

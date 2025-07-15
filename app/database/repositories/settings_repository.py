@@ -39,3 +39,23 @@ class SettingsRepository:
             .all()
         )
         return {s.key: s.value for s in settings}
+
+# active account methods
+    def get_active_account_id(self, user_id: str) -> str | None:
+        return self.get(user_id, "active_account_id")
+    
+    def set_active_account_id(self, user_id: str, account_id: str) -> None:
+        self.set(user_id, "active_account_id", account_id)
+    
+    def clear_active_account(self, user_id: str) -> None:
+        self.delete(user_id, "active_account_id")
+
+# current account methods
+    def get_current_user_id(self) -> str | None:
+        return self.get("system", "current_user_id")
+    
+    def set_current_user_id(self, user_id: str) -> None:
+        self.set("system", "current_user_id", user_id)
+    
+    def clear_current_user(self) -> None:
+        self.delete("system", "current_user_id")

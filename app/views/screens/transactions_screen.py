@@ -6,12 +6,11 @@ from app.views.screens.base_screen import BaseScreen
 from app.views.widgets.transactions_widgets import (TransactionRow, AddTransactionPopup, 
                                                     FilterPopup, SortPopup, TransactionDetailsPopup, 
                                                     ConfirmDeletePopup, AccountSelectPopup)
-from app.utils.constants import ALL
+
 from app.utils.language_mapper import LanguageMapper as LM
 from app.utils.formatters import format_date
 from app.utils.state_savers import FilterState, SortState
 
-from datetime import datetime
 
 Builder.load_file("kv/transactions_screen.kv")
 

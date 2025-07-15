@@ -3,8 +3,7 @@ from app.views.screens import SplashScreen, FirstScreen, LoginScreen, Registrati
 # controllers
 from app.controllers import AnalyticsController, AuthController, TransactionController, MetaDataController, GraphFactory
 # services
-from app.services import LocalStorageService, AuthService, TransactionProcessor, DataLoader
-from app.services.analytics import AnalyticsService
+from app.services import LocalStorageService, AuthService, TransactionProcessor, DataLoader, AnalyticsService
 from app.services.crud_services import AccountService, CategoryService, CurrencyService, TransactionService
 # app cls
 from app.app import ExpensesTrackerApp

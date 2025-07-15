@@ -35,7 +35,7 @@ class TransactionService:
         """
         if self.offline_mode:
             print("[TransactionService] OFFLINE mode: loading from local storage")
-            return self.storage.get_transactions()
+            return self.storage.transactions.get_transactions()
 
         if self._cached is not None and not force_refresh:
             return self._cached
@@ -45,11 +45,11 @@ class TransactionService:
             transactions = [Transaction.from_dict(t) for t in result["data"]]
             self._cached = transactions
             if self.storage:
-                self.storage.save_transactions(transactions)
+                self.storage.transactions.save_transactions(transactions)
             return transactions
         else:
             print("[TransactionService] API error:", result.get("error"))
-            return self.storage.get_transactions()
+            return self.storage.transactions.get_transactions()
 
     def get_transaction_by_id(self, transaction_id: str):
         """
@@ -123,7 +123,7 @@ class TransactionService:
             if self._cached:
                 self._cached = [t for t in self._cached if t.transaction_id != transaction_id]
             if self.storage:
-                self.storage.save_transactions(self._cached)
+                self.storage.transactions.save_transactions(self._cached)
         return result
 
     def _invalidate_cache(self):

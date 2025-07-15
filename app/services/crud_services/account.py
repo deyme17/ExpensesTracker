@@ -23,7 +23,7 @@ class AccountService:
         """
         # local
         try:
-            accounts = self.storage_service.get_accounts()
+            accounts = self.storage_service.accounts.get_accounts()
 
             if accounts:
                 return accounts, None
@@ -41,7 +41,7 @@ class AccountService:
                     accounts = [Account.from_dict(acc) for acc in result["data"]]
 
                     if self.storage_service:
-                        self.storage_service.save_accounts(accounts)
+                        self.storage_service.accounts.save_accounts(accounts)
                     
                     return accounts, None
                 

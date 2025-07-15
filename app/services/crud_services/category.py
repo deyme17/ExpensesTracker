@@ -32,7 +32,7 @@ class CategoryService:
                 categories = [Category.from_dict(c) for c in result["data"]]
 
                 if self.storage_service:
-                    self.storage_service.save_categories(categories)
+                    self.storage_service.categories.save_categories(categories)
 
                 self._update_category_cache(categories)
                 return categories, None
@@ -42,7 +42,7 @@ class CategoryService:
             pass
 
         if self.storage_service:
-            categories = self.storage_service.get_categories()
+            categories = self.storage_service.categories.get_categories()
             self._update_category_cache(categories)
             return categories, ErrorCodes.OFFLINE_MODE
 

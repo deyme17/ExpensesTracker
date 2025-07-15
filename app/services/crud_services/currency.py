@@ -32,7 +32,7 @@ class CurrencyService:
                 currencies = [Currency.from_dict(c) for c in result["data"]]
 
                 if self.storage_service:
-                    self.storage_service.save_currencies(currencies)
+                    self.storage_service.currencies.save_currencies(currencies)
 
                 self._update_currency_cache(currencies)
                 return currencies, None
@@ -42,7 +42,7 @@ class CurrencyService:
             pass
 
         if self.storage_service:
-            currencies = self.storage_service.get_currencies()
+            currencies = self.storage_service.currencies.get_currencies()
             self._update_currency_cache(currencies)
             return currencies, ErrorCodes.OFFLINE_MODE
 

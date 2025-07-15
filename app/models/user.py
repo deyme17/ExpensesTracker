@@ -1,11 +1,17 @@
 from app.utils.encryption import Encryption as enc
 
 class User:
-    def __init__(self, user_id: str, name: str, email: str, token: str):
+    def __init__(self, user_id: str, name: str, email: str, token: str = None, encrypted_token: str = None):
         self.user_id = user_id
         self.name = name
         self.email = email
-        self._encrypted_token = enc.encrypt(token)
+        
+        if token:
+            self._encrypted_token = enc.encrypt(token)
+        elif encrypted_token:
+            self._encrypted_token = encrypted_token
+        else:
+            self._encrypted_token = None
 
     @property
     def token(self) -> str:

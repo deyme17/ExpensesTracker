@@ -9,9 +9,11 @@ from app.services.crud_services import AccountService, CategoryService, Currency
 from app.app import ExpensesTrackerApp
 # local db
 from app.database.db_manager import LocalDBManager
+from app.database.init_db import init_db
 
 
 def create_app():
+    init_db()
     local_storage = LocalDBManager()
     
     # services

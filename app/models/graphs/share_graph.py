@@ -11,8 +11,8 @@ class ShareGraph(BaseGraph):
     """
     transactions = ListProperty([])
 
-    def __init__(self, renderer, category_service, **kwargs):
-        super().__init__(renderer, **kwargs)
+    def __init__(self, category_service, **kwargs):
+        super().__init__(**kwargs)
         self.category_service = category_service
 
     def fit(self, transactions):

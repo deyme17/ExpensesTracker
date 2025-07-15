@@ -1,20 +1,17 @@
-from server.database.db import SessionLocal
-from server.models.account import Account
+from server.database.repositories.base_repository import BaseRepository
+from server.database.orm_models.account import Account
+from sqlalchemy.orm import Session
 
-class AccountRepository:
-    def create(self, data: dict):
-        with SessionLocal() as db:
-            account = Account(**data)
-            db.add(account)
-            db.commit()
-            db.refresh(account)
-            return account
 
-    def get_by_user_id(self, user_id):
-        with SessionLocal() as db:
+class AccountRepository(BaseRepository[Account]):
+    def __init__(self):
+        super().__init__(Account)
+
+    def get_by_user_id(self, user_id: str):
+        with self.get_session() as db:
             return db.query(Account).filter(Account.user_id == user_id).all()
-        
-    def bulk_create(self, accounts_data: list, user_id: str, db):
+
+    def bulk_create(self, accounts_data: list, user_id: str, db: Session):
         accounts = [
             Account(
                 account_id=a["id"],
@@ -26,7 +23,6 @@ class AccountRepository:
             )
             for a in accounts_data
         ]
-        for acc in accounts:
-            db.add(acc)
+        db.add_all(accounts)
         db.flush()
         return accounts

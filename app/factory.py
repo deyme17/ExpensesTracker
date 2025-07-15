@@ -1,7 +1,7 @@
 # screens
 from app.views.screens import SplashScreen, FirstScreen, LoginScreen, RegistrationScreen, TransactionsScreen, AnalyticsScreen
 # controllers
-from app.controllers import AnalyticsController, AuthController, TransactionController, MetaDataController
+from app.controllers import AnalyticsController, AuthController, TransactionController, MetaDataController, GraphFactory
 # services
 from app.services import LocalStorageService, AuthService, TransactionProcessor, DataLoader
 from app.services.analytics import AnalyticsService
@@ -41,6 +41,7 @@ def create_app():
         category_service,
         currency_service
     )
+    graph_factory = GraphFactory(category_service)
     analytics_controller = AnalyticsController(analytics_service)
     meta_data_controller = MetaDataController(currency_service, category_service)
 
@@ -70,6 +71,7 @@ def create_app():
             name=name,
             transaction_controller=transaction_controller,
             analytics_controller=analytics_controller,
+            graph_factory=graph_factory,
             local_storage=storage,
             logout_callback=auth_controller.logout
         ),

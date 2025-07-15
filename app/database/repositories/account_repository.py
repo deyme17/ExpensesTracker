@@ -10,7 +10,7 @@ class AccountRepository(BaseRepository[AccountORM]):
     def __init__(self, session: Session):
         super().__init__(session, AccountORM)
 
-    def save_accounts(self, accounts: list[Account]):
+    def save_accounts(self, accounts: list[Account]) -> None:
         for acc in accounts:
             orm = AccountORM(
                 account_id=acc.account_id,

@@ -9,7 +9,7 @@ class CategoryRepository(BaseRepository[CategoryORM]):
     def __init__(self, session: Session):
         super().__init__(session, CategoryORM)
 
-    def save_categories(self, categories: list[Category]):
+    def save_categories(self, categories: list[Category]) -> None:
         for cat in categories:
             orm = CategoryORM(
                 mcc_code=cat.mcc_code,

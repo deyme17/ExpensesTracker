@@ -11,6 +11,8 @@ class AccountRepository(BaseRepository[AccountORM]):
         super().__init__(session, AccountORM)
 
     def save_accounts(self, accounts: list[Account]) -> None:
+        if not accounts:
+            return None
         for acc in accounts:
             orm = AccountORM(
                 account_id=acc.account_id,

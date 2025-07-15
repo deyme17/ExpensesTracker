@@ -10,6 +10,8 @@ class CurrencyRepository(BaseRepository[CurrencyORM]):
         super().__init__(session, CurrencyORM)
 
     def save_currencies(self, currencies: list[Currency]) -> None:
+        if not currencies:
+            return None
         for cat in currencies:
             orm = CurrencyORM(
                 currency_code=cat.currency_code,

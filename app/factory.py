@@ -3,14 +3,16 @@ from app.views.screens import SplashScreen, FirstScreen, LoginScreen, Registrati
 # controllers
 from app.controllers import AnalyticsController, AuthController, TransactionController, MetaDataController, GraphFactory
 # services
-from app.services import LocalStorageService, AuthService, TransactionProcessor, DataLoader, AnalyticsService
+from app.services import AuthService, TransactionProcessor, DataLoader, AnalyticsService
 from app.services.crud_services import AccountService, CategoryService, CurrencyService, TransactionService
 # app cls
 from app.app import ExpensesTrackerApp
+# local db
+from app.database.db_manager import LocalDBManager
 
 
 def create_app():
-    storage = LocalStorageService()
+    storage = LocalDBManager()
     
     # services
     category_service = CategoryService(storage)

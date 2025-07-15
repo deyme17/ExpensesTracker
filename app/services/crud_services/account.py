@@ -1,9 +1,10 @@
 from app.api import get_auth_headers, safe_request, API_BASE
 from app.utils.error_codes import ErrorCodes
 from app.models.account import Account
+from app.utils.helpers import RemoteMode
 
 
-class AccountService:
+class AccountService(RemoteMode):
     """
     Handles account data retrieval from local storage or API.
     Args:
@@ -26,28 +27,23 @@ class AccountService:
             accounts = self.local_storage.accounts.get_accounts()
             if accounts:
                 return accounts, None
-            
         except Exception:
             pass
 
-        # api
-        if self.user_id:
-            try:
-                url = f"{API_BASE}/api/accounts/{self.user_id}"
-                result = safe_request("GET", url, headers=get_auth_headers())
+        if self.offline_mode or not self.user_id:
+            return [], ErrorCodes.OFFLINE_MODE
 
-                if result.get("success"):
-                    accounts = [Account.from_dict(acc) for acc in result["data"]]
+        try:
+            url = f"{API_BASE}/api/accounts/{self.user_id}"
+            result = safe_request("GET", url, headers=get_auth_headers())
 
-                    if self.local_storage:
-                        self.local_storage.accounts.save_accounts(accounts)
-                    
-                    return accounts, None
-                
-                else:
-                    return [], result.get("error", ErrorCodes.UNKNOWN_ERROR)
-                
-            except Exception:
-                return [], ErrorCodes.UNKNOWN_ERROR
+            if result.get("success"):
+                accounts = [Account.from_dict(acc) for acc in result["data"]]
+                if self.local_storage:
+                    self.local_storage.accounts.save_accounts(accounts)
+                return accounts, None
+            else:
+                return [], result.get("error", ErrorCodes.UNKNOWN_ERROR)
 
-        return [], ErrorCodes.OFFLINE_MODE
+        except Exception:
+            return [], ErrorCodes.UNKNOWN_ERROR

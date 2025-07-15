@@ -2,9 +2,10 @@ from app.models.currency import Currency
 from app.api import api_get_currencies
 from app.utils.constants import DEFAULT_CURRENCY_CODE
 from app.utils.error_codes import ErrorCodes
+from app.utils.helpers import RemoteMode
 
 
-class CurrencyService:
+class CurrencyService(RemoteMode):
     """
     Handles currency data operations including code/name conversions and caching.
     Args:
@@ -26,20 +27,18 @@ class CurrencyService:
         if self._code_to_currency:
             return [Currency(currency_code=k, name=v) for k, v in self._code_to_currency.items()], None
 
-        try:
-            result = api_get_currencies()
-            if result.get("success"):
-                currencies = [Currency.from_dict(c) for c in result["data"]]
-
-                if self.local_storage:
-                    self.local_storage.currencies.save_currencies(currencies)
-
-                self._update_currency_cache(currencies)
-                return currencies, None
-            
-            return [], result.get("error", ErrorCodes.UNKNOWN_ERROR)
-        except Exception:
-            pass
+        if not self.offline_mode:
+            try:
+                result = api_get_currencies()
+                if result.get("success"):
+                    currencies = [Currency.from_dict(c) for c in result["data"]]
+                    if self.local_storage:
+                        self.local_storage.currencies.save_currencies(currencies)
+                    self._update_currency_cache(currencies)
+                    return currencies, None
+                return [], result.get("error", ErrorCodes.UNKNOWN_ERROR)
+            except Exception:
+                pass
 
         if self.local_storage:
             currencies = self.local_storage.currencies.get_currencies()

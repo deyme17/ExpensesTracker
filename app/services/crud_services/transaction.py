@@ -6,12 +6,12 @@ from app.api import (
     api_get_transaction_by_id
 )
 from app.models.transaction import Transaction
-from app.utils.helpers import is_online
+from app.utils.helpers import RemoteMode
 from app.utils.error_codes import ErrorCodes
 from app.utils.formatters import format_date
 
 
-class TransactionService:
+class TransactionService(RemoteMode):
     """
     Handles transaction operations including CRUD and caching.
     Args:
@@ -22,7 +22,6 @@ class TransactionService:
     def __init__(self, user_id: str|None, local_storage):
         self.user_id = user_id
         self.local_storage = local_storage
-        self.offline_mode = not is_online()
         self._cached = None
 
     def get_transactions(self, force_refresh: bool = False) -> list:
@@ -47,9 +46,9 @@ class TransactionService:
             if self.local_storage:
                 self.local_storage.transactions.save_transactions(transactions)
             return transactions
-        else:
-            print("[TransactionService] API error:", result.get("error"))
-            return self.local_storage.transactions.get_transactions()
+
+        print("[TransactionService] API error:", result.get("error"))
+        return self.local_storage.transactions.get_transactions()
 
     def get_transaction_by_id(self, transaction_id: str):
         """

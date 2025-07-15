@@ -2,9 +2,10 @@ from app.api import api_get_categories
 from app.utils.constants import DEFAULT_MCC, DEFAULT_CATEGORY
 from app.utils.error_codes import ErrorCodes
 from app.models.category import Category
+from app.utils.helpers import RemoteMode
 
 
-class CategoryService:
+class CategoryService(RemoteMode):
     """
     Handles category data operations including MCC code lookups and caching.
     Args:
@@ -25,21 +26,18 @@ class CategoryService:
         if self._mcc_to_name:
             return [Category(mcc_code=k, name=v) for k, v in self._mcc_to_name.items()], None
 
-        try:
-            result = api_get_categories()
-
-            if result.get("success"):
-                categories = [Category.from_dict(c) for c in result["data"]]
-
-                if self.local_storage:
-                    self.local_storage.categories.save_categories(categories)
-
-                self._update_category_cache(categories)
-                return categories, None
-            
-            return [], result.get("error", ErrorCodes.UNKNOWN_ERROR)
-        except Exception:
-            pass
+        if not self.offline_mode:
+            try:
+                result = api_get_categories()
+                if result.get("success"):
+                    categories = [Category.from_dict(c) for c in result["data"]]
+                    if self.local_storage:
+                        self.local_storage.categories.save_categories(categories)
+                    self._update_category_cache(categories)
+                    return categories, None
+                return [], result.get("error", ErrorCodes.UNKNOWN_ERROR)
+            except Exception:
+                pass
 
         if self.local_storage:
             categories = self.local_storage.categories.get_categories()

@@ -12,19 +12,19 @@ from app.database.db_manager import LocalDBManager
 
 
 def create_app():
-    storage = LocalDBManager()
+    local_storage = LocalDBManager()
     
     # services
-    category_service = CategoryService(storage)
-    currency_service = CurrencyService(storage)
+    category_service = CategoryService(local_storage)
+    currency_service = CurrencyService(local_storage)
     transaction_processor = TransactionProcessor(category_service)
     analytics_service = AnalyticsService(category_service)
-    account_service = AccountService(storage_service=storage, user_id=None)
-    transaction_service = TransactionService(storage_service=storage, user_id=None)
+    account_service = AccountService(local_storage=local_storage, user_id=None)
+    transaction_service = TransactionService(local_storage=local_storage, user_id=None)
 
     # DataLoader
     data_loader = DataLoader(
-        storage,
+        local_storage,
         account_service,
         transaction_service, 
         category_service,
@@ -32,7 +32,7 @@ def create_app():
     )
 
     # auth
-    auth = AuthService(storage, data_loader, account_service, transaction_service)
+    auth = AuthService(local_storage, data_loader, account_service, transaction_service)
 
     # controllers
     auth_controller = AuthController(auth)
@@ -64,7 +64,7 @@ def create_app():
             name=name, 
             transactions_controller=transaction_controller, 
             meta_data_controller=meta_data_controller,
-            storage_service=storage,
+            local_storage=local_storage,
             update_analytics_callback=refresh_analytics,
             logout_callback=auth_controller.logout),
 
@@ -73,9 +73,9 @@ def create_app():
             transaction_controller=transaction_controller,
             analytics_controller=analytics_controller,
             graph_factory=graph_factory,
-            local_storage=storage,
+            local_storage=local_storage,
             logout_callback=auth_controller.logout
         ),
-        storage_service=storage,
+        local_storage=local_storage,
         is_authenticated=auth_controller.is_authenticated
     )

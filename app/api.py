@@ -10,7 +10,8 @@ API_BASE = os.getenv("API_BASE")
 def get_auth_headers():
     try:
         from app.database.db_manager import LocalDBManager
-        user = LocalDBManager().user.get_user()
+        current_user_id = LocalDBManager().settings.get_current_user_id()
+        user = LocalDBManager().user.get_user(current_user_id)
 
         if user and user.token:
             if is_token_expired(user.token):

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from typing import Type, TypeVar, Generic, List, Optional
+from typing import Type, TypeVar, Generic, Optional
 
 ORM_TYPE = TypeVar('T')
 
@@ -16,7 +16,7 @@ class BaseRepository(Generic[ORM_TYPE]):
     def get_by_id(self, id_value) -> Optional[ORM_TYPE]:
         return self.session.query(self.model).get(id_value)
 
-    def get_all(self) -> List[ORM_TYPE]:
+    def get_all(self) -> list[ORM_TYPE]:
         return self.session.query(self.model).all()
 
     def update(self, obj: ORM_TYPE) -> None:

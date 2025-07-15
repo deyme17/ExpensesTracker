@@ -20,7 +20,6 @@ class SettingsRepository:
             .filter_by(user_id=user_id, key=key)
             .first()
         )
-
         if setting:
             setting.value = value
         else:

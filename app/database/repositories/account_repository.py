@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import Optional
 
 from app.database.repositories.base_repository import BaseRepository
 from app.database.orm_models.account import AccountORM

@@ -3,14 +3,14 @@ from sqlalchemy.sql import func
 import enum
 
 from app.database.orm_models.base_orm import Base
-from app.utils.constants import DEFAULT_CURRENCY_CODE, DEFAULT_MCC
+from app.utils.constants import INCOME, EXPENSE, CARD, CASH, DEFAULT_CURRENCY_CODE, DEFAULT_MCC
 
 class TransactionType(enum.Enum):
-    EXPENSE = "expense"
-    INCOME  = "income"
+    EXPENSE = EXPENSE
+    INCOME  = INCOME
 class PaymentMethod(enum.Enum):
-    CARD = "card"
-    CASH = "cash"
+    CARD = CARD
+    CASH = CASH
 
 
 class TransactionORM(Base):

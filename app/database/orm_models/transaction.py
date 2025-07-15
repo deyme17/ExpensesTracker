@@ -1,9 +1,9 @@
 from sqlalchemy import Column, String, Float, Integer, DateTime, Boolean, Enum
 from sqlalchemy.sql import func
-from app.database.orm_models.base_orm import Base
 import enum
 
-from app.utils.constants import INCOME, EXPENSE, CARD, CASH
+from app.database.orm_models.base_orm import Base
+from app.utils.constants import INCOME, EXPENSE, CARD, CASH, DEFAULT_CURRENCY_CODE, DEFAULT_MCC
 
 class TransactionType(enum.Enum):
     EXPENSE = EXPENSE
@@ -26,8 +26,8 @@ class TransactionORM(Base):
         default=TransactionType.EXPENSE,
         nullable=False
     )
-    mcc_code = Column(Integer, default=0)
-    currency_code = Column(Integer, default=980)
+    mcc_code = Column(Integer, default=DEFAULT_MCC)
+    currency_code = Column(Integer, default=DEFAULT_CURRENCY_CODE)
     description = Column(String, default="No description")
     payment_method = Column(
         Enum(PaymentMethod, name="payment_method"),

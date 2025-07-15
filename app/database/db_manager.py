@@ -4,6 +4,15 @@ from app.database.orm_models.base_orm import SessionLocal
 
 
 class LocalDBManager:
+    """Centralized database access manager for local SQLite storage.
+    Provides repositories for all core entities:
+        - Accounts
+        - Categories  
+        - Currencies
+        - Transactions
+        - Users
+        - Settings
+    """
     def __init__(self):
         self.session = SessionLocal()
         self.accounts = AccountRepository(self.session)

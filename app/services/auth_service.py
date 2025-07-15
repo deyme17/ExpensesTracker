@@ -10,13 +10,13 @@ class AuthService:
     """
     Handles user authentication and session management.
     Args:
-        storage_service: Storage handler for user persistence
+        local_storage: Storage handler for user persistence
         data_loader: Component responsible for loading user data
         account_service:
         transaction_service:
     """
-    def __init__(self, storage_service, data_loader, account_service, transaction_service):
-        self.storage = storage_service
+    def __init__(self, local_storage, data_loader, account_service, transaction_service):
+        self.local_storage = local_storage
         self.data_loader = data_loader
         self.account_service = account_service
         self.transaction_service = transaction_service
@@ -24,12 +24,12 @@ class AuthService:
 
     def on_user_authenticated(self, user, callback=None):
         self.current_user = user
-        self.storage.user.save_user(user)
+        self.local_storage.user.save_user(user)
 
         # update user_id
         self.account_service.user_id = user.user_id
         self.transaction_service.user_id = user.user_id
-        self.transaction_service.storage = self.storage
+        self.transaction_service.storage = self.local_storage
 
         self.data_loader.load_data(user, callback=callback)
 
@@ -45,7 +45,7 @@ class AuthService:
                 return False
             return True
         
-        user = self.storage.user.get_user()
+        user = self.local_storage.user.get_user()
         if user:
             if is_token_expired(user.token):
                 self.logout()
@@ -61,7 +61,7 @@ class AuthService:
             User: The authenticated user object or None
         """
         if not self.current_user:
-            self.current_user = self.storage.user.get_user()
+            self.current_user = self.local_storage.user.get_user()
         return self.current_user
 
     def logout(self) -> bool:
@@ -71,7 +71,7 @@ class AuthService:
             bool: Always returns True
         """
         self.current_user = None
-        self.storage.user.clear_user()
+        self.local_storage.user.clear_user()
         return True
 
     def login(self, email: str, password: str, callback=None):
@@ -90,7 +90,7 @@ class AuthService:
                     user = User.from_api_dict(response)
                     self.on_user_authenticated(user, callback=lambda: callback(True, LM.message("login_success")) if callback else None)
                 else:
-                    local_user = self.storage.user.get_user()
+                    local_user = self.local_storage.user.get_user()
 
                     if local_user and local_user.email == email:
                         self.on_user_authenticated(local_user, callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None)
@@ -100,7 +100,7 @@ class AuthService:
                             callback(False, LM.server_error(error_code))
 
             except Exception:
-                local_user = self.storage.user.get_user()
+                local_user = self.local_storage.user.get_user()
                 if local_user and local_user.email == email:
                     self.on_user_authenticated(local_user, callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None)
                 else:
@@ -131,7 +131,7 @@ class AuthService:
                 print(response)
                 if response.get("success"):
                     user = User.from_api_dict(response)
-                    self.storage.user.save_user(user)
+                    self.local_storage.user.save_user(user)
                     self.current_user = user
                     def after_load():
                         if callback:

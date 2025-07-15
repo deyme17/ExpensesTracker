@@ -8,11 +8,11 @@ class CategoryService:
     """
     Handles category data operations including MCC code lookups and caching.
     Args:
-        storage_service: Optional storage service for local caching (must implement 
+        local_storage: Optional storage service for local caching (must implement 
                          `save_categories()` and `get_categories()`)
     """
-    def __init__(self, storage_service=None):
-        self.storage_service = storage_service
+    def __init__(self, local_storage=None):
+        self.local_storage = local_storage
         self._mcc_to_name = {}
         self._name_to_mcc = {}
 
@@ -31,8 +31,8 @@ class CategoryService:
             if result.get("success"):
                 categories = [Category.from_dict(c) for c in result["data"]]
 
-                if self.storage_service:
-                    self.storage_service.categories.save_categories(categories)
+                if self.local_storage:
+                    self.local_storage.categories.save_categories(categories)
 
                 self._update_category_cache(categories)
                 return categories, None
@@ -41,8 +41,8 @@ class CategoryService:
         except Exception:
             pass
 
-        if self.storage_service:
-            categories = self.storage_service.categories.get_categories()
+        if self.local_storage:
+            categories = self.local_storage.categories.get_categories()
             self._update_category_cache(categories)
             return categories, ErrorCodes.OFFLINE_MODE
 

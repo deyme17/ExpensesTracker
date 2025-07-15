@@ -7,7 +7,7 @@ class DataLoader:
     """
     Handles asynchronous loading of financial data.
     Args:
-        storage_service: Storage handler for persistent data
+        local_storage: Storage handler for persistent data
         account_service: Account operations service
         transaction_service: Transaction operations service
         category_service: Category operations service
@@ -15,13 +15,13 @@ class DataLoader:
     """
     def __init__(
         self,
-        storage_service,
+        local_storage,
         account_service,
         transaction_service,
         category_service,
         currency_service
     ):
-        self.storage = storage_service
+        self.storage = local_storage
         self.account_service = account_service
         self.transaction_service = transaction_service
         self.category_service = category_service

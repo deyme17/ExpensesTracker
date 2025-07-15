@@ -41,11 +41,11 @@ class AnalyticsScreen(BaseScreen):
         self.transaction_controller = transaction_controller
         self.analytics_controller = analytics_controller
         self.graph_factory = graph_factory
-        self.storage = local_storage
+        self.local_storage = local_storage
 
         # state
         self._filter_state = AnalyticsFilterState()
-        self.selected_account_id = self.storage.get_active_account_id()
+        self.selected_account_id = self.local_storage.get_active_account_id()
 
         # sections
         self.stats_section = None
@@ -136,7 +136,7 @@ class AnalyticsScreen(BaseScreen):
         """
         Reloads transactions and updates all sections.
         """
-        self.selected_account_id = self.storage.get_active_account_id()
+        self.selected_account_id = self.local_storage.get_active_account_id()
         self._load_analytics_data()
         self._update_sections()
 

@@ -1,5 +1,5 @@
 from kivy.uix.screenmanager import Screen, SlideTransition
-from kivy.properties import StringProperty, NumericProperty, ListProperty, ObjectProperty
+from kivy.properties import NumericProperty, ObjectProperty
 from kivy.graphics import Color, Ellipse
 from kivy.animation import Animation
 from kivy.clock import Clock

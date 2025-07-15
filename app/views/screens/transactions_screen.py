@@ -21,19 +21,19 @@ class TransactionsScreen(BaseScreen):
     Args:
         transactions_controller: Handles transaction operations
         meta_data_controller: Provides currency/category metadata
-        storage_service: Persistent storage handler
+        local_storage: Persistent local_storage handler
         update_analytics_callback: Callback for analytics updates
     """
     balance_text = StringProperty("")
     account_options = ListProperty([])
     selected_account_id = StringProperty(allownone=True)
 
-    def __init__(self, transactions_controller, meta_data_controller, storage_service, update_analytics_callback=None, **kwargs):
+    def __init__(self, transactions_controller, meta_data_controller, local_storage, update_analytics_callback=None, **kwargs):
         super().__init__(**kwargs)
         # controllers
         self.transactions_controller = transactions_controller
         self.meta_data_controller = meta_data_controller
-        self.storage_service = storage_service
+        self.local_storage = local_storage
         # callback
         self.update_analytics_callback = update_analytics_callback
         # data
@@ -172,7 +172,7 @@ class TransactionsScreen(BaseScreen):
     def _on_account_selected(self, selected_account_id: str):
         self.selected_account_id = selected_account_id
         print("[DEBUG] Account selected:", selected_account_id)
-        self.storage_service.set_active_account(selected_account_id)
+        self.local_storage.set_active_account(selected_account_id)
         self._refresh_everything()
         self.show_success_message(LM.message("account_changed"))
 
@@ -200,8 +200,8 @@ class TransactionsScreen(BaseScreen):
         self.trigger_analytics_update()
 
     def _initialize_data(self):
-        self.accounts = self.storage_service.get_accounts() or []
-        self.selected_account_id = self.storage_service.get_active_account_id()
+        self.accounts = self.local_storage.get_accounts() or []
+        self.selected_account_id = self.local_storage.get_active_account_id()
         self.account_options = [f"{a.currency_code}-{a.type}" for a in self.accounts]
         self.categories = self.meta_data_controller.get_categories()
         self.currencies = self.meta_data_controller.get_currencies()

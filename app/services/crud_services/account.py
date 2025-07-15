@@ -7,11 +7,11 @@ class AccountService:
     """
     Handles account data retrieval from local storage or API.
     Args:
-        storage_service: Service for local account storage operations
+        local_storage: Service for local account storage operations
         user_id: Optional user identifier for API requests
     """
-    def __init__(self, storage_service, user_id=None):
-        self.storage_service = storage_service
+    def __init__(self, local_storage, user_id=None):
+        self.local_storage = local_storage
         self.user_id = user_id
 
     def get_accounts(self) -> tuple[list, str]:
@@ -23,8 +23,7 @@ class AccountService:
         """
         # local
         try:
-            accounts = self.storage_service.accounts.get_accounts()
-
+            accounts = self.local_storage.accounts.get_accounts()
             if accounts:
                 return accounts, None
             
@@ -40,8 +39,8 @@ class AccountService:
                 if result.get("success"):
                     accounts = [Account.from_dict(acc) for acc in result["data"]]
 
-                    if self.storage_service:
-                        self.storage_service.accounts.save_accounts(accounts)
+                    if self.local_storage:
+                        self.local_storage.accounts.save_accounts(accounts)
                     
                     return accounts, None
                 

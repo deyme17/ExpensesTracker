@@ -16,12 +16,12 @@ class TransactionService:
     Handles transaction operations including CRUD and caching.
     Args:
         user_id: ID of the current user
-        storage_service: Storage handler for offline operations (must implement
+        local_storage: Storage handler for offline operations (must implement
                        `get_transactions()` and `save_transactions()`)
     """
-    def __init__(self, user_id: str|None, storage_service):
+    def __init__(self, user_id: str|None, local_storage):
         self.user_id = user_id
-        self.storage = storage_service
+        self.local_storage = local_storage
         self.offline_mode = not is_online()
         self._cached = None
 
@@ -35,7 +35,7 @@ class TransactionService:
         """
         if self.offline_mode:
             print("[TransactionService] OFFLINE mode: loading from local storage")
-            return self.storage.transactions.get_transactions()
+            return self.local_storage.transactions.get_transactions()
 
         if self._cached is not None and not force_refresh:
             return self._cached
@@ -44,12 +44,12 @@ class TransactionService:
         if result.get("success"):
             transactions = [Transaction.from_dict(t) for t in result["data"]]
             self._cached = transactions
-            if self.storage:
-                self.storage.transactions.save_transactions(transactions)
+            if self.local_storage:
+                self.local_storage.transactions.save_transactions(transactions)
             return transactions
         else:
             print("[TransactionService] API error:", result.get("error"))
-            return self.storage.transactions.get_transactions()
+            return self.local_storage.transactions.get_transactions()
 
     def get_transaction_by_id(self, transaction_id: str):
         """
@@ -122,8 +122,8 @@ class TransactionService:
         if result.get("success"):
             if self._cached:
                 self._cached = [t for t in self._cached if t.transaction_id != transaction_id]
-            if self.storage:
-                self.storage.transactions.save_transactions(self._cached)
+            if self.local_storage:
+                self.local_storage.transactions.save_transactions(self._cached)
         return result
 
     def _invalidate_cache(self):

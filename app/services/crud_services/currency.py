@@ -8,11 +8,11 @@ class CurrencyService:
     """
     Handles currency data operations including code/name conversions and caching.
     Args:
-        storage_service: Optional storage service for local caching (must implement 
+        local_storage: Optional storage service for local caching (must implement 
                        `save_currencies()` and `get_currencies()`)
     """
-    def __init__(self, storage_service=None):
-        self.storage_service = storage_service
+    def __init__(self, local_storage=None):
+        self.local_storage = local_storage
         # cache
         self._code_to_currency = {}
         self._name_to_currency_code = {}
@@ -31,8 +31,8 @@ class CurrencyService:
             if result.get("success"):
                 currencies = [Currency.from_dict(c) for c in result["data"]]
 
-                if self.storage_service:
-                    self.storage_service.currencies.save_currencies(currencies)
+                if self.local_storage:
+                    self.local_storage.currencies.save_currencies(currencies)
 
                 self._update_currency_cache(currencies)
                 return currencies, None
@@ -41,8 +41,8 @@ class CurrencyService:
         except Exception:
             pass
 
-        if self.storage_service:
-            currencies = self.storage_service.currencies.get_currencies()
+        if self.local_storage:
+            currencies = self.local_storage.currencies.get_currencies()
             self._update_currency_cache(currencies)
             return currencies, ErrorCodes.OFFLINE_MODE
 

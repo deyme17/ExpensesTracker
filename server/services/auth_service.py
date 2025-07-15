@@ -4,8 +4,8 @@ from server.services.bank_services.monobank_service import MonobankService
 from server.services.user_service import UserService
 from server.services.account_service import AccountService
 from server.services.transaction_service import TransactionService
-from server.models.user import User
-from server.models.category import Category
+from server.database.orm_models.user import User
+from server.database.orm_models.category import Category
 from server.utils.security import hash_password, verify_password, create_access_token
 
 

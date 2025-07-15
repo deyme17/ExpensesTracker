@@ -8,14 +8,15 @@ class GraphFactory:
     Factory for creating and configuring different types of financial graphs.
     Implements the Strategy pattern to select appropriate graph types based on renderer configuration.
     """
-    def __init__(self):
+    def __init__(self, category_service):
+        """Args: category_service: Service for category data operations (is used in ShareGraph)"""
         self._strategies_by_key = {
             "distribution": DistributionGraph,
             "line": DynamicsGraph,
-            "share": ShareGraph
+            "share": lambda: ShareGraph(category_service)
         }
 
-    def create_graph(self, renderer, transactions: list):
+    def create_graph(self, renderer, transactions):
         """
         Creates and configures a graph visualization.
         Args:

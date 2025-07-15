@@ -23,4 +23,14 @@ class LocalDBManager:
         self.settings = SettingsRepository(self.session)
 
     def close(self):
-        self.session.close()
+        """Close database session"""
+        try:
+            self.session.close()
+        except Exception as e:
+            print(f"[ERROR] Failed to close database session: {e}")
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()

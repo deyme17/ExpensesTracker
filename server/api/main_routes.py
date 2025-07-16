@@ -111,19 +111,6 @@ def get_accounts(user_id):
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
     
-@api.route("/accounts/<account_id>", methods=["PATCH"])
-@require_auth
-def update_balance(account_id):
-    data = request.get_json()
-    if not data or "val" not in data:
-        return jsonify({"error": "Missing 'val' in request body"}), 400
-    try:
-        account_service.update_balance(account_id, data["val"])
-        return jsonify({"success": True})
-    
-    except ValueError as e:git
-        return jsonify({"error": str(e)}), 400
-
 
 # categories
 @api.route("/categories", methods=["GET"])

@@ -2,10 +2,20 @@ from server.database.repositories.currency_repository import CurrencyRepository
 
 
 class CurrencyService:
-    def __init__(self):
-        self.repo = CurrencyRepository()
+    """
+    Service layer for currency operations.
+    Args:
+        repository: CurrencyRepository instance for data access
+    """
+    def __init__(self, repository):
+        self.repo = repository
 
-    def get_all(self):
+    def get_all(self) -> list[dict]:
+        """
+        Retrieves all available currencies.
+        Returns:
+            List of currency dictionaries
+        """
         try:
             currencies = self.repo.get_all()
             result = []
@@ -22,4 +32,5 @@ class CurrencyService:
             print(f"[CurrencyService] Error fetching currencies: {str(e)}")
             raise
 
-currency_service = CurrencyService()
+
+currency_service = CurrencyService(repository=CurrencyRepository())

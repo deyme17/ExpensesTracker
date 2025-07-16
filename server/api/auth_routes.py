@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from server.services import auth_service
 from server.utils.security import create_access_token
+from server.services import auth_service
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
@@ -43,6 +43,8 @@ def login():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 401
     
+
+# ping
 ping_bp = Blueprint("ping", __name__)
 
 @ping_bp.route("/ping", methods=["GET"])

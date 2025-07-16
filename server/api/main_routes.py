@@ -92,7 +92,7 @@ def delete_transaction(transaction_id):
 @api.route("/accounts", methods=["POST"])
 def create_account():
     try:
-        data = request.json
+        data = request.get_json()
         account = account_service.create(data)
         return jsonify({"success": True, "data": {"account_id": account.account_id}})
 
@@ -115,7 +115,7 @@ def get_accounts(user_id):
 @api.route("/accounts/<account_id>", methods=["PATCH"])
 @require_auth
 def update_balance(account_id):
-    data = request.json
+    data = request.get_json()
     if not data or "val" not in data:
         return jsonify({"error": "Missing 'val' in request body"}), 400
     try:

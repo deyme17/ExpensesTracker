@@ -33,7 +33,7 @@ class AccountService:
         """
         return self.repo.bulk_create(accounts_data, user_id, db)
     
-    def update_balance(self, account_id: str, val: float):
+    def update_balance(self, account_id: str, val: float, db: Session):
         """
         Updates account balance.
         Args:
@@ -42,7 +42,7 @@ class AccountService:
         Returns:
             Updated account object
         """
-        return self.repo.update(account_id, val)
+        return self.repo.update_balance(account_id, val, db)
 
     def get_by_user_id(self, user_id: str) -> list[dict]:
         """

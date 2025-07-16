@@ -7,6 +7,15 @@ class AccountRepository(BaseRepository[Account]):
     def __init__(self):
         super().__init__(Account)
 
+    def update_balance(self, account_id: str, val: float, db: Session) -> Account | None:
+        account = db.query(Account).filter(Account.account_id == account_id).first()
+        if not account:
+            return None
+        account.balance += val
+        db.commit()
+        db.refresh(account)
+        return account
+    
     def get_by_user_id(self, user_id: str):
         with self.get_session() as db:
             return db.query(Account).filter(Account.user_id == user_id).all()

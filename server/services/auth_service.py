@@ -10,7 +10,6 @@ class AuthService:
     """
     Service for handling user registration and authentication.
     """
-
     def __init__( self, user_service, bank_service_cls: BankService, bank_sync_service):
         """
         Args:

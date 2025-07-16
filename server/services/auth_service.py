@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from server.database.orm_models import User
 from server.services.bank_services.bank_service import BankService
-from server.utils.security import hash_password, verify_password, create_access_token
+from server.utils.security import hash_password, verify_password, create_access_token, WEBHOOK_URL
 
 
 class AuthService:
@@ -41,18 +41,22 @@ class AuthService:
         if self.user_service.repo.get_user_by_email(data["email"]):
             raise Exception("user_exists")
 
-        user_data = {
-            "user_id": user_id,
-            "name": client_info.get("name"),
-            "email": data.get("email"),
-            "hashed_password": hash_password(data["password"]),
-            "encrypted_token": token
-        }
-        user = self.user_service.repo.create_user(user_data, db)
+        try:
+            with db.begin():
+                user_data = {
+                    "user_id": user_id,
+                    "name": client_info.get("name"),
+                    "email": data.get("email"),
+                    "hashed_password": hash_password(data["password"]),
+                    "encrypted_token": token
+                }
+                user = self.user_service.repo.create_user(user_data, db)
+                self.bank_sync_service.sync_user_data(bank, user_id, db)
+                bank.set_webhook(WEBHOOK_URL)
 
-        self.bank_sync_service.sync_user_data(bank, user_id, db)
+        except Exception as e:
+            raise Exception(f"Registration failed: {e}")
 
-        db.commit()
         return {
             "user_id": user.user_id,
             "name": user.name,

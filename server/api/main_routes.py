@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from server.utils.auth_decorator import require_auth
-from server.services.crud import transaction_service, account_service, category_service, currency_service
-from server.services import auth_service
+from server.services.crud import transaction_service, account_service, category_service, currency_service, user_service
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
@@ -11,7 +10,7 @@ api = Blueprint("api", __name__, url_prefix="/api")
 @require_auth
 def get_current_user():
     try:
-        user = auth_service.get_user_by_id(request.user_id)
+        user = user_service.get_user_by_id(request.user_id)
         return jsonify({"success": True, "data": {
             "user_id": user.user_id,
             "name": user.name,
@@ -122,7 +121,7 @@ def update_balance(account_id):
         account_service.update_balance(account_id, data["val"])
         return jsonify({"success": True})
     
-    except ValueError as e:
+    except ValueError as e:git
         return jsonify({"error": str(e)}), 400
 
 

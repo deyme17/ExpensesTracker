@@ -1,5 +1,4 @@
 from server.database.repositories.account_repository import AccountRepository
-from sqlalchemy.orm import Session
 
 
 class AccountService:
@@ -21,19 +20,18 @@ class AccountService:
         """
         return self.repo.create(data)
     
-    def bulk_create(self, accounts_data: list[dict], user_id: str, db: Session):
+    def bulk_create(self, accounts_data: list[dict], user_id: str):
         """
         Bulk create accounts.
         Args:
             accounts_data: list of account dicts from банк-сервісу
             user_id: user id to link accounts to
-            db: SQLAlchemy session
         Returns:
             list of created Account ORM objects
         """
-        return self.repo.bulk_create(accounts_data, user_id, db)
+        return self.repo.bulk_create(accounts_data, user_id)
     
-    def update_balance(self, account_id: str, val: float, db: Session):
+    def update_balance(self, account_id: str, val: float):
         """
         Updates account balance.
         Args:
@@ -42,7 +40,7 @@ class AccountService:
         Returns:
             Updated account object
         """
-        return self.repo.update_balance(account_id, val, db)
+        return self.repo.update_balance(account_id, val)
 
     def get_by_user_id(self, user_id: str) -> list[dict]:
         """

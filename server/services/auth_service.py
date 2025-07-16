@@ -52,6 +52,7 @@ class AuthService:
 
         self.bank_sync_service.sync_user_data(bank, user_id, db)
 
+        db.commit()
         return {
             "user_id": user.user_id,
             "name": user.name,

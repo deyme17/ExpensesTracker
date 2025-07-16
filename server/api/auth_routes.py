@@ -1,15 +1,17 @@
 from flask import Blueprint, request, jsonify
 from server.utils.security import create_access_token
 from server.services import auth_service
+from server.database.db import SessionLocal
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
+    db = SessionLocal()
     try:
         data = request.get_json()
-        user_info = auth_service.register_user(data)
+        user_info = auth_service.register_user(data, db)
 
         token = create_access_token({"user_id": user_info["user_id"]})
 
@@ -21,7 +23,10 @@ def register():
             "token": token
         })
     except Exception as e:
+        db.rollback()
         return jsonify({"success": False, "error": str(e)}), 400
+    finally:
+        db.close()
 
 
 @auth_bp.route("/login", methods=["POST"])

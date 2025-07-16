@@ -54,3 +54,17 @@ class MonobankService:
             raise Exception("transactions_fetch_error: status={status}, text={text}".format(
                 status=response.status_code,
                 text=response.text))
+        
+    def set_webHook(self, url: str) -> None:
+        """
+        Sets WebHookURL for current user.
+        Args:
+            url: WebHook endpoint on which the updates will be sent.
+        """
+        response = requests.post(
+            f"{self.BASE_URL}/personal/webhook",
+            headers=self._headers(),
+            json={"webHookUrl": url}
+        )
+        if response.status_code != 200:
+            raise Exception(f"Failed to set webHook {response.text}")

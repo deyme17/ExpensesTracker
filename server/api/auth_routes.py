@@ -1,10 +1,8 @@
 from flask import Blueprint, request, jsonify
-from server.services.auth_service import AuthService
-from server.utils.security import create_access_token, verify_password
+from server.services import auth_service
+from server.utils.security import create_access_token
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
-
-auth_service = AuthService()
 
 
 @auth_bp.route("/register", methods=["POST"])

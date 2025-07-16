@@ -1,13 +1,9 @@
 from flask import Blueprint, request, jsonify
-from server.services.transaction_service import transaction_service
-from server.services.account_service import account_service
-from server.services.category_service import category_service
-from server.services.currency_service import currency_service
-from server.services.auth_service import AuthService
 from server.utils.auth_decorator import require_auth
+from server.services import transaction_service, auth_service, account_service, category_service, currency_service
 
 api = Blueprint("api", __name__, url_prefix="/api")
-auth_service = AuthService()
+
 
 # user
 @api.route("/me", methods=["GET"])

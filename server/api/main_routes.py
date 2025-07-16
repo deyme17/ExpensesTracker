@@ -28,36 +28,68 @@ def get_current_user():
 @api.route("/transactions/<user_id>", methods=["GET"])
 @require_auth
 def get_transactions(user_id):
-    if request.user_id != user_id:
-        return jsonify({"success": False, "error": "Access denied"}), 403
-
-    transactions = transaction_service.get_all_by_user(user_id)
-    return jsonify({"success": True, "data": transactions})
+    try:
+        if request.user_id != user_id:
+            return jsonify({"success": False, "error": "Access denied"}), 403
+        
+        transactions = transaction_service.get_all_by_user(user_id)
+        return jsonify({"success": True, "data": transactions})
+    
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @api.route("/transaction", methods=["POST"])
 @require_auth
 def create_transaction():
-    data = request.json
-    data["user_id"] = request.user_id
-    transaction = transaction_service.create(data)
-    return jsonify({"success": True, "data": {"transaction_id": transaction.transaction_id}})
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "error": "No data provided"}), 400
+
+        data["user_id"] = request.user_id
+        transaction = transaction_service.create(data)
+        return jsonify({"success": True, "data": {"transaction_id": transaction.transaction_id}})
+    
+    except KeyError as e:
+        return jsonify({"success": False, "error": f"Missing required field: {str(e)}"}), 400
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"success": False, "error": "Internal server error"}), 500
 
 
 @api.route("/transaction/<string:transaction_id>", methods=["PATCH"])
 @require_auth
 def update_transaction(transaction_id):
-    data = request.json
-    transaction_service.update(transaction_id, data)
-    return jsonify({"success": True})
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "error": "No data provided"}), 400
+
+        transaction_service.update(transaction_id, data)
+        return jsonify({"success": True})
+    
+    except KeyError as e:
+        return jsonify({"success": False, "error": f"Transaction not found: {transaction_id}"}), 404
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"success": False, "error": "Internal server error"}), 500
 
 
 @api.route("/transaction/<string:transaction_id>", methods=["DELETE"])
 @require_auth
 def delete_transaction(transaction_id):
-    transaction_service.delete(transaction_id)
-    return jsonify({"success": True})
-
+    try:
+        transaction_service.delete(transaction_id)
+        return jsonify({"success": True})
+    
+    except KeyError as e:
+        return jsonify({"success": False, "error": f"Transaction not found: {transaction_id}"}), 404
+    except Exception as e:
+        return jsonify({"success": False, "error": "Internal server error"}), 500
+    
 
 # accounts
 @api.route("/accounts", methods=["POST"])
@@ -66,6 +98,7 @@ def create_account():
         data = request.json
         account = account_service.create(data)
         return jsonify({"success": True, "data": {"account_id": account.account_id}})
+
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
@@ -78,6 +111,7 @@ def get_accounts(user_id):
     try:
         accounts = account_service.get_by_user_id(user_id)
         return jsonify({"success": True, "data": accounts})
+    
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
     
@@ -90,6 +124,7 @@ def update_balance(account_id):
     try:
         account_service.update_balance(account_id, data["val"])
         return jsonify({"success": True})
+    
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 

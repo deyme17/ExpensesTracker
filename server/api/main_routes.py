@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from server.utils.auth_decorator import require_auth
-from server.services import transaction_service, auth_service, account_service, category_service, currency_service
+from server.services.crud import transaction_service, account_service, category_service, currency_service
+from server.services import auth_service
 
 api = Blueprint("api", __name__, url_prefix="/api")
 

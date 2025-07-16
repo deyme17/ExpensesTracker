@@ -1,27 +1,48 @@
-from datetime import timedelta, datetime
+from datetime import timedelta
+
 from server.database.db import SessionLocal
 from server.services.bank_services.monobank_service import MonobankService
-from server.services.user_service import UserService
-from server.services.account_service import AccountService
-from server.services.transaction_service import TransactionService
-from server.database.orm_models.user import User
-from server.database.orm_models.category import Category
+from server.services.crud import user_service, account_service, transaction_service
+from server.database.orm_models import User, Category
+
 from server.utils.security import hash_password, verify_password, create_access_token
 
 
 class AuthService:
-    def __init__(self):
-        self.user_service = UserService()
-        self.account_service = AccountService()
-        self.transaction_service = TransactionService()
+    """
+    Handles user authentication, registration and token management.
+    Args:
+        user_service: Service for user data operations
+        account_service: Service for account operations
+        transaction_service: Service for transaction operations
+        bank_service: Factory for bank API service (e.g. MonobankService)
+    """
+    def __init__(self, user_service, account_service, transaction_service, bank_service):
+        self.user_service = user_service
+        self.account_service = account_service
+        self.transaction_service = transaction_service
+        self.bank_service = bank_service
 
-    def register_user(self, data: dict):
+    def register_user(self, data: dict[str, str]) -> dict[str, str]:
+        """
+        Registers a new user with linked bank account.
+        Args:
+            data: Registration data containing:
+                - email: User email
+                - password: Plaintext password
+                - encrypted_token: Bank API token
+        Returns:
+            Dictionary with basic user info:
+                - user_id: Unique user identifier
+                - name: User's name from bank
+                - email: User's email
+        """
         token = data.get("encrypted_token", "").strip()
         if not token:
             raise Exception("token_missing")
 
-        mono = MonobankService(token)
-        client_info = mono.get_client_info()
+        bank = self.bank_service(token)
+        client_info = bank.get_client_info()
         user_id = client_info["user_id"]
 
         with SessionLocal() as db:
@@ -50,7 +71,7 @@ class AuthService:
                 # transactions
                 all_transactions = []
                 for acc in accounts:
-                    txs = mono.get_transactions(acc.account_id, days=31)
+                    txs = bank.get_transactions(acc.account_id, days=31)
                     all_transactions.extend(self.transaction_service.map_transactions(txs, user_id, acc.account_id))
 
                 # add categories
@@ -74,7 +95,19 @@ class AuthService:
                 db.rollback()
                 raise e
 
-    def login_user(self, email: str, password: str):
+    def login_user(self, email: str, password: str) -> dict[str, str]:
+        """
+        Authenticates user and generates JWT token.
+        Args:
+            email: User's email address
+            password: Plaintext password for verification
+        Returns:
+            Dictionary containing:
+                - token: JWT access token
+                - user_id: Authenticated user ID
+                - name: User's name
+                - email: User's email
+        """
         user = self.user_service.repo.get_user_by_email(email)
         if not user or not verify_password(password, user.hashed_password):
             raise Exception("invalid_credentials")
@@ -88,11 +121,28 @@ class AuthService:
             "email": user.email
         }
 
-    def get_user_by_id(self, user_id: str):
+    def get_user_by_id(self, user_id: str) -> User:
+        """
+        Retrieves user by their unique identifier.
+        Args:
+            user_id: Unique user ID to lookup
+        Returns:
+            User ORM object with all user data
+        """
         user = self.user_service.repo.get_user_by_id(user_id)
         if not user:
             raise Exception("user_not_found")
         return user
 
     def create_token(self, user: User) -> str:
-        return create_access_token({"user_id": user.user_id}, expires_delta=timedelta(days=1))
+        """Generates JWT token for authenticated user.
+        Args:
+            user: User ORM object to generate token for
+        Returns:
+            JWT token string valid for 1 day
+        """
+        return create_access_token({"user_id": user.user_id}, expires_delta=timedelta(days=20))
+    
+
+auth_service = AuthService(user_service=user_service, account_service=account_service, transaction_service=transaction_service, 
+                           bank_service=MonobankService())

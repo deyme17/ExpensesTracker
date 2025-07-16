@@ -14,10 +14,22 @@ def serialize(obj):
 
 
 class TransactionService:
-    def __init__(self):
-        self.repo = TransactionRepository()
+    """
+    Service layer for transaction operations.
+    Args:
+        repository: TransactionRepository instance for data access
+    """
+    def __init__(self, repository):
+        self.repo = repository
 
-    def get_all_by_user(self, user_id):
+    def get_all_by_user(self, user_id: str) -> list[dict]:
+        """
+        Retrieves all transactions for specified user.
+        Args:
+            user_id: User's unique identifier
+        Returns:
+            List of transaction dictionaries with serialized values
+        """
         transactions = self.repo.get_all_by_user(user_id)
         return [
             {
@@ -37,16 +49,45 @@ class TransactionService:
             for t in transactions
         ]
 
-    def create(self, data):
+    def create(self, data: dict):
+        """
+        Creates new transaction.
+        Args:
+            data: Transaction data dictionary
+        Returns:
+            Created transaction object
+        """
         return self.repo.create(data)
 
-    def delete(self, transaction_id):
+    def delete(self, transaction_id: str) -> None:
+        """
+        Deletes specified transaction.
+        Args:
+            transaction_id: Transaction's unique identifier
+        """
         return self.repo.delete(transaction_id)
 
-    def update(self, transaction_id, data):
+    def update(self, transaction_id: str, data: dict):
+        """
+        Updates existing transaction.
+        Args:
+            transaction_id: Transaction's unique identifier
+            data: Updated transaction data
+        Returns:
+            Updated transaction object
+        """
         return self.repo.update(transaction_id, data)
     
-    def map_transactions(self, tx_data, user_id, account_id):
+    def map_transactions(self, tx_data: list[dict], user_id: str, account_id: str) -> list:
+        """
+        Maps external transaction data to ORM models.
+        Args:
+            tx_data: List of raw transaction dictionaries
+            user_id: Associated user ID
+            account_id: Associated account ID
+        Returns:
+            List of Transaction ORM objects
+        """
         from server.database.orm_models.transaction import Transaction
         return [
             Transaction(
@@ -66,4 +107,4 @@ class TransactionService:
         ]
 
 
-transaction_service = TransactionService()
+transaction_service = TransactionService(repository=TransactionRepository())

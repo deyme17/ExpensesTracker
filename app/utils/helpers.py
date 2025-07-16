@@ -12,7 +12,7 @@ def set_bins(length):
 class RemoteMode:
     _last_ping_time = 0
     _last_ping_result = False
-    PING_CACHE_TTL = 30
+    PING_CACHE_TTL = 600
 
     def is_online(self):
         current_time = time.time()

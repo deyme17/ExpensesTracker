@@ -42,3 +42,12 @@ class BankService(ABC):
             }
         """
         pass
+
+    @abstractmethod
+    def set_webHook(self, url: str) -> None:
+        """
+        Sets WebHookURL for current user.
+        Args:
+            url: WebHook endpoint on which the updates will be sent.
+        """
+        pass

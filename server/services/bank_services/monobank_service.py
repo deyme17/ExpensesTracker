@@ -12,6 +12,15 @@ class MonobankService:
         return {"X-Token": self.token}
 
     def get_client_info(self):
+        """
+        Get the necessary information to create a user in the database.
+        Returns:
+            dict: {
+            "user_id": str,
+            "name": str,
+            "balance": float
+        }
+        """
         url = f"{self.BASE_URL}/personal/client-info"
         response = requests.get(url, headers=self._headers())
 
@@ -32,6 +41,22 @@ class MonobankService:
         }
 
     def get_transactions(self, account_id, days=31):
+        """
+        Import user transactions for the last N days.
+        Returns:
+            dict: {
+                "transaction_id": str,
+                "user_id": str,
+                "amount": float,
+                "date": datetime.date,
+                "currency_code": int,
+                "mcc_code": int,
+                "type": str,
+                "description": str,
+                "cashback": float,
+                "commission": float
+            }
+        """
         if not account_id:
             raise ValueError("missing_account_id")
 

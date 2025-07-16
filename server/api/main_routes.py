@@ -4,7 +4,6 @@ from server.services.account_service import account_service
 from server.services.category_service import category_service
 from server.services.currency_service import currency_service
 from server.services.auth_service import AuthService
-from server.utils.security import decode_access_token
 from server.utils.auth_decorator import require_auth
 
 api = Blueprint("api", __name__, url_prefix="/api")
@@ -70,6 +69,7 @@ def create_account():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
+
 @api.route("/accounts/<user_id>", methods=["GET"])
 @require_auth
 def get_accounts(user_id):
@@ -80,6 +80,19 @@ def get_accounts(user_id):
         return jsonify({"success": True, "data": accounts})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+    
+@api.route("/accounts/<account_id>", methods=["PATCH"])
+@require_auth
+def update_balance(account_id):
+    data = request.json
+    if not data or "val" not in data:
+        return jsonify({"error": "Missing 'val' in request body"}), 400
+    try:
+        account_service.update_balance(account_id, data["val"])
+        return jsonify({"success": True})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
 
 # categories
 @api.route("/categories", methods=["GET"])
@@ -88,6 +101,7 @@ def get_categories():
         return jsonify({"success": True, "data": category_service.get_all()})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
 
 # currencies
 @api.route("/currencies", methods=["GET"])

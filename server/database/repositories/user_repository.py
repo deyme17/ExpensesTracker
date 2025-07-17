@@ -1,6 +1,5 @@
 from server.database.repositories.base_repository import BaseRepository
 from server.database.orm_models.user import User
-from server.database.db import SessionLocal
 from sqlalchemy.orm import Session
 
 

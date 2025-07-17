@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from server.database.orm_models import User
 from server.services.bank_services.bank_service import BankService
 from server.utils.security import hash_password, verify_password, create_access_token
+from server.utils.encryption import Encryption as enc
 from dotenv import load_dotenv
 import os
 
@@ -35,11 +36,11 @@ class AuthService:
         Returns:
             Dict with user_id, name, and email
         """
-        token = data.get("encrypted_token", "").strip()
-        if not token:
-            raise Exception("token_missing")
+        monobank_token = data.get("monobank_token", "").strip()
+        if not monobank_token:
+            raise Exception("monobank_token_missing")
 
-        bank = self.bank_service_cls(token)
+        bank = self.bank_service_cls(monobank_token)
         client_info = bank.get_client_info()
         user_id = client_info["user_id"]
 
@@ -53,7 +54,7 @@ class AuthService:
                     "name": client_info.get("name"),
                     "email": data.get("email"),
                     "hashed_password": hash_password(data["password"]),
-                    "encrypted_token": token
+                    "encrypted_token": enc.encrypt(monobank_token)
                 }
                 user = self.user_service.repo.create_user(user_data, db)
                 self.bank_sync_service.sync_user_data(bank, user_id, db)

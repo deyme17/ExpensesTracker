@@ -164,7 +164,7 @@ class AuthService:
                 payload = {
                     "email": email,
                     "password": password,
-                    "encrypted_token": token
+                    "token": token
                 }
                 print("REGISTRATION")
                 response = api_register(payload)

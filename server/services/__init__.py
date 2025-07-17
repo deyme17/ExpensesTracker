@@ -1,5 +1,4 @@
 from server.services.auth_service import AuthService
-from server.services.account_sync_service import AccountSyncService
 from server.services.bank_services.monobank_service import MonobankService
 from server.services.bank_sync_service import BankSyncService
 
@@ -15,7 +14,3 @@ auth_service = AuthService(
     bank_service_cls=MonobankService,
     bank_sync_service=bank_sync_service
 )
-account_sync_service = AccountSyncService(
-    bank_service=MonobankService,
-    account_service=account_service
-    )

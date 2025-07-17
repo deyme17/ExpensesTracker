@@ -154,7 +154,7 @@ class AuthService:
             email: User email address
             password: Plaintext password
             confirm_password: Password confirmation
-            token: Monobank API token
+            monobank_token: Monobank API token
             callback: Optional callback(success: bool, message: str)
         """
         def try_register(dt):

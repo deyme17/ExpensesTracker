@@ -1,27 +1,28 @@
 from server.database.repositories.base_repository import BaseRepository
 from server.database.orm_models.account import Account
+from sqlalchemy.orm import Session
 
 
 class AccountRepository(BaseRepository[Account]):
     def __init__(self):
         super().__init__(Account)
 
-    def update_balance(self, account_id: str, val: float) -> Account | None:
-        with self.get_session() as db:
-            account = db.query(Account).filter(Account.account_id == account_id).first()
+    def update_balance(self, account_id: str, val: float, db: Session = None) -> Account | None:
+        with self.get_session(db) as session:
+            account = session.query(Account).filter(Account.account_id == account_id).first()
             if not account:
                 return None
             account.balance += val
-            db.commit()
-            db.refresh(account)
+            session.commit()
+            session.refresh(account)
             return account
     
-    def get_by_user_id(self, user_id: str):
-        with self.get_session() as db:
-            return db.query(Account).filter(Account.user_id == user_id).all()
+    def get_by_user_id(self, user_id: str, db: Session = None):
+        with self.get_session(db) as session:
+            return session.query(Account).filter(Account.user_id == user_id).all()
 
-    def bulk_create(self, accounts_data: list, user_id: str):
-        with self.get_session() as db:
+    def bulk_create(self, accounts_data: list, user_id: str, db: Session = None):
+        with self.get_session(db) as session:
             accounts = [
                 Account(
                     account_id=a["id"],
@@ -33,6 +34,6 @@ class AccountRepository(BaseRepository[Account]):
                 )
                 for a in accounts_data
             ]
-            db.add_all(accounts)
-            db.flush()
+            session.add_all(accounts)
+            session.flush()
             return accounts

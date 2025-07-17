@@ -9,40 +9,40 @@ class BaseRepository(Generic[ORM_TYPE]):
     def __init__(self, model: Type[ORM_TYPE]):
         self.model = model
 
-    def get_session(self) -> Session:
-        return SessionLocal()
+    def get_session(self, db: Session = None) -> Session:
+        return db or SessionLocal()
 
-    def get_all(self) -> List[ORM_TYPE]:
-        with self.get_session() as db:
-            return db.query(self.model).all()
+    def get_all(self, db: Session = None) -> List[ORM_TYPE]:
+        with self.get_session(db) as session:
+            return session.query(self.model).all()
 
-    def get_by_id(self, obj_id: str) -> Optional[ORM_TYPE]:
-        with self.get_session() as db:
-            return db.query(self.model).get(obj_id)
+    def get_by_id(self, obj_id: str, db: Session = None) -> Optional[ORM_TYPE]:
+        with self.get_session(db) as session:
+            return session.query(self.model).get(obj_id)
 
-    def create(self, data: dict) -> ORM_TYPE:
-        with self.get_session() as db:
+    def create(self, data: dict, db: Session = None) -> ORM_TYPE:
+        with self.get_session(db) as session:
             obj = self.model(**data)
-            db.add(obj)
-            db.commit()
-            db.refresh(obj)
+            session.add(obj)
+            session.commit()
+            session.refresh(obj)
             return obj
 
-    def delete(self, obj_id: str) -> None:
-        with self.get_session() as db:
-            obj = db.query(self.model).get(obj_id)
+    def delete(self, obj_id: str, db: Session = None) -> None:
+        with self.get_session(db) as session:
+            obj = session.query(self.model).get(obj_id)
             if obj:
-                db.delete(obj)
-                db.commit()
+                session.delete(obj)
+                session.commit()
 
-    def update(self, obj_id: str, data: dict) -> Optional[ORM_TYPE]:
-        with self.get_session() as db:
-            obj = db.query(self.model).get(obj_id)
+    def update(self, obj_id: str, data: dict, db: Session = None) -> Optional[ORM_TYPE]:
+        with self.get_session(db) as session:
+            obj = session.query(self.model).get(obj_id)
             if not obj:
                 return None
             for key, value in data.items():
                 if hasattr(obj, key):
                     setattr(obj, key, value)
-            db.commit()
-            db.refresh(obj)
+            session.commit()
+            session.refresh(obj)
             return obj

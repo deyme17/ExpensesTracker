@@ -8,10 +8,12 @@ class MonoWebHookService(BaseWebHookService):
     Args:
         transaction_service: Service for CRUD transaction operations (is used for transaction saving)
         account_service: Service for CRUD account operations (is used for balance updates)
+         account_sync_service: Service to ensure accounts exist and are synced from Monobank API
     """
-    def __init__(self,transaction_service, account_service):
+    def __init__(self, transaction_service, account_service, account_sync_service):
         self.transaction_service = transaction_service
         self.account_service = account_service
+        self.account_sync_service = account_sync_service
 
     def save_hooked_transactions(self, data: dict, db: Session = None) -> None:
         """
@@ -31,6 +33,8 @@ class MonoWebHookService(BaseWebHookService):
         """
         Saves a single transaction and updates the account balance.
         """
+        self.account_sync_service.sync_account_by_id(tx_data["account"], db)
+
         transaction = self.transaction_service.create(tx_data, db)
         self.account_service.update_balance(
             account_id=transaction.account_id,

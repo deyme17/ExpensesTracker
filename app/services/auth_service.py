@@ -93,6 +93,28 @@ class AuthService:
         self.local_storage.settings.clear_current_user()
         return True
 
+    def _try_offline_login(self, email: str, callback: Optional[Callable[[bool, str], None]] = None) -> bool:
+        """
+        Attempt to authenticate the user offline using locally stored credentials.
+        Args:
+            email: User email address to verify against local data
+            callback: Optional callback(success: bool, message: str) to notify about the result
+        Returns:
+            True if offline login succeeded, False otherwise
+        """
+        current_user_id = self.local_storage.settings.get_current_user_id()
+        if not current_user_id:
+            return False
+
+        local_user = self.local_storage.user.get_user(current_user_id)
+        if local_user and local_user.email == email:
+            self.on_user_authenticated(
+                local_user,
+                callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None
+            )
+            return True
+        return False
+    
     def login(self, email: str, password: str, callback: Optional[Callable[[bool, str], None]] = None) -> None:
         """
         Authenticate a user with email/password credentials.
@@ -112,43 +134,19 @@ class AuthService:
                         callback=lambda: callback(True, LM.message("login_success")) if callback else None
                     )
                 else:
-                    # try offline login
-                    current_user_id = self.local_storage.settings.get_current_user_id()
-                    local_user = None
-                    
-                    if current_user_id:
-                        local_user = self.local_storage.user.get_user(current_user_id)
-                    
-                    if local_user and local_user.email == email:
-                        self.on_user_authenticated(
-                            local_user, 
-                            callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None
-                        )
-                    else:
+                    if not self._try_offline_login(email, callback):
                         error_code = response.get("error", ErrorCodes.UNKNOWN_ERROR)
                         if callback:
                             callback(False, LM.server_error(error_code))
 
             except Exception:
-                # try offline login
-                current_user_id = self.local_storage.settings.get_current_user_id()
-                local_user = None
-                
-                if current_user_id:
-                    local_user = self.local_storage.user.get_user(current_user_id)
-                
-                if local_user and local_user.email == email:
-                    self.on_user_authenticated(
-                        local_user, 
-                        callback=lambda: callback(True, LM.message("login_success_offline")) if callback else None
-                    )
-                else:
+                if not self._try_offline_login(email, callback):
                     if callback:
                         callback(False, LM.server_error(ErrorCodes.UNKNOWN_ERROR))
 
         Clock.schedule_once(try_login, 0.5)
 
-    def register(self, email: str, password: str, confirm_password: str, token: str, 
+    def register(self, email: str, password: str, confirm_password: str, monobank_token: str, 
                 callback: Optional[Callable[[bool, str], None]] = None) -> None:
         """
         Register a new user account.
@@ -164,7 +162,7 @@ class AuthService:
                 payload = {
                     "email": email,
                     "password": password,
-                    "monobank_token": token
+                    "monobank_token": monobank_token
                 }
                 print("REGISTRATION")
                 response = api_register(payload)

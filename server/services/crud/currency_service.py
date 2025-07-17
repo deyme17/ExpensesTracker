@@ -1,4 +1,5 @@
 from server.database.repositories.currency_repository import CurrencyRepository
+from sqlalchemy.orm import Session
 
 
 class CurrencyService:
@@ -10,14 +11,16 @@ class CurrencyService:
     def __init__(self, repository):
         self.repo = repository
 
-    def get_all(self) -> list[dict]:
+    def get_all(self, db: Session = None) -> list[dict]:
         """
         Retrieves all available currencies.
+        Args:
+            db: Optional database session
         Returns:
             List of currency dictionaries
         """
         try:
-            currencies = self.repo.get_all()
+            currencies = self.repo.get_all(db)
             result = []
             for currency in currencies:
                 try:

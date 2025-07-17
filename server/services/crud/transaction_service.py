@@ -1,4 +1,5 @@
 from server.database.repositories.transaction_repository import TransactionRepository
+from sqlalchemy.orm import Session
 import enum
 from datetime import date, datetime
 from decimal import Decimal
@@ -22,15 +23,16 @@ class TransactionService:
     def __init__(self, repository):
         self.repo = repository
 
-    def get_all_by_user(self, user_id: str) -> list[dict]:
+    def get_all_by_user(self, user_id: str, db: Session = None) -> list[dict]:
         """
         Retrieves all transactions for specified user.
         Args:
             user_id: User's unique identifier
+            db: Optional database session
         Returns:
             List of transaction dictionaries with serialized values
         """
-        transactions = self.repo.get_all_by_user(user_id)
+        transactions = self.repo.get_all_by_user(user_id, db)
         return [
             {
                 "transaction_id": t.transaction_id,
@@ -49,34 +51,37 @@ class TransactionService:
             for t in transactions
         ]
 
-    def create(self, data: dict):
+    def create(self, data: dict, db: Session = None):
         """
         Creates new transaction.
         Args:
             data: Transaction data dictionary
+            db: Optional database session
         Returns:
             Created transaction object
         """
-        return self.repo.create(data)
+        return self.repo.create(data, db)
 
-    def delete(self, transaction_id: str) -> None:
+    def delete(self, transaction_id: str, db: Session = None) -> None:
         """
         Deletes specified transaction.
         Args:
             transaction_id: Transaction's unique identifier
+            db: Optional database session
         """
-        return self.repo.delete(transaction_id)
+        return self.repo.delete(transaction_id, db)
 
-    def update(self, transaction_id: str, data: dict):
+    def update(self, transaction_id: str, data: dict, db: Session = None):
         """
         Updates existing transaction.
         Args:
             transaction_id: Transaction's unique identifier
             data: Updated transaction data
+            db: Optional database session
         Returns:
             Updated transaction object
         """
-        return self.repo.update(transaction_id, data)
+        return self.repo.update(transaction_id, data, db)
     
     def map_transactions(self, tx_data: list[dict], user_id: str, account_id: str) -> list:
         """

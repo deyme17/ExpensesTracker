@@ -3,7 +3,12 @@ from sqlalchemy.orm import Session
 
 from server.database.orm_models import User
 from server.services.bank_services.bank_service import BankService
-from server.utils.security import hash_password, verify_password, create_access_token, WEBHOOK_URL
+from server.utils.security import hash_password, verify_password, create_access_token
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://no-webhook_URL/api/monobank/webhook")
 
 
 class AuthService:

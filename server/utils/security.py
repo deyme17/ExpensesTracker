@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "super-secret228")
-WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://no-webhook_URL/api/monobank/webhook")
 ALGORITHM = os.getenv("ALGORITHM", "H256")
 ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60*24)
 

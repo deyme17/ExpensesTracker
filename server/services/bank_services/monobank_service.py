@@ -18,7 +18,7 @@ class MonobankService:
             dict: {
             "user_id": str,
             "name": str,
-            "balance": float
+            "accounts": list
         }
         """
         url = f"{self.BASE_URL}/personal/client-info"

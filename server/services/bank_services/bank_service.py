@@ -18,7 +18,7 @@ class BankService(ABC):
             dict: {
             "user_id": str,
             "name": str,
-            "balance": float
+            "accounts": list
         }
         """
         pass

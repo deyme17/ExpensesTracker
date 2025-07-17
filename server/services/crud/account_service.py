@@ -53,7 +53,7 @@ class AccountService:
             account_id: Account ID
             db: Optional database session
         Returns:
-            Account dictionary
+            Account object
         """
         return self.repo.get_by_id(account_id, db)
 

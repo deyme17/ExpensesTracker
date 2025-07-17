@@ -18,7 +18,7 @@ class UserService:
             email: User's email address
             db: Optional database session
         Returns:
-            User data dictionary or None if not found
+            User object or None if not found
         """
         return self.repo.get_user_by_email(email, db)
 
@@ -29,7 +29,7 @@ class UserService:
             user_id: User's unique ID
             db: Optional database session
         Returns:
-            User data dictionary or None if not found
+            User data object or None if not found
         """
         return self.repo.get_user_by_id(user_id, db)
 

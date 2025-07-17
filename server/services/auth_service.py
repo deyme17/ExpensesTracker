@@ -63,16 +63,17 @@ class AuthService:
             "email": user.email
         }
 
-    def login_user(self, email: str, password: str) -> dict[str, str]:
+    def login_user(self, email: str, password: str, db: Session = None) -> dict[str, str]:
         """
         Authenticates user and returns JWT.
         Args:
             email: User email
             password: Plaintext password
+            db: Optional database session
         Returns:
             Dict with token and user info
         """
-        user = self.user_service.repo.get_user_by_email(email)
+        user = self.user_service.repo.get_user_by_email(email, db=db)
         if not user or not verify_password(password, user.hashed_password):
             raise Exception("invalid_credentials")
 

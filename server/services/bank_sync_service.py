@@ -16,11 +16,16 @@ class BankSyncService:
         """
         Syncs accounts and transactions for the given user from bank data.
         """
-        client_info = bank.get_client_info()
-        accounts = self._add_accounts(client_info, user_id, db)
-        transactions = self._get_transactions(bank, accounts, user_id)
-        self._add_missing_categories(transactions, db)
-        self._add_transactions(transactions, db)
+        try:
+            client_info = bank.get_client_info()
+            accounts = self._add_accounts(client_info, user_id, db)
+            transactions = self._get_transactions(bank, accounts, user_id)
+            self._add_missing_categories(transactions, db)
+            self._add_transactions(transactions, db)
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise
 
     def _add_accounts(self, client_info: dict, user_id: str, db: Session):
         """

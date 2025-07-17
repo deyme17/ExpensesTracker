@@ -46,6 +46,17 @@ class AccountService:
         """
         return self.repo.update_balance(account_id, val, db)
 
+    def get_by_id(self, account_id: str, db: Session = None) -> dict:
+        """
+        Gets account by account id.
+        Args:
+            account_id: Account ID
+            db: Optional database session
+        Returns:
+            Account dictionary
+        """
+        return self.repo.get_by_id(account_id, db)
+
     def get_by_user_id(self, user_id: str, db: Session = None) -> list[dict]:
         """
         Gets all accounts for specified user.

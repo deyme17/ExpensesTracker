@@ -1,4 +1,5 @@
 from .base_webhook_service import BaseWebHookService
+from sqlalchemy.orm import Session
 
 
 class MonoWebHookService(BaseWebHookService):
@@ -12,20 +13,27 @@ class MonoWebHookService(BaseWebHookService):
         self.transaction_service = transaction_service
         self.account_service = account_service
 
-    def save_hooked_transactions(self, data: dict) -> None:
+    def save_hooked_transactions(self, data: dict, db: Session = None) -> None:
+        """
+        Extracts and saves all transactions from a webhook payload.
+        Args:
+            data: The webhook payload containing transaction data.
+            db: Optional database session
+        """
         transactions = data.get("transactions", [])
         if not transactions:
             raise ValueError("No transactions found in webhook payload")
 
         for tx in transactions:
-            self._save_transaction(tx)
+            self._save_transaction(tx, db)
 
-    def _save_transaction(self, tx_data: dict) -> None:
+    def _save_transaction(self, tx_data: dict, db: Session = None) -> None:
         """
         Saves a single transaction and updates the account balance.
         """
-        transaction = self.transaction_service.create(tx_data)
+        transaction = self.transaction_service.create(tx_data, db)
         self.account_service.update_balance(
             account_id=transaction.account_id,
             amount=transaction.amount,
+            db=db
         )

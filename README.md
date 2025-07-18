@@ -10,7 +10,7 @@
 - 🔍 Transaction detail viewer, filtering, and sorting tools  
 - 🌐 Language UI with flexible `LanguageMapper`  
 - 💱 Total balance overview (per account)  
-- 📊 Built-in basic financial statistics and dynamic graphs of income/expenses
+- 📊 Built-in basic financial statistics and dynamic graphs of incomes and expenses<br>
         -📈 Line chart for dynamics over time  
         -📊 Histogram for distribution  
         -🥧 Pie charts for category-wise comparison 

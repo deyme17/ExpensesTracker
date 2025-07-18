@@ -5,6 +5,7 @@ class ErrorCodes:
     TRANSACTIONS_FETCH_ERROR = "transactions_fetch_error"
     MISSING_ACCOUNT_ID = "missing_account_id"
     NO_ACCOUNTS_FOUND = "no_accounts_found"
+    API_FAILED_BUT_LOADED_LOCAL = "api_failed_but_loaded_local"
 
     # User-side
     USER_EXISTS = "user_exists"

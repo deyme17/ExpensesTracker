@@ -24,31 +24,45 @@ class TransactionService(RemoteMode):
         self.local_storage = local_storage
         self._cached = None
 
-    def get_transactions(self, force_refresh: bool = False) -> list:
+    def get_transactions(self, force_refresh: bool = False) -> tuple[list[Transaction], str | None]:
         """
         Retrieves transactions from cache, API, or local storage.
         Args:
             force_refresh: If True, bypasses cache
         Returns:
-            List[Transaction]: List of transaction objects
+            Tuple: (list_of_transactions, error_message)
         """
-        if self.offline_mode:
-            print("[TransactionService] OFFLINE mode: loading from local storage")
-            return self.local_storage.transactions.get_transactions()
+        # local storage if offline
+        if self.offline_mode or not self.user_id:
+            try:
+                transactions = self.local_storage.transactions.get_transactions()
+                return transactions, None
+            except Exception:
+                return [], ErrorCodes.OFFLINE_MODE
 
+        # Return cached if allowed
         if self._cached is not None and not force_refresh:
-            return self._cached
+            return self._cached, None
 
-        result = api_get_transactions(self.user_id)
-        if result.get("success"):
-            transactions = [Transaction.from_dict(t) for t in result["data"]]
-            self._cached = transactions
-            if self.local_storage:
-                self.local_storage.transactions.save_transactions(transactions)
-            return transactions
+        try:
+            result = api_get_transactions(self.user_id)
+            if result.get("success"):
+                transactions = [Transaction.from_dict(t) for t in result["data"]]
+                self._cached = transactions
 
-        print("[TransactionService] API error:", result.get("error"))
-        return self.local_storage.transactions.get_transactions()
+                try:
+                    if self.local_storage:
+                        self.local_storage.transactions.save_transactions(transactions)
+                except Exception:
+                    pass
+                
+                return transactions, None
+            
+            return [], result.get("error", ErrorCodes.UNKNOWN_ERROR)
+        
+        except Exception:
+            return [], ErrorCodes.UNKNOWN_ERROR
+
 
     def get_transaction_by_id(self, transaction_id: str):
         """

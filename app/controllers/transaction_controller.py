@@ -63,7 +63,7 @@ class TransactionController:
     def get_transaction_by_id(self, transaction_id: str):
         return self.transaction_service.get_transaction_by_id(transaction_id)
 
-    def get_transactions(self, force_refresh: bool = False) -> list:
+    def get_transactions(self, force_refresh: bool = False) -> tuple[list, str | None]:
         return self.transaction_service.get_transactions(force_refresh=force_refresh)
 
     def filter_transactions(self, *, type: str = None, start_date: datetime = None, end_date: datetime = None,

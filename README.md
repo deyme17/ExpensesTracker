@@ -1,14 +1,51 @@
-# Android App for Financial Monitoring
-A simple Android application designed to track expenses and income using the Monobank API and WebHook. The app provides users with financial insights and savings management.
+# ExpensesTracker
 
-🔥 Key Features
+**ExpensesTracker** is an Android financial tracking application with Monobank API integration. It allows users to track income and expenses, analyze financial behavior, and securely manage personal budgets on the go.
 
-✅ Authentication via Monobank API – connect your bank account for automatic transaction updates.
+## Features
 
-✅ Manual expense and income entry – add transactions manually without bank integration.
+- 🔐 Monobank token-based authorization
+- 🔄 Automatic transaction import via secure Monobank webhook 
+- ✍️ Manual creation and editing of transactions with category and description  
+- 📊 Built-in basic financial statistics and dynamic graphs of income/expenses
+        *📈 Line chart for dynamics over time  
+        *📊 Histogram for distribution  
+        *🥧 Pie charts for category-wise comparison 
+- 🔍 Transaction detail viewer, filtering, and sorting tools  
+- 🌐 Language UI with flexible `LanguageMapper`  
+- 💱 Total balance overview (per account)  
 
-✅ Expense categorization – manage categories for better financial organization.
+## Architecture & Design
 
-✅ Automatic synchronization – regularly fetch new transactions via WebHook.
+- 🧭 **Client-server architecture** with RESTful API  
+- 🛠️ **Backend**: Flask app with PostgreSQL and main application with mySQL
+- 📱 **Frontend**: Kivy mobile GUI with clean UI/UX  
+- 🔐 **Security**: 
+  - JWT-based user authentication  
+  - Monobank token encryption + secure storage  
+  - Password hashing using `bcrypt`  
+- ⚙️ **Multithreading**: Asynchronous data loading to improve responsiveness  
+- 📂 **Design Patterns**:
+  - **MVC** (Model-View-Controller) as the backbone of frontend logic  
+  - **Repository pattern** for database abstraction  
+  - **Factory pattern** for dynamic object creation (e.g., charts, services)  
+  - **Strategy pattern** for different data processing pipelines  
+- 📦 Dockerized deployment with environment configuration  
+- 📚 Extensive class and method documentation  
+- 🔄 **Dependency inversion principle** followed for clean service injection
 
-✅ Financial analytics – generate reports and visualize spending trends with graphs.
+## Why Use It?
+
+- ✅ Real-time statistics with minimal manual input  
+- 📈 Graphical insights into spending trends  
+- 🛡️ Secure, reliable, and maintainable architecture  
+- 🔧 Easily extendable and testable codebase  
+- 🌍 Multilingual interface for global use
+
+## Tech Stack
+
+- **Frontend:** Kivy (Python)  
+- **Backend:** Flask  
+- **Database:** PostgreSQL (and mySQL)   
+- **Auth:** JWT generation + Monobank token  
+- **Containerization:** Docker  

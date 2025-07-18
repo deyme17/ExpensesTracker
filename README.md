@@ -7,15 +7,13 @@
 - 🔐 Monobank token-based authorization
 - 🔄 Automatic transaction import via secure Monobank webhook 
 - ✍️ Manual creation and editing of transactions with category and description  
-- 📊 Built-in basic financial statistics and dynamic graphs of income/expenses
-
-        *📈 Line chart for dynamics over time  
-        *📊 Histogram for distribution  
-        *🥧 Pie charts for category-wise comparison 
-
 - 🔍 Transaction detail viewer, filtering, and sorting tools  
 - 🌐 Language UI with flexible `LanguageMapper`  
 - 💱 Total balance overview (per account)  
+- 📊 Built-in basic financial statistics and dynamic graphs of income/expenses
+        *📈 Line chart for dynamics over time  
+        *📊 Histogram for distribution  
+        *🥧 Pie charts for category-wise comparison 
 
 ## Architecture & Design
 

@@ -11,7 +11,7 @@ class UserService:
     def __init__(self, repository):
         self.repo = repository
 
-    def get_user_by_email(self, email: str, db: Session = None) -> dict:
+    def get_user_by_email(self, email: str, db: Session = None):
         """
         Retrieves user by email address.
         Args:
@@ -22,7 +22,7 @@ class UserService:
         """
         return self.repo.get_user_by_email(email, db)
 
-    def get_user_by_id(self, user_id: str, db: Session = None) -> dict:
+    def get_user_by_id(self, user_id: str, db: Session = None):
         """
         Retrieves user by unique identifier.
         Args:
@@ -32,6 +32,16 @@ class UserService:
             User data object or None if not found
         """
         return self.repo.get_user_by_id(user_id, db)
-
+    
+    def get_user_by_account_id(self, account_id: str, db: Session = None):
+        """
+        Retrieves user by unique account identifier.
+        Args:
+            account: Account's unique ID
+            db: Optional database session
+        Returns:
+            User data object or None if not found
+        """
+        return self.repo.get_user_by_account_id(account_id, db)
 
 user_service = UserService(repository=UserRepository())

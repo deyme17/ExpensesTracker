@@ -8,9 +8,11 @@
 - 🔄 Automatic transaction import via secure Monobank webhook 
 - ✍️ Manual creation and editing of transactions with category and description  
 - 📊 Built-in basic financial statistics and dynamic graphs of income/expenses
+
         *📈 Line chart for dynamics over time  
         *📊 Histogram for distribution  
         *🥧 Pie charts for category-wise comparison 
+
 - 🔍 Transaction detail viewer, filtering, and sorting tools  
 - 🌐 Language UI with flexible `LanguageMapper`  
 - 💱 Total balance overview (per account)  
@@ -20,16 +22,19 @@
 - 🧭 **Client-server architecture** with RESTful API  
 - 🛠️ **Backend**: Flask app with PostgreSQL and main application with mySQL
 - 📱 **Frontend**: Kivy mobile GUI with clean UI/UX  
+- ⚙️ **Multithreading**: Asynchronous data loading to improve responsiveness 
+
 - 🔐 **Security**: 
   - JWT-based user authentication  
   - Monobank token encryption + secure storage  
   - Password hashing using `bcrypt`  
-- ⚙️ **Multithreading**: Asynchronous data loading to improve responsiveness  
+
 - 📂 **Design Patterns**:
   - **MVC** (Model-View-Controller) as the backbone of frontend logic  
   - **Repository pattern** for database abstraction  
   - **Factory pattern** for dynamic object creation (e.g., charts, services)  
   - **Strategy pattern** for different data processing pipelines  
+
 - 📦 Dockerized deployment with environment configuration  
 - 📚 Extensive class and method documentation  
 - 🔄 **Dependency inversion principle** followed for clean service injection

@@ -27,7 +27,6 @@ class TransactionRepository(BaseRepository[TransactionORM]):
                 payment_method=trx.payment_method,
                 cashback=trx.cashback,
                 commission=trx.commission,
-                is_synced=trx.is_synced,
             )
             self.session.merge(orm_transaction)
         self.session.commit()
@@ -51,7 +50,6 @@ class TransactionRepository(BaseRepository[TransactionORM]):
                 payment_method=orm_trx.payment_method,
                 cashback=orm_trx.cashback,
                 commission=orm_trx.commission,
-                is_synced=orm_trx.is_synced
             )
             for orm_trx in orm_transactions
         ]
@@ -70,7 +68,6 @@ class TransactionRepository(BaseRepository[TransactionORM]):
             payment_method=transaction.payment_method,
             cashback=transaction.cashback,
             commission=transaction.commission,
-            is_synced=transaction.is_synced,
         )
         self.session.add(orm_transaction)
         self.session.commit()
@@ -90,7 +87,6 @@ class TransactionRepository(BaseRepository[TransactionORM]):
         orm_trx.payment_method = transaction.payment_method
         orm_trx.cashback = transaction.cashback
         orm_trx.commission = transaction.commission
-        orm_trx.is_synced = transaction.is_synced
 
         self.session.commit()
         self.session.refresh(orm_trx)
@@ -119,5 +115,4 @@ class TransactionRepository(BaseRepository[TransactionORM]):
             payment_method=orm_trx.payment_method,
             cashback=orm_trx.cashback,
             commission=orm_trx.commission,
-            is_synced=orm_trx.is_synced
         )

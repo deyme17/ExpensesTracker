@@ -20,4 +20,3 @@ class TransactionORM(Base):
     payment_method = Column(String, nullable=False, default=CARD)
     cashback = Column(Float, default=0.0)
     commission = Column(Float, default=0.0)
-    is_synced = Column(Boolean, default=False)

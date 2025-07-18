@@ -7,7 +7,7 @@ from typing import Optional
 class Transaction:
     def __init__(self, transaction_id: str, user_id: str, amount: str|int|float, date: datetime, account_id: str,
                  mcc_code: int|str, currency_code: int|str, description: str = "", payment_method: str = CARD, type: str = EXPENSE,
-                 cashback: float|int|str = 0.0, commission: float|int|str = 0.0, is_synced: bool = True):
+                 cashback: float|int|str = 0.0, commission: float|int|str = 0.0):
 
         self.transaction_id = transaction_id
         self.user_id = user_id
@@ -21,7 +21,6 @@ class Transaction:
         self.payment_method = payment_method
         self.cashback = float(cashback)
         self.commission = float(commission)
-        self.is_synced = is_synced
 
     def _parse_date(self, date: str) -> datetime:
         if isinstance(date, datetime):
@@ -48,7 +47,6 @@ class Transaction:
             "payment_method": self.payment_method,
             "cashback": self.cashback,
             "commission": self.commission,
-            "is_synced": self.is_synced
         }
 
     @classmethod
@@ -68,7 +66,6 @@ class Transaction:
             payment_method=data.get("payment_method", CARD),
             cashback=data.get("cashback", 0.0),
             commission=data.get("commission", 0.0),
-            is_synced=data.get("is_synced", True)
         )
 
     def __str__(self) -> str:

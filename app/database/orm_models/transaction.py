@@ -1,6 +1,5 @@
-from sqlalchemy import Column, String, Float, Integer, DateTime, Boolean, Enum
+from sqlalchemy import Column, String, Float, Integer, DateTime, Boolean
 from sqlalchemy.sql import func
-import enum
 
 from app.database.orm_models.base_orm import Base
 from app.utils.constants import CARD, DEFAULT_CURRENCY_CODE, DEFAULT_MCC

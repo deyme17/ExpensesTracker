@@ -30,9 +30,9 @@ class TransactionService(RemoteMode):
         Args:
             force_refresh: If True, bypasses cache
         Returns:
-            Tuple: (list_of_transactions, error_message)
+            Tuple: (list_of_transactions, error_message or None)
         """
-        # local storage if offline
+        # use local storage if offline
         if self.offline_mode or not self.user_id:
             try:
                 transactions = self.local_storage.transactions.get_transactions()
@@ -40,29 +40,26 @@ class TransactionService(RemoteMode):
             except Exception:
                 return [], ErrorCodes.OFFLINE_MODE
 
-        # Return cached if allowed
+        # cache?
         if self._cached is not None and not force_refresh:
             return self._cached, None
 
+        # api
         try:
             result = api_get_transactions(self.user_id)
             if result.get("success"):
                 transactions = [Transaction.from_dict(t) for t in result["data"]]
                 self._cached = transactions
-
-                try:
-                    if self.local_storage:
-                        self.local_storage.transactions.save_transactions(transactions)
-                except Exception:
-                    pass
-                
                 return transactions, None
-            
-            return [], result.get("error", ErrorCodes.UNKNOWN_ERROR)
-        
-        except Exception:
-            return [], ErrorCodes.UNKNOWN_ERROR
 
+            return [], result.get("error", ErrorCodes.UNKNOWN_ERROR)
+
+        except Exception:
+            try:
+                transactions = self.local_storage.transactions.get_transactions()
+                return transactions, ErrorCodes.API_FAILED_BUT_LOADED_LOCAL
+            except Exception:
+                return [], ErrorCodes.UNKNOWN_ERROR
 
     def get_transaction_by_id(self, transaction_id: str):
         """

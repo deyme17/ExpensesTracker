@@ -192,7 +192,7 @@ class TransactionsScreen(BaseScreen):
 
 # other
     def refresh_transactions(self, force: bool =False):
-        all_tx, _ = self.transactions_controller.get_transactions(force_refresh=force)
+        all_tx = self.transactions_controller.get_transactions(force_refresh=force)
         filtered = [tx for tx in all_tx if tx.account_id == self.selected_account_id]
         filtered = sorted(filtered, key=lambda t: t.date, reverse=True)
         self._display_transactions(filtered)

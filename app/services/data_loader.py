@@ -8,6 +8,7 @@ class DataLoader:
     Handles asynchronous loading of financial data.
     Args:
         local_storage: Storage handler for persistent data
+        sync_service_cls: Class for synchronizing data between local storage and DB.
         account_service: Account operations service
         transaction_service: Transaction operations service
         category_service: Category operations service
@@ -16,12 +17,14 @@ class DataLoader:
     def __init__(
         self,
         local_storage,
+        sync_service_cls,
         account_service,
         transaction_service,
         category_service,
         currency_service
     ):
         self.local_storage = local_storage
+        self.sync_service_cls = sync_service_cls
         self.account_service = account_service
         self.transaction_service = transaction_service
         self.category_service = category_service
@@ -41,10 +44,20 @@ class DataLoader:
                 self.transaction_service.local_storage = self.local_storage
 
                 accounts, _ = self.account_service.get_accounts()
-                self.transaction_service.get_transactions(force_refresh=True)
-                self.category_service.get_categories()
-                self.currency_service.get_currencies()
+                transactions, _ = self.transaction_service.get_transactions(force_refresh=True)
+                categories, _ = self.category_service.get_categories()
+                currencies, _ = self.currency_service.get_currencies()
 
+                # sync data
+                sync_service = self.sync_service_cls(
+                    local_storage=self.local_storage,
+                    transaction_data=transactions,
+                    category_data=categories,
+                    currency_data=currencies
+                )
+                sync_service.sync()
+                
+                # choose acc
                 if accounts:
                     previous_account_id = self.local_storage.settings.get_active_account_id(user.user_id)
                     matching_account = next((acc for acc in accounts if acc.account_id == previous_account_id), None)

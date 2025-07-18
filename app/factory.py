@@ -3,7 +3,7 @@ from app.views.screens import SplashScreen, FirstScreen, LoginScreen, Registrati
 # controllers
 from app.controllers import AnalyticsController, AuthController, TransactionController, MetaDataController, GraphFactory
 # services
-from app.services import AuthService, TransactionProcessor, DataLoader, AnalyticsService
+from app.services import AuthService, TransactionProcessor, DataLoader, AnalyticsService, SyncService
 from app.services.crud_services import AccountService, CategoryService, CurrencyService, TransactionService
 # app cls
 from app.app import ExpensesTrackerApp
@@ -26,11 +26,12 @@ def create_app():
 
     # DataLoader
     data_loader = DataLoader(
-        local_storage,
-        account_service,
-        transaction_service, 
-        category_service,
-        currency_service
+        local_storage=local_storage,
+        sync_service_cls=SyncService,
+        account_service=account_service,
+        transaction_service=transaction_service, 
+        category_service=category_service,
+        currency_service=currency_service
     )
 
     # auth

@@ -1,0 +1,282 @@
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import dp kivy.metrics.dp
+
+#:set primary_color get_color_from_hex('#FF7043')
+#:set secondary_color get_color_from_hex('#0F7055')
+#:set accent_color get_color_from_hex('#FFB74D')
+#:set bg_color get_color_from_hex('#062925')
+#:set text_light get_color_from_hex('#FFFFFF')
+#:set text_dark get_color_from_hex('#212121')
+#:set hint_color get_color_from_hex('#B0BEC5')
+#:set card_color get_color_from_hex('#0A4035')
+#:set card_light get_color_from_hex('#65F0C9')
+#:set error_color get_color_from_hex('#F44336')
+#:set success_color get_color_from_hex('#66BB6A')
+#:set light_bg get_color_from_hex('#D8F3EB')
+
+<TransactionRow>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(60)
+    padding: [dp(12), dp(8)]
+    spacing: dp(8)
+    canvas.before:
+        Color:
+            rgba: light_bg
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(8)]
+
+    Label:
+        text: root.category
+        color: text_dark
+        size_hint_x: 0.35
+        font_size: '15sp'
+        text_size: self.size
+        halign: 'left'
+        valign: 'middle'
+        shorten: True
+        shorten_from: 'right'
+
+    Label:
+        text: root.date
+        color: hint_color
+        size_hint_x: 0.3
+        font_size: '14sp'
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+
+    Label:
+        text: root.amount
+        color: success_color if root.type == 'income' else error_color
+        size_hint_x: 0.35
+        font_size: '15sp'
+        text_size: self.size
+        halign: 'right'
+        valign: 'middle'
+
+<TransactionsScreen>:
+    transactions_container: transactions_container_id
+    canvas.before:
+        Color:
+            rgba: bg_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+
+        # menu + balance + account
+        BoxLayout:
+            size_hint_y: None
+            height: dp(70)
+            padding: dp(5)
+            spacing: dp(10)
+            canvas.before:
+                Color:
+                    rgba: card_light
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(10)]
+
+            Label:
+                text: root.balance_text
+                font_size: '20sp'
+                bold: True
+                color: text_dark
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+                padding: [dp(5), 0]
+
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_press: root.open_account_selector()
+                canvas.before:
+                    Color:
+                        rgba: secondary_color
+                    Line:
+                        width: 1.5
+                        rectangle: [self.x + dp(10), self.y + dp(12), dp(20), dp(15)]
+                    Line:
+                        width: 1.5
+                        points: [self.x + dp(10), self.y + dp(30), self.x + dp(30), self.y + dp(30)]
+
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_press: root.show_menu()
+                canvas.before:
+                    Color:
+                        rgba: secondary_color
+                    Line:
+                        width: 1.5
+                        circle: (self.center_x, self.center_y, min(self.width, self.height) / 2 - dp(5), 0, 360)
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x + dp(5), self.center_y - dp(2)]
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(5), self.center_y + dp(2), self.center_x + dp(5), self.center_y + dp(2)]
+
+        # Buttons
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+            Button:
+                text: 'Дохід'
+                background_color: 0, 0, 0, 0
+                color: text_light
+                bold: True
+                on_press: root.add_transaction(type='income')
+                canvas.before:
+                    Color:
+                        rgba: success_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+            Button:
+                text: 'Витрата'
+                background_color: 0, 0, 0, 0
+                color: text_light
+                bold: True
+                on_press: root.add_transaction(type='expense')
+                canvas.before:
+                    Color:
+                        rgba: error_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+
+        # Transactions title and controls
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            padding: [dp(15), 0]
+            canvas.before:
+                Color:
+                    rgba: card_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(10)]
+
+            Label:
+                text: 'Транзакції'
+                font_size: '18sp'
+                bold: True
+                color: text_light
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_press: root.refresh_transactions()
+                canvas.before:
+                    Color:
+                        rgba: accent_color
+                    Line:
+                        width: 1.5
+                        circle: (self.center_x, self.center_y, dp(12), 0, 360)
+
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_press: root.show_sort()
+                canvas.before:
+                    Color:
+                        rgba: accent_color
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(6), self.center_y - dp(5), self.center_x, self.center_y - dp(10), self.center_x + dp(6), self.center_y - dp(5)]
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(6), self.center_y + dp(5), self.center_x, self.center_y + dp(10), self.center_x + dp(6), self.center_y + dp(5)]
+
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_press: root.show_filter()
+                canvas.before:
+                    Color:
+                        rgba: accent_color
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(10), self.center_y + dp(8), self.center_x + dp(10), self.center_y + dp(8), self.center_x + dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(10), self.center_y + dp(8)]
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(2)]
+
+        # Transactions list
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            bar_width: dp(5)
+            bar_color: primary_color
+            bar_inactive_color: hint_color
+            effect_cls: 'ScrollEffect'
+
+            GridLayout:
+                id: transactions_container_id
+                cols: 1
+                spacing: dp(5)
+                padding: dp(5)
+                size_hint_y: None
+                height: self.minimum_height
+
+        # Bottom menu
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            spacing: dp(5)
+            Button:
+                text: 'Транзакції'
+                background_color: 0, 0, 0, 0
+                color: primary_color
+                bold: True
+                canvas.before:
+                    Color:
+                        rgba: card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+                    Color:
+                        rgba: primary_color
+                    Rectangle:
+                        pos: self.x + dp(10), self.y + dp(5)
+                        size: self.width - dp(20), dp(2)
+            Button:
+                text: 'Аналітика'
+                background_color: 0, 0, 0, 0
+                color: text_light
+                canvas.before:
+                    Color:
+                        rgba: card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+                on_press: root.go_analytics()

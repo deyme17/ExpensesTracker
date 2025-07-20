@@ -1,7 +1,7 @@
 import bcrypt
 import base64
 import os
-from jose import jwt
+import jwt
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 

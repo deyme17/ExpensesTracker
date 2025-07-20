@@ -3,28 +3,34 @@ D:/ExpensesTracker/server
 ├── requirements.txt                        # Залежності проєкту
 ├── Dockerfile                              # Файл для створення та налаштування Docker образу
 │
-└── app/                                    # Серверна частина (Flask)
-    ├── app.py                              # Функція для створення додатку
-    ├── __init__.py                         # Конфігурація Flask
-    ├── init_db.py                          # Ініціалізація серверної БД
-    │
-    ├── api/
-    │   ├── auth_routes.py                  # Маршрути аутентифікації (/auth/register, /auth/login)
-    │   ├── main_routes.py                  # Основні маршрути (/accounts, /transactions, /categories)
-    │   └── webhook_routes.py               # Обробка webhooks від банків
-    │
-    ├── database/
-    │   ├── db.py                           # SQLAlchemy engine/session
-    │   ├── orm_models/                     # ORM моделі (account, category, currency, transaction, user)
-    │   └── repositories/                   # Репозиторії для роботи з БД
-    │
-    ├── services/
-    │   ├── auth_service.py                 # Сервіс аутентифікації
-    │   ├── bank_sync_service.py            # Синхронізація з банками
-    │   ├── bank_services/                  # Сервіси для роботи з банками
-    │   │   ├── bank_service.py             # Базовий банківський сервіс
-    │   │   └── monobank_service.py         # Сервіс Monobank API
-    │   ├── crud/                           # Сервіси для CRUD операцій (account, category, currency, transaction, user)
-    │   └── webhook_services/               # Сервіси для обробки webhooks
-    │
-    └── utils/                              # Утиліти (auth_decorator, encryption, security, validators)
+├── app/                                    # Серверна частина (Flask)
+│   ├── app.py                              # Функція для створення додатку
+│   ├── __init__.py                         # Конфігурація Flask
+│   ├── init_db.py                          # Ініціалізація серверної БД
+│   │
+│   ├── api/
+│   │   ├── auth_routes.py                  # Маршрути аутентифікації (/auth/register, /auth/login)
+│   │   ├── main_routes.py                  # Основні маршрути (/accounts, /transactions, /categories)
+│   │   └── webhook_routes.py               # Маршрути для обробки webhookів від банків (задачі передаються Celery)
+│   │
+│   ├── database/
+│   │   ├── db.py                           # SQLAlchemy engine/session
+│   │   ├── orm_models/                     # ORM моделі (account, category, currency, transaction, user)
+│   │   └── repositories/                   # Репозиторії для роботи з БД
+│   │
+│   ├── services/
+│   │   ├── auth_service.py                 # Сервіс аутентифікації
+│   │   ├── bank_sync_service.py            # Синхронізація з банками
+│   │   ├── bank_services/                  # Сервіси для роботи з банками
+│   │   │   ├── bank_service.py             # Базовий банківський сервіс
+│   │   │   └── monobank_service.py         # Сервіс Monobank API
+│   │   ├── crud/                           # Сервіси для CRUD операцій (account, category, currency, transaction, user)
+│   │   └── webhook_services/               # Сервіси для обробки webhooks
+│   │
+│   ├── tasks/webhook_tasks.py              # Задачі для асинхронної обробки вебхуків за допомогою Celery      
+│   │
+│   └── utils/                              # Утиліти (auth_decorator, encryption, security, validators)
+│
+└── celery/
+    ├── worker.py                           # Конфігурація Celery worker для обробки асинхронних задач
+    └── config.py                           # Налаштування Celery (брокер, черги, часові зони)

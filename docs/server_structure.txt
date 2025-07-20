@@ -32,5 +32,5 @@ D:/ExpensesTracker/server
 │   │
 │   └── utils/                              # Утиліти (auth_decorator, encryption, security, validators)
 │
-└── celery/
+└── celery_app/
     └── config.py                           # Налаштування Celery (брокер, черги, часові зони)

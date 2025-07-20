@@ -1,4 +1,4 @@
-from celery.config import create_celery
+from celery_app.config import create_celery
 from app.app import create_app
 
 flask_app = create_app()

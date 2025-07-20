@@ -11,7 +11,7 @@
 - 💱 Total balance overview (per account)  
 - 📊 Built-in basic financial statistics and dynamic graphs of incomes and expenses<br>
         -Line chart for dynamics over time   
-        -Histogram for distribution
+        -Histogram for distribution<br>
         -Pie charts for category-wise comparison
 
 ## Architecture & Design
@@ -24,7 +24,7 @@
           -Redis as message broker for reliable task delivery<br> 
           -Asynchronous data loading using `Threading`<br> 
   
-- 🔐 **Security**:
+- 🔐 **Security**:<br>
           - JWT-based user authentication  
           - Monobank token encryption + secure storage  
           - Password hashing using `bcrypt`
@@ -32,7 +32,7 @@
 - 📂 **Design Patterns**:<br> 
           - **MVC** (Model-View-Controller) as the backbone of frontend logic  
           - **Repository pattern** for database abstraction  
-          - **Factory pattern** for dynamic object creation (e.g., charts, services)
+          - **Factory pattern** for dynamic object creation (e.g., charts, services)<br>
           - **Strategy pattern** for different data processing pipelines
   
 - 📦 Dockerized deployment with environment configuration  

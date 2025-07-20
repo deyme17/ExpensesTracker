@@ -1,26 +1,19 @@
 from flask import Blueprint, request, jsonify
-from app.database.db import SessionLocal
-from app.services.webhook_services import mono_webhook_service
+from app.tasks.webhook_tasks import handle_webhook_task
 
 mono_webhook_bp = Blueprint("monobank_webhook", __name__, url_prefix="/api/monobank")
 
 
 @mono_webhook_bp.route("/webhook", methods=["POST"])
 def monobank_webhook():
-    db = SessionLocal()
     try:
         data = request.get_json()
         if not data:
-            return jsonify({"error": "no_data"}), 400
+            return jsonify({"status": "rejected"}), 400
 
-        mono_webhook_service.save_hooked_transactions(data, db)
-        db.commit()
+        handle_webhook_task.delay(data=data, bank_name="monobank")
 
-        return jsonify({"success": True}), 200
+        return jsonify({"status": "accepted"}), 202
 
     except Exception as e:
-        db.rollback()
-        return jsonify({"success": False, "error": str(e)}), 500
-
-    finally:
-        db.close()
+        return jsonify({"status": "rejected", "error": str(e)}), 500

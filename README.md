@@ -19,19 +19,22 @@
 - 🧭 **Client-server architecture** with RESTful API  
 - 🛠️ **Backend**: Flask app with PostgreSQL and main application with SQLite
 - 📱 **Frontend**: Kivy mobile GUI with clean UI/UX  
-- ⚙️ **Asynchronous Processing**: 
-          - Celery distributed task queue for webhook processing
-          - Redis as message broker for reliable task delivery
-          - Asynchronous data loading using `Threading`
+- ⚙️ **Asynchronous Processing**:<br> 
+          -Celery distributed task queue for webhook processing
+          -Redis as message broker for reliable task delivery
+          -Asynchronous data loading using `Threading`
+  
 - 🔐 **Security**: 
-  - JWT-based user authentication  
-  - Monobank token encryption + secure storage  
-  - Password hashing using `bcrypt`  
+          - JWT-based user authentication  
+          - Monobank token encryption + secure storage  
+          - Password hashing using `bcrypt`
+    
 - 📂 **Design Patterns**:
           - **MVC** (Model-View-Controller) as the backbone of frontend logic  
           - **Repository pattern** for database abstraction  
           - **Factory pattern** for dynamic object creation (e.g., charts, services)  
-          - **Strategy pattern** for different data processing pipelines  
+          - **Strategy pattern** for different data processing pipelines
+  
 - 📦 Dockerized deployment with environment configuration  
 - 📚 Extensive class and method documentation  
 - 🔄 Dependency inversion principle followed for clean service injection

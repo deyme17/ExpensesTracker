@@ -4,8 +4,8 @@ requests==2.31.0
 python-jose==3.4.0
 gunicorn==21.2.0
 
-celery==
-redis==
+celery==5.5.3
+redis==4.5.5
 
 SQLAlchemy==2.0.25
 psycopg2-binary==2.9.9

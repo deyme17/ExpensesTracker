@@ -11,8 +11,7 @@ def create_celery(task_name: str = "ext_celery") -> Celery:                     
     celery_app = Celery(
         task_name,
         broker=BROKER_URL,
-        backend=BROKER_URL,
-        include=['app.tasks.webhook_tasks'] 
+        backend=BROKER_URL
     )
     celery_app.conf.update(
         task_serializer='json',
@@ -20,5 +19,6 @@ def create_celery(task_name: str = "ext_celery") -> Celery:                     
         result_serializer='json',
         timezone='UTC',
         enable_utc=True,
+        include=['app.tasks.webhook_tasks'] 
     )
     return celery_app

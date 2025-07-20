@@ -20,9 +20,9 @@
 - 🛠️ **Backend**: Flask app with PostgreSQL and main application with SQLite
 - 📱 **Frontend**: Kivy mobile GUI with clean UI/UX  
 - ⚙️ **Asynchronous Processing**:<br> 
-          -Celery distributed task queue for webhook processing
-          -Redis as message broker for reliable task delivery
-          -Asynchronous data loading using `Threading`
+          -Celery distributed task queue for webhook processing<br> 
+          -Redis as message broker for reliable task delivery<br> 
+          -Asynchronous data loading using `Threading`<br> 
   
 - 🔐 **Security**: 
           - JWT-based user authentication  

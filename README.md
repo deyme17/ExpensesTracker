@@ -11,7 +11,7 @@
 - 💱 Total balance overview (per account)  
 - 📊 Built-in basic financial statistics and dynamic graphs of incomes and expenses<br>
         -Line chart for dynamics over time   
-        -Histogram for distribution< 
+        -Histogram for distribution
         -Pie charts for category-wise comparison
 
 ## Architecture & Design

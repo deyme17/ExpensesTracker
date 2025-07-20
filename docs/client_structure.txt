@@ -1,7 +1,7 @@
-D:/ExpensesTracker/
+D:/ExpensesTracker/expenses-tracker-client
 ├── main.py                                 # Точка входу для клієнтського додатку (Kivy)
-├── run_api.py                              # Точка входу для Flask API-серверу
 ├── requirements.txt                        # Залежності проєкту
+├── Dockerfile                              # Файл для створення та налаштування Docker образу
 │
 ├── app/                                    # Клієнтська частина (Kivy)
 │   ├── app.py                              # Ініціалізація Kivy-додатку
@@ -12,7 +12,7 @@ D:/ExpensesTracker/
 │   │   ├── auth_controller.py              # Реєстрація, логін, збереження користувача
 │   │   ├── analytics_controller.py         # Обробка графіків та статистики
 │   │   ├── transaction_controller.py       # Управляння транзакціями
-│   │   ├── metadata_controller.py          # Управління метаданими
+│   │   ├── metadata_controller.py          # Управління категоріями та валютами
 │   │   └── graph_factory.py                # Фабрика для створення графіків
 │   │
 │   ├── database/
@@ -63,34 +63,5 @@ D:/ExpensesTracker/
 │           ├── popups/                     # Спливаючі вікна
 │           └── transactions_widgets/       # Віджети для роботи з транзакціями
 │
-├── server/                                 # Серверна частина (Flask)
-│   ├── app.py                              # Запуск і конфігурація Flask
-│   ├── init_db.py                          # Ініціалізація серверної БД
-│   │
-│   ├── api/
-│   │   ├── auth_routes.py                  # Маршрути аутентифікації (/auth/register, /auth/login)
-│   │   ├── main_routes.py                  # Основні маршрути (/accounts, /transactions, /categories)
-│   │   └── webhook_routes.py               # Обробка webhooks від банків
-│   │
-│   ├── database/
-│   │   ├── db.py                           # SQLAlchemy engine/session
-│   │   ├── orm_models/                     # ORM моделі (account, category, currency, transaction, user)
-│   │   └── repositories/                   # Репозиторії для роботи з БД
-│   │
-│   ├── services/
-│   │   ├── auth_service.py                 # Сервіс аутентифікації
-│   │   ├── bank_sync_service.py            # Синхронізація з банками
-│   │   ├── bank_services/                  # Сервіси для роботи з банками
-│   │   │   ├── bank_service.py             # Базовий банківський сервіс
-│   │   │   └── monobank_service.py         # Сервіс Monobank API
-│   │   ├── crud/                           # CRUD операції (account, category, currency, transaction, user)
-│   │   └── webhook_services/               # Сервіси для обробки webhooks
-│   │
-│   └── utils/                              # Утиліти (auth_decorator, encryption, security, validators)
-│
-├── docs/                                   # Документація
-│   ├── dbSchema/                           # Схеми БД
-│   ├── diagrams/                           # Діаграми (DFD, UML)
-│   └── structure.txt                       # Структура проєкту
 ├── kv/                                     # Kv файли для Kivy
 └── resources/                              # Ресурси (images тощо)

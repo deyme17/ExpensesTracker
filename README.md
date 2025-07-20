@@ -18,7 +18,7 @@
 ## Architecture & Design
 
 - 🧭 **Client-server architecture** with RESTful API  
-- 🛠️ **Backend**: Flask app with PostgreSQL and main application with mySQL
+- 🛠️ **Backend**: Flask app with PostgreSQL and main application with SQLite
 - 📱 **Frontend**: Kivy mobile GUI with clean UI/UX  
 - ⚙️ **Multithreading**: Asynchronous data loading to improve responsiveness 
 
@@ -49,6 +49,6 @@
 
 - **Frontend:** Kivy (Python)  
 - **Backend:** Flask  
-- **Database:** PostgreSQL (and mySQL)   
+- **Database:** PostgreSQL (and SQLite)   
 - **Auth:** JWT generation + Monobank token  
 - **Containerization:** Docker  

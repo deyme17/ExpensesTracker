@@ -1,5 +1,6 @@
 D:/ExpensesTracker/server
 ├── main.py                                 # Точка входу для Flask API-серверу
+├── run_worker.py                           # Конфігурація Celery worker для обробки асинхронних задач
 ├── requirements.txt                        # Залежності проєкту
 ├── Dockerfile                              # Файл для створення та налаштування Docker образу
 │
@@ -32,5 +33,4 @@ D:/ExpensesTracker/server
 │   └── utils/                              # Утиліти (auth_decorator, encryption, security, validators)
 │
 └── celery/
-    ├── worker.py                           # Конфігурація Celery worker для обробки асинхронних задач
     └── config.py                           # Налаштування Celery (брокер, черги, часові зони)

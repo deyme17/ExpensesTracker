@@ -19,6 +19,5 @@ def create_celery(task_name: str = "ext_celery") -> Celery:                     
         result_backend=None,
         timezone='UTC',
         enable_utc=True,
-        include=['app.tasks.webhook_tasks'] 
     )
     return celery_app

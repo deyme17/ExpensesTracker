@@ -3,6 +3,7 @@ D:/ExpensesTracker/server
 ├── run_worker.py                           # Конфігурація Celery worker для обробки асинхронних задач
 ├── requirements.txt                        # Залежності проєкту
 ├── Dockerfile                              # Файл для створення та налаштування Docker образу
+├── docker-compose.yml                      # Файл для створення та налаштування docker compose
 │
 ├── app/                                    # Серверна частина (Flask)
 │   ├── app.py                              # Функція для створення додатку

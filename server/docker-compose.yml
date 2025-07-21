@@ -34,6 +34,6 @@ services:
     container_name: celery_worker
     command: python run_worker.py
     environment:
-      - BROKER_URL=redis://localhost:6379/0
+      - BROKER_URL=${BROKER_URL}
     depends_on:
       - redis

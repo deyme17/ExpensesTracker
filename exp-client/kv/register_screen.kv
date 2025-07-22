@@ -1,0 +1,223 @@
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+#:import dp kivy.metrics.dp
+#:import Clock kivy.clock.Clock
+#:import Animation kivy.animation.Animation
+
+# color scheme
+#:set primary_color get_color_from_hex('#FF7043')
+#:set secondary_color get_color_from_hex('#0F7055')
+#:set accent_color get_color_from_hex('#FFB74D')
+#:set bg_color get_color_from_hex('#062925')
+#:set text_light get_color_from_hex('#FFFFFF')
+#:set text_dark get_color_from_hex('#212121')
+#:set hint_color get_color_from_hex('#B0BEC5')
+#:set card_color get_color_from_hex('#0A4035')
+#:set error_color get_color_from_hex('#F44336')
+#:set success_color get_color_from_hex('#66BB6A')
+
+    
+<RegistrationScreen>:
+    email_input: email_input
+    password_input: password_input
+    confirm_password_input: confirm_password_input
+    monobank_token_input: monobank_token_input
+    error_label: error_label
+    register_button: register_button
+    
+    AnimatedBackground:
+        id: animated_bg
+        size_hint: 1, 1
+    
+    ScrollView:
+        size_hint: None, 0.9
+        width: min(dp(350), root.width * 0.9)
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        do_scroll_x: False
+        do_scroll_y: True
+        bar_width: dp(5)
+        bar_color: primary_color
+        bar_inactive_color: hint_color
+        effect_cls: 'ScrollEffect'
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: self.minimum_height
+            padding: dp(25)
+            spacing: dp(18)
+            
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.05
+                RoundedRectangle:
+                    pos: self.x - dp(5), self.y - dp(5)
+                    size: self.width + dp(10), self.height + dp(10)
+                    radius: [dp(20)]
+                    
+                Color:
+                    rgba: card_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(20)]
+                    
+                Color:
+                    rgba: 1, 1, 1, 0.05
+                Line:
+                    rounded_rectangle: [self.x, self.y, self.width, self.height, dp(20)]
+                    width: 1
+            
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(70)
+                spacing: dp(5)
+                
+                Label:
+                    text: 'Реєстрація'
+                    font_size: '30sp'
+                    color: text_light
+                    bold: True
+                    size_hint_y: None
+                    height: dp(45)
+                    
+                Widget:
+                    size_hint: None, None
+                    size: dp(60), dp(3)
+                    pos_hint: {'center_x': 0.5}
+                    canvas:
+                        Color:
+                            rgba: primary_color
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+            
+            Label:
+                text: "Email"
+                size_hint_y: None
+                height: dp(30)
+                color: text_light
+                font_size: '16sp'
+                halign: 'left'
+                text_size: self.width, None
+                
+            FancyTextInput:
+                id: email_input
+                hint_text: "Введіть email"
+                size_hint_y: None
+                height: dp(55)
+                required: True
+            
+            Label:
+                text: "Пароль"
+                size_hint_y: None
+                height: dp(30)
+                color: text_light
+                font_size: '16sp'
+                halign: 'left'
+                text_size: self.width, None
+                
+            FancyTextInput:
+                id: password_input
+                hint_text: "Введіть пароль"
+                password: True
+                size_hint_y: None
+                height: dp(55)
+                required: True
+            
+            Label:
+                text: "Підтвердження паролю"
+                size_hint_y: None
+                height: dp(30)
+                color: text_light
+                font_size: '16sp'
+                halign: 'left'
+                text_size: self.width, None
+                
+            FancyTextInput:
+                id: confirm_password_input
+                hint_text: "Введіть пароль ще раз"
+                password: True
+                size_hint_y: None
+                height: dp(55)
+                required: True
+            
+            Widget:
+                size_hint_y: None
+                height: dp(10)
+            
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(30)
+                
+                Label:
+                    text: "Монобанк токен"
+                    size_hint_x: 0.8
+                    color: text_light
+                    font_size: '16sp'
+                    halign: 'left'
+                    text_size: self.width, None
+                
+                Button:
+                    size_hint: None, None
+                    size: dp(24), dp(24)
+                    pos_hint: {'center_y': 0.5}
+                    background_color: 0, 0, 0, 0
+                    text: '?'
+                    font_size: '18sp'
+                    on_press: root.show_token_info()
+            
+            FancyTextInput:
+                id: monobank_token_input
+                hint_text: "Введіть токен API MonoBank"
+                size_hint_y: None
+                height: dp(55)
+                password: True
+                required: False
+            
+            Label:
+                id: error_label
+                text: root.error_message
+                color: error_color
+                font_size: '14sp'
+                size_hint_y: None
+                height: dp(30)
+                opacity: root.show_error
+            
+            GlowButton:
+                id: register_button
+                text: 'Зареєструватись'
+                size_hint_y: None
+                height: dp(55)
+                on_press: root.register()
+            
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(40)
+                padding: [0, dp(10), 0, 0]
+                
+                Label:
+                    text: 'Вже маєте акаунт?'
+                    font_size: '14sp'
+                    color: hint_color
+                    size_hint_x: 0.5
+                    halign: 'right'
+                    valign: 'middle'
+                    text_size: self.size
+                    padding: [dp(5), 0]
+                
+                Label:
+                    text: 'Увійти'
+                    font_size: '14sp'
+                    color: accent_color
+                    underline: True
+                    size_hint_x: 0.5
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+                    padding: [dp(5), 0]
+                    on_touch_down: 
+                        if self.collide_point(*args[1].pos): root.go_to_login()

@@ -1,0 +1,199 @@
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import dp kivy.metrics.dp
+#:import Animation kivy.animation.Animation
+
+# Color scheme
+#:set primary_color    get_color_from_hex('#FF7043')
+#:set secondary_color  get_color_from_hex('#0F7055')
+#:set accent_color     get_color_from_hex('#FFB74D')
+#:set bg_color         get_color_from_hex('#062925')
+#:set text_light       get_color_from_hex('#FFFFFF')
+#:set hint_color       get_color_from_hex('#B0BEC5')
+#:set card_color       get_color_from_hex('#0A4035')
+#:set expense_color    get_color_from_hex('#F44336')
+#:set income_color     get_color_from_hex('#66BB6A')
+
+<ChartButton@ToggleButton>:
+    group: 'chart_type'
+    background_color: 0, 0, 0, 0
+    color: text_light if self.state == 'down' else hint_color
+    font_size: '15sp'
+    bold: self.state == 'down'
+    allow_no_selection: False
+    canvas.before:
+        Color:
+            rgba: primary_color if self.state == 'down' else card_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(8)]
+        Color:
+            rgba: accent_color if self.state == 'down' else (0, 0, 0, 0)
+        Line:
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(8)]
+            width: dp(1.5)
+    on_press:
+        self.background_color = 0, 0, 0, 0.1
+        Animation(background_color=(0, 0, 0, 0), d=0.3).start(self)
+
+<AnalyticsScreen>:
+    id: analytics_screen_root
+
+    AnimatedBackground:
+        size_hint: 1, 1
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(12)
+        spacing: dp(12)
+
+        # Header with filter & menu icons
+        BoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            spacing: dp(8)
+
+            Label:
+                text: 'Аналітика'
+                color: text_light
+                font_size: '24sp'
+                bold: True
+                valign: 'middle'
+                halign: 'left'
+                text_size: self.size
+
+            # Filter icon button
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_release: analytics_screen_root.show_filter()
+                canvas.before:
+                    Color:
+                        rgba: accent_color
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(10), self.center_y + dp(8), self.center_x + dp(10), self.center_y + dp(8), self.center_x + dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(10), self.center_y + dp(8)]
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x - dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(8), self.center_x + dp(5), self.center_y - dp(2)]
+
+            # Menu icon button
+            Button:
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {'center_y': 0.5}
+                background_color: 0, 0, 0, 0
+                on_release: analytics_screen_root.show_menu()
+                canvas.before:
+                    Color:
+                        rgba: secondary_color
+                    Line:
+                        width: 1.5
+                        circle: (self.center_x, self.center_y, min(self.width, self.height) / 2 - dp(5), 0, 360)
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(5), self.center_y - dp(2), self.center_x + dp(5), self.center_y - dp(2)]
+                    Line:
+                        width: 1.5
+                        points: [self.center_x - dp(5), self.center_y + dp(2), self.center_x + dp(5), self.center_y + dp(2)]
+
+        Label:
+            id: chart_type_label
+            text: analytics_screen_root.translated_type
+            font_size: '16sp'
+            bold: True
+            color: expense_color if analytics_screen_root.translated_type == 'Витрати' else income_color
+            size_hint_y: None
+            height: dp(20)
+            halign: 'center'
+            text_size: self.size
+
+        # Graph container
+        BoxLayout:
+            id: graph_box
+            orientation: 'vertical'
+            size_hint_y: 1
+            padding: 0
+
+        # Chart type buttons
+        GridLayout:
+            cols: 3
+            size_hint_y: None
+            height: dp(48)
+            spacing: dp(8)
+
+            ChartButton:
+                id: histogram_btn
+                text: 'Гістограма'
+                state: 'down'
+                on_release: analytics_screen_root.change_chart_type('histogram')
+
+            ChartButton:
+                id: line_btn
+                text: 'Лінійний'
+                on_release: analytics_screen_root.change_chart_type('line')
+
+            ChartButton:
+                id: pie_btn
+                text: 'Кругова'
+                on_release: analytics_screen_root.change_chart_type('pie')
+
+        # Statistics panel
+        BoxLayout:
+            size_hint_y: None
+            height: dp(130)
+            orientation: 'horizontal'
+            padding: dp(8)
+            spacing: dp(8)
+            canvas.before:
+                Color:
+                    rgba: card_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(12)]
+
+            StatsSection:
+                id: stats_box
+                size_hint_x: 1
+
+        # Bottom navigation bar
+        BoxLayout:
+            size_hint_y: None
+            height: dp(56)
+            spacing: dp(8)
+
+            Button:
+                text: 'Транзакції'
+                background_normal: ''
+                background_color: 0, 0, 0, 0
+                color: text_light
+                on_press: analytics_screen_root.go_to_transactions()
+                canvas.before:
+                    Color:
+                        rgba: card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+
+            Button:
+                text: 'Аналітика'
+                background_normal: ''
+                background_color: 0, 0, 0, 0
+                color: primary_color
+                bold: True
+                canvas.before:
+                    Color:
+                        rgba: card_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10)]
+                    Color:
+                        rgba: primary_color
+                    Rectangle:
+                        pos: (self.x + dp(10), self.y + dp(5))
+                        size: (self.width - dp(20), dp(2))

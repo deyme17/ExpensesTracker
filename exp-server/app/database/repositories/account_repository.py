@@ -37,6 +37,6 @@ class AccountRepository(BaseRepository[Account]):
                 for a in accounts_data
             ]
             session.add_all(accounts)
-            session.commit()
+            session.flush()
             return accounts
         return self._with_session(operation, db)

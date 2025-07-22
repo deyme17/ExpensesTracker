@@ -19,13 +19,14 @@ class BankSyncService:
         try:
             client_info = bank.get_client_info()
             accounts = self._add_accounts(client_info, user_id, db)
+            db.flush()
             transactions = self._get_transactions(bank, accounts, user_id)
             self._add_missing_categories(transactions, db)
             self._add_transactions(transactions, db)
             db.commit()
-        except Exception:
+        except Exception as e:
             db.rollback()
-            raise
+            raise Exception(f"Sync failed: {str(e)}")
 
     def _add_accounts(self, client_info: dict, user_id: str, db: Session):
         """
@@ -35,7 +36,6 @@ class BankSyncService:
         if not accounts_data:
             raise Exception("no_accounts_found")
         accounts = self.account_service.bulk_create(accounts_data, user_id, db)
-        db.commit()
         return accounts
 
     def _get_transactions(self, bank: BankService, accounts: list, user_id: str):
@@ -57,7 +57,6 @@ class BankSyncService:
         missing_mcc = {t.mcc_code for t in transactions if t.mcc_code not in existing_mcc}
         for code in missing_mcc:
             db.add(Category(mcc_code=code, name="other"))
-        db.commit()
 
     def _add_transactions(self, transactions: list, db: Session):
         """
@@ -65,4 +64,3 @@ class BankSyncService:
         """
         for tx in transactions:
             db.add(tx)
-        db.commit()

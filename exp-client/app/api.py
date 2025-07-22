@@ -37,7 +37,7 @@ def safe_request(method, url, **kwargs):
         try:
             data = response.json()
             print(f'[DEBUG API] <{url}>\nSuccess: {data.get("success", "N/A")}\nTotal records: {len(data.get("data", []))}')
-            return {"success": True, "data": data}
+            return data
         except ValueError:
             return {"success": False, "error": ErrorCodes.INVALID_RESPONSE}
 

@@ -29,6 +29,7 @@ def get_transactions(user_id):
             return jsonify({"success": False, "error": "Access denied"}), 403
         
         transactions = transaction_service.get_all_by_user(user_id)
+        print(f"[DEBUG ROUTES] <get_transactions> Total records: {len(transactions)}\n {transactions[-1]}")
         return jsonify({"success": True, "data": transactions})
     
     except Exception as e:
@@ -106,6 +107,7 @@ def get_accounts(user_id):
         return jsonify({"success": False, "error": "Access denied"}), 403
     try:
         accounts = account_service.get_by_user_id(user_id)
+        print(f"[DEBUG ROUTES] <get_accounts> Total records: {len(accounts)}\n {accounts[-1]}")
         return jsonify({"success": True, "data": accounts})
     
     except Exception as e:
@@ -116,7 +118,9 @@ def get_accounts(user_id):
 @api.route("/categories", methods=["GET"])
 def get_categories():
     try:
-        return jsonify({"success": True, "data": category_service.get_all()})
+        categories = category_service.get_all()
+        print(f"[DEBUG ROUTES] <get_categories> Total records: {len(categories)}\n {categories[-1]}")
+        return jsonify({"success": True, "data": categories})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
@@ -125,6 +129,8 @@ def get_categories():
 @api.route("/currencies", methods=["GET"])
 def get_currencies():
     try:
-        return jsonify({"success": True, "data": currency_service.get_all()})
+        currencies = currency_service.get_all()
+        print(f"[DEBUG ROUTES] <get_currencies> Total records: {len(currencies)}\n {currencies[-1]}")
+        return jsonify({"success": True, "data": currencies})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400

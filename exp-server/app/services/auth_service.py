@@ -44,7 +44,7 @@ class AuthService:
         client_info = bank.get_client_info()
         user_id = client_info["user_id"]
 
-        if self.user_service.repo.get_user_by_email(data["email"]):
+        if self.user_service.get_user_by_email(data["email"], db):
             raise Exception("user_exists")
 
         try:
@@ -56,8 +56,7 @@ class AuthService:
                 "encrypted_token": enc.encrypt(monobank_token)
             }
 
-
-            user = self.user_service.repo.create_user(user_data, db)
+            user = self.user_service.create_user(user_data, db)
             self.bank_sync_service.sync_user_data(bank, user_id, db)
             if WEBHOOK_URL:
                 bank.set_webhook(WEBHOOK_URL)
@@ -84,7 +83,7 @@ class AuthService:
         Returns:
             Dict with token and user info
         """
-        user = self.user_service.repo.get_user_by_email(email, db=db)
+        user = self.user_service.get_user_by_email(email, db=db)
         if not user or not verify_password(password, user.hashed_password):
             raise Exception("invalid_credentials")
 

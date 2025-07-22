@@ -34,7 +34,9 @@ class BankSyncService:
         accounts_data = client_info.get("accounts", [])
         if not accounts_data:
             raise Exception("no_accounts_found")
-        return self.account_service.repo.bulk_create(accounts_data, user_id, db)
+        accounts = self.account_service.bulk_create(accounts_data, user_id, db)
+        db.commit()
+        return accounts
 
     def _get_transactions(self, bank: BankService, accounts: list, user_id: str):
         """
@@ -55,6 +57,7 @@ class BankSyncService:
         missing_mcc = {t.mcc_code for t in transactions if t.mcc_code not in existing_mcc}
         for code in missing_mcc:
             db.add(Category(mcc_code=code, name="other"))
+        db.commit()
 
     def _add_transactions(self, transactions: list, db: Session):
         """
@@ -62,3 +65,4 @@ class BankSyncService:
         """
         for tx in transactions:
             db.add(tx)
+        db.commit()

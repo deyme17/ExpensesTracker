@@ -43,5 +43,25 @@ class UserService:
             User data object or None if not found
         """
         return self.repo.get_user_by_account_id(account_id, db)
+    
+    def create_user(self, user_data: dict, db: Session = None):
+        """Creates a new user in the database.
+        Args:
+            user_data: Dictionary containing user attributes:
+            db: Optional database session
+        Returns:
+            User: The created User ORM object
+        """
+        return self.repo.create_user(user_data, db)
+
+    def get_user_by_email(self, email: str, db: Session = None):
+        """Retrieves a user by their email address.
+        Args:
+            email: Email address to search for
+            db: Optional database session
+        Returns:
+            Optional[User]: User object if found, None otherwise
+        """
+        return self.repo.get_user_by_email(email, db)
 
 user_service = UserService(repository=UserRepository())

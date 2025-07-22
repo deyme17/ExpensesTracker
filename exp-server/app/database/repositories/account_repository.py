@@ -8,7 +8,7 @@ class AccountRepository(BaseRepository[Account]):
         super().__init__(Account)
 
     def update_balance(self, account_id: str, val: float, db: Session = None) -> Account | None:
-        with self.get_session(db) as session:
+        def operation(session: Session):
             account = session.query(Account).filter(Account.account_id == account_id).first()
             if not account:
                 return None
@@ -16,13 +16,15 @@ class AccountRepository(BaseRepository[Account]):
             session.commit()
             session.refresh(account)
             return account
-    
+        return self._with_session(operation, db)
+
     def get_by_user_id(self, user_id: str, db: Session = None):
-        with self.get_session(db) as session:
+        def operation(session: Session):
             return session.query(Account).filter(Account.user_id == user_id).all()
+        return self._with_session(operation, db)
 
     def bulk_create(self, accounts_data: list, user_id: str, db: Session = None):
-        with self.get_session(db) as session:
+        def operation(session: Session):
             accounts = [
                 Account(
                     account_id=a["id"],
@@ -37,3 +39,4 @@ class AccountRepository(BaseRepository[Account]):
             session.add_all(accounts)
             session.flush()
             return accounts
+        return self._with_session(operation, db)

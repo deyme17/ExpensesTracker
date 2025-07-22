@@ -8,5 +8,6 @@ class CategoryRepository(BaseRepository[Category]):
         super().__init__(Category)
 
     def get_category_by_mcc(self, mcc_code: int, db: Session = None):
-        with self.get_session(db) as session:
+        def operation(session: Session):
             return session.query(Category).filter(Category.mcc_code == mcc_code).first()
+        return self._with_session(operation, db)

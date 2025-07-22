@@ -1,4 +1,4 @@
-D:/ExpensesTracker/server
+D:/ExpensesTracker/exp-server
 ├── main.py                                 # Точка входу для Flask API-серверу
 ├── run_worker.py                           # Конфігурація Celery worker для обробки асинхронних задач
 ├── requirements.txt                        # Залежності проєкту

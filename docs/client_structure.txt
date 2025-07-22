@@ -1,4 +1,4 @@
-D:/ExpensesTracker/expenses-tracker-client
+D:/ExpensesTracker/exp-client
 ├── main.py                                 # Точка входу для клієнтського додатку (Kivy)
 ├── requirements.txt                        # Залежності проєкту
 ├── Dockerfile                              # Файл для створення та налаштування Docker образу

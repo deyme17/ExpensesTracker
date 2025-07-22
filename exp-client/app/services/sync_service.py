@@ -7,7 +7,6 @@ class SyncService:
         category_data: List of categories to synchronize  
         currency_data: List of currencies to synchronize
     """
-
     def __init__(self, local_storage, transaction_data, category_data, currency_data):
         self.local_storage = local_storage
         self.transactions = transaction_data

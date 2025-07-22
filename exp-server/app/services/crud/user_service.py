@@ -54,14 +54,4 @@ class UserService:
         """
         return self.repo.create_user(user_data, db)
 
-    def get_user_by_email(self, email: str, db: Session = None):
-        """Retrieves a user by their email address.
-        Args:
-            email: Email address to search for
-            db: Optional database session
-        Returns:
-            Optional[User]: User object if found, None otherwise
-        """
-        return self.repo.get_user_by_email(email, db)
-
 user_service = UserService(repository=UserRepository())

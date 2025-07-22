@@ -98,13 +98,3 @@ class AuthService:
             "name": user.name,
             "email": user.email
         }
-
-    def create_token(self, user: User) -> str:
-        """
-        Creates a JWT token for a given user.
-        Args:
-            user: User ORM model
-        Returns:
-            JWT token string
-        """
-        return create_access_token({"user_id": user.user_id}, expires_delta=timedelta(days=20))

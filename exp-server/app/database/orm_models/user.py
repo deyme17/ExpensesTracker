@@ -9,3 +9,12 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     encrypted_token = Column(String, nullable=False)
+
+    def to_dict(self):
+        return {
+            "user_id": self.user_id,
+            "name": self.name,
+            "email": self.email,
+            "hashed_password": self.hashed_password,
+            "encrypted_token": self.encrypted_token,
+        }

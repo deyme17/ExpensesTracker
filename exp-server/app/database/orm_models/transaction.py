@@ -22,3 +22,19 @@ class Transaction(Base):
     description = Column(String(255), nullable=False, default="without_description")
     cashback = Column(DECIMAL(19, 4), nullable=False, default=0)
     commission = Column(DECIMAL(19, 4), nullable=False, default=0)
+
+    def to_dict(self):
+        return {
+            "transaction_id": self.transaction_id,
+            "user_id": self.user_id,
+            "amount": float(self.amount),
+            "date": self.date.isoformat() if self.date else None,
+            "account_id": self.account_id,
+            "mcc_code": int(self.mcc_code),
+            "currency_code": int(self.currency_code),
+            "payment_method": self.payment_method.value,
+            "type": self.type,
+            "description": self.description,
+            "cashback": float(self.cashback),
+            "commission": float(self.commission),
+        }

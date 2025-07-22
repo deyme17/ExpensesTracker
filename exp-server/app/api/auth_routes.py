@@ -17,10 +17,12 @@ def register():
 
         return jsonify({
             "success": True,
-            "user_id": user_info["user_id"],
-            "name": user_info["name"],
-            "email": user_info["email"],
-            "token": token
+            "data": {
+                "user_id": user_info["user_id"],
+                "name": user_info["name"],
+                "email": user_info["email"],
+                "token": token
+            }
         })
     except Exception as e:
         db.rollback()
@@ -37,13 +39,16 @@ def login():
         password = data.get("password")
 
         result = auth_service.login_user(email, password)
-        print(f"[DEBUG ROUTES] <login>\nUser email:\n{result["email"]}")
+        print(f"[DEBUG ROUTES] <login>\nUser email:\n{result['email']}")
+        
         return jsonify({
             "success": True,
-            "user_id": result["user_id"],
-            "name": result["name"],
-            "email": result["email"],
-            "token": result["token"]
+            "data": {
+                "user_id": result["user_id"],
+                "name": result["name"],
+                "email": result["email"],
+                "token": result["token"]
+            }
         })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 401

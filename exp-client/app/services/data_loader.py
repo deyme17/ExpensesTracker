@@ -39,10 +39,12 @@ class DataLoader:
         """
         def _execute_load():
             try:
+                # set some after-auth attributes 
                 self.account_service.user_id = user.user_id
                 self.transaction_service.user_id = user.user_id
                 self.transaction_service.local_storage = self.local_storage
 
+                # get data
                 accounts, _ = self.account_service.get_accounts()
                 transactions, _ = self.transaction_service.get_transactions(force_refresh=True)
                 categories, _ = self.category_service.get_categories()
@@ -58,6 +60,7 @@ class DataLoader:
                 sync_service.sync()
                 
                 # choose acc
+                matching_account = None
                 if accounts:
                     previous_account_id = self.local_storage.settings.get_active_account_id(user.user_id)
                     matching_account = next((acc for acc in accounts if acc.account_id == previous_account_id), None)

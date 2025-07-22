@@ -126,7 +126,7 @@ class AuthService:
         def try_login(dt):
             try:
                 response = api_login({"email": email, "password": password})
-
+                print(f"[DEBUG AuthService] <login>\nSuccess: {response.get('success', 'N/A')}")
                 if response.get("success"):
                     user = User.from_api_dict(response["data"])
                     self.on_user_authenticated(
@@ -166,7 +166,7 @@ class AuthService:
                 }
                 print("REGISTRATION")
                 response = api_register(payload)
-                print(response)
+                print(f"[DEBUG AuthService] <register>\nSuccess: {response.get('success', 'N/A')}")
                 
                 if response.get("success"):
                     user = User.from_api_dict(response["data"])

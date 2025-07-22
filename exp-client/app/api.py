@@ -29,12 +29,14 @@ def safe_request(method, url, **kwargs):
 
         if response.status_code == 429:
             return {"success": False, "error": ErrorCodes.TOO_MANY_REQUESTS}
+        if response.status_code == 400:
+            return {"success": False, "error": ErrorCodes.BAD_REQUEST, "status_code": response.status_code}
         if not response.ok:
-            return {"success": False, "error": ErrorCodes.SERVER_UNREACHABLE, "status_code": response.status_code}
-
+            return {"success": False, "error": ErrorCodes.UNKNOWN_ERROR, "status_code": response.status_code}
+        
         try:
             data = response.json()
-            print(data)
+            print(f'[DEBUG API] <{url}>\nSuccess: {data.get("success", "N/A")}\nTotal records: {len(data.get("data", []))}')
             return {"success": True, "data": data}
         except ValueError:
             return {"success": False, "error": ErrorCodes.INVALID_RESPONSE}
@@ -44,6 +46,7 @@ def safe_request(method, url, **kwargs):
     except requests.ConnectionError:
         return {"success": False, "error": ErrorCodes.SERVER_UNREACHABLE}
     except Exception as e:
+        print(f"[ERROR] <{url}>\n{e}")
         return {"success": False, "error": ErrorCodes.UNKNOWN_ERROR}
 
 def api_get_transactions(user_id):

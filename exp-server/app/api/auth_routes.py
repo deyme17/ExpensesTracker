@@ -12,7 +12,7 @@ def register():
     try:
         data = request.get_json()
         user_info = auth_service.register_user(data, db)
-        print(f"[DEBUG ROUTES] <register>\nUser email:\n{user_info["email"]}")
+        print(f"[DEBUG ROUTES] <register>\nUser email:\n{user_info['email']}")
         token = create_access_token({"user_id": user_info["user_id"]})
 
         return jsonify({

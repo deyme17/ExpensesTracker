@@ -48,21 +48,23 @@ class AuthService:
             raise Exception("user_exists")
 
         try:
-            with db.begin():
-                user_data = {
-                    "user_id": user_id,
-                    "name": client_info.get("name"),
-                    "email": data.get("email"),
-                    "hashed_password": hash_password(data["password"]),
-                    "encrypted_token": enc.encrypt(monobank_token)
-                }
-                user = self.user_service.repo.create_user(user_data, db)
-                self.bank_sync_service.sync_user_data(bank, user_id, db)
-                
-                if WEBHOOK_URL:
-                    bank.set_webhook(WEBHOOK_URL)
+            user_data = {
+                "user_id": user_id,
+                "name": client_info.get("name"),
+                "email": data.get("email"),
+                "hashed_password": hash_password(data["password"]),
+                "encrypted_token": enc.encrypt(monobank_token)
+            }
+
+            user = self.user_service.repo.create_user(user_data, db)
+            self.bank_sync_service.sync_user_data(bank, user_id, db)
+            if WEBHOOK_URL:
+                bank.set_webhook(WEBHOOK_URL)
+
+            db.commit()
 
         except Exception as e:
+            db.rollback()
             raise Exception(f"Registration failed: {e}")
 
         return {

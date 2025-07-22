@@ -56,6 +56,7 @@ class AuthService:
                 "encrypted_token": enc.encrypt(monobank_token)
             }
 
+
             user = self.user_service.repo.create_user(user_data, db)
             self.bank_sync_service.sync_user_data(bank, user_id, db)
             if WEBHOOK_URL:

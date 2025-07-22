@@ -87,11 +87,12 @@ class TransactionService(RemoteMode):
 
         date_str = data.get("date")
         if date_str:
-            formatted = format_date(date_str, "%Y-%m-%d")
-            if formatted == date_str:
+            try:
+                formatted = format_date(date_str, "%Y-%m-%d")
+                data["date"] = formatted
+            except ValueError:
                 print(f"[TransactionService] Invalid date format: {date_str}")
                 return {"success": False, "error": ErrorCodes.INVALID_DATE_FORMAT}
-            data["date"] = formatted
 
         result = api_add_transaction(data)
         if result.get("success"):

@@ -10,7 +10,7 @@ D:/ExpensesTracker/exp-server
 │   ├── __init__.py                         # Конфігурація Flask
 │   ├── init_db.py                          # Ініціалізація серверної БД
 │   │
-│   ├── api/
+│   ├── routes/
 │   │   ├── auth_routes.py                  # Маршрути аутентифікації (/auth/register, /auth/login)
 │   │   ├── main_routes.py                  # Основні маршрути (/accounts, /transactions, /categories)
 │   │   └── webhook_routes.py               # Маршрути для обробки webhookів від банків (задачі передаються Celery)

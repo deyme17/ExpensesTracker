@@ -55,3 +55,10 @@
 - **Task Queue:** Celery + Redis  
 - **Auth:** JWT generation + Monobank token  
 - **Containerization:** Docker
+
+## Deploy
+
+- The server and database are hosted on DigitalOcean (Droplet + Managed PostgreSQL).
+- The domain `expenses-tracker.tech` points to the server IP.
+- SSL certificates are issued via Let's Encrypt (Certbot) for secure HTTPS.
+- Backend and Celery worker run in Docker containers managed with Docker Compose.

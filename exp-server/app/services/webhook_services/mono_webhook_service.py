@@ -2,6 +2,8 @@ from .base_webhook_service import BaseWebHookService
 from sqlalchemy.orm import Session
 from datetime import datetime as dt
 
+import logging
+logger = logging.getLogger(__name__)
 
 class MonoWebHookService(BaseWebHookService):
     """Handles webhook data from Monobank and saves transactions.
@@ -39,7 +41,7 @@ class MonoWebHookService(BaseWebHookService):
         """
         hook_type = data.get("type")
         if hook_type != "StatementItem":
-            print(f"[Webhook] Unsupported type: {hook_type}")
+            logger.info(f"[Webhook] Unsupported type: {hook_type}")
             return None, None
 
         hook_data = data.get("data", {})
@@ -47,7 +49,7 @@ class MonoWebHookService(BaseWebHookService):
         account_id = hook_data.get("account")
 
         if not statement or not account_id:
-            print(f"[Webhook] Invalid payload. account_id={account_id}, statement={statement}")
+            logger.info(f"[Webhook] Invalid payload. account_id={account_id}, statement={statement}")
             return None, None
 
         return statement, account_id
@@ -104,11 +106,11 @@ class MonoWebHookService(BaseWebHookService):
         """
         account = self.account_service.get_by_id(tx_data["account"], db)
         if not account:
-            print(f"[Webhook] Skipping: account {tx_data['account']} not found")
+            logger.info(f"[Webhook] Skipping: account {tx_data['account']} not found")
             return False
 
         if self.transaction_service.get_by_id(tx_data["id"], db):
-            print(f"[Webhook] Skipping: transaction {tx_data['id']} already exists")
+            logger.info(f"[Webhook] Skipping: transaction {tx_data['id']} already exists")
             return False
 
         return True

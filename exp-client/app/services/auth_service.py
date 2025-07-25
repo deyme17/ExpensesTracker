@@ -174,7 +174,6 @@ class AuthService:
                 }
                 print("REGISTRATION")
                 response = api_register(payload)
-                print(f"[DEBUG AuthService] response:\n{response}")
                 print(f"[DEBUG AuthService] <register>\nSuccess: {response.get('success', 'N/A')}")
                 
                 if response.get("success"):

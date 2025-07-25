@@ -25,7 +25,7 @@ def get_auth_headers():
 
 def safe_request(method, url, **kwargs):
     try:
-        response = requests.request(method, url, timeout=5, **kwargs)
+        response = requests.request(method, url, timeout=10, **kwargs)
 
         if response.status_code == 429:
             return {"success": False, "error": ErrorCodes.TOO_MANY_REQUESTS}

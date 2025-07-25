@@ -22,7 +22,7 @@ class MonobankService:
         }
         """
         url = f"{self.BASE_URL}/personal/client-info"
-        response = requests.get(url, headers=self._headers())
+        response = requests.get(url, headers=self._headers(), timeout=15)
 
         if response.status_code != 200:
             raise Exception("client_info_error: status={status}, text={text}".format(
@@ -67,7 +67,7 @@ class MonobankService:
 
         time.sleep(0.4)
 
-        response = requests.get(url, headers=self._headers())
+        response = requests.get(url, headers=self._headers(), timeout=15)
 
         if response.status_code == 200:
             return response.json()
@@ -90,7 +90,7 @@ class MonobankService:
             f"{self.BASE_URL}/personal/webhook",
             headers=self._headers(),
             json={"webHookUrl": url},
-            timeout=5
+            timeout=15
         )
         if response.status_code != 200:
             raise Exception(f"Failed to set webHook {response.text}")

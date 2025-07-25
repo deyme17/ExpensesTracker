@@ -135,7 +135,15 @@ class AuthService:
                     )
                 else:
                     if not self._try_offline_login(email, callback):
-                        error_code = response.get("error", ErrorCodes.UNKNOWN_ERROR)
+                        status_code = response.get("status_code", 500)
+
+                        if status_code == 404:
+                            error_code = ErrorCodes.USER_NOT_FOUND
+                        elif status_code == 401:
+                            error_code = ErrorCodes.INVALID_CREDENTIALS
+                        else:
+                            error_code = ErrorCodes.UNKNOWN_ERROR
+
                         if callback:
                             callback(False, LM.server_error(error_code))
 
@@ -182,9 +190,18 @@ class AuthService:
                     
                     self.data_loader.load_data(user, callback=after_load)
                 else:
-                    error_code = response.get("error", ErrorCodes.UNKNOWN_ERROR)
+                    status_code = response.get("status_code", 500)
+
+                    if status_code == 409:
+                        error_code = ErrorCodes.USER_EXISTS
+                    elif status_code == 400:
+                        error_code = ErrorCodes.INVALID_CREDENTIALS
+                    else:
+                        error_code = ErrorCodes.REGISTRATION_FAILED
+
                     if callback:
                         callback(False, LM.server_error(error_code))
+
             except Exception:
                 if callback:
                     callback(False, LM.server_error(ErrorCodes.UNKNOWN_ERROR))

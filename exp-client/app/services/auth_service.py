@@ -192,10 +192,8 @@ class AuthService:
                 else:
                     status_code = response.get("status_code", 500)
 
-                    if status_code == 409:
+                    if status_code == 409 or status_code == 400:
                         error_code = ErrorCodes.USER_EXISTS
-                    elif status_code == 400:
-                        error_code = ErrorCodes.INVALID_CREDENTIALS
                     else:
                         error_code = ErrorCodes.REGISTRATION_FAILED
 
